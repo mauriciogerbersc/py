@@ -1,0 +1,44 @@
+body {
+    margin: 0;
+    color: #000;
+    background-color: #fff;
+  }
+
+
+  header, footer, aside, nav, form, iframe, .menu, .hero, .adslot {
+    display: none;
+  }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+  }
+
+  h1 {
+    page-break-before: always;
+    break-before: always;
+  }
+
+  table {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+
+  @page {
+    margin: 2cm;
+  }
+  
+  /* target the first page only */
+  @page :first {
+    margin-top: 6cm;
+  }
+  
+  /* target left (even-numbered) pages only */
+  @page :left {
+    margin-right: 4cm;
+  }
+  
+  /* target right (odd-numbered) pages only */
+  @page :right {
+    margin-left: 4cm;
+  }
