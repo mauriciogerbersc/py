@@ -31,38 +31,77 @@ x
             <a href="/variaveis/nova" class="btn btn-primary">Cadastrar nova Variável</a>
         </div>
 
-        @if(count($arr) > 0)
-        <table id="example1" class="table ">
-            <thead>
-                <tr>
-                    <th class="dt-center">Categoria</th>
-                    <th>Variável</th>
-                    <th class="dt-center">Valor</th>
-                    <th class="dt-center">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($arr as $a)
-                <tr>
-                    <td class="dt-center">{{$a['categoria_nome']}}</td>
-                    <td class=>{{$a['nome']}}</td>
-                    <td class="dt-center">{{$a['valor']}}</td>
-                    <td class="dt-center">
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Ações
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="/variaveis/editar/{{$a['id']}}">Editar Variável</a>
-                                <a class="dropdown-item" href="/variaveis/remover/{{$a['id']}}">Remover Variável</a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+
+        @if(session('classe'))
+        <div class="alert {{session('classe')}} alert-dismissible fade show" role="alert">
+            {{ session('mensagem') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
         @endif
+
+
+        <div class="table-responsive">
+
+            @foreach($categorias as $categoria)
+            <table class="table table-dark table-hover table-striped mg-b-0">
+                <thead>
+                    <tr>
+
+                        <th class="tx-center">Tipo</th>
+                        <th>{{$categoria->nome}}</th>
+                        <th>Valor Base</th>
+                        <th>Unidade</th>
+                        <th class="tx-center">Ordem</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($variaveis as $var)
+                    <tr>
+                        @if($categoria->id == $var['categoria_id'])
+                        <td style="line-height:3; width:10%" class="tx-center">
+                            @if($var['tipo_variavel'] == 0)
+                                Full
+                            @elseif($var['tipo_variavel'] == 1)
+                                Basic
+                            @else
+                                Ambos
+                            @endif
+                        </th>
+                        <td scope="row" style="line-height:3; width:33%">{{$var['nome']}}</td>
+                        <td style="line-height:3; width:15%">
+                            R$ {!! Helper::moedaReal($var['valor']) !!}
+                        </td>
+                        <td style="line-height:3; width:15%">{{$var['unidade']}}</td>
+                        <td style="width:15%" class="dt-center">
+                            <input type="text" class="form-control ordem" data-variavel="{{$var['id']}}" name="ordem"
+                                value="{{$var['ordem']}}" />
+                        </td>
+                        <td style="line-height:3; width:10%" class="dt-center">
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Ações
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item" href="/variaveis/editar/{{$var['id']}}">Editar Variável</a>
+                                    <a class="dropdown-item" href="/variaveis/remover/{{$var['id']}}">Remover
+                                        Variável</a>
+                                </div>
+                            </div>
+                        </td>
+                        @endif
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+          
+            @endforeach
+
+        </div>
+
     </div>
 </div>
 @endsection
@@ -84,6 +123,47 @@ x
     $(function() {
         'use strict'
 
+        $(document).ready(function() {
+            
+            $(".table").hide();
+        
+            $("table").has("tbody td").show().after("<hr>");
+
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                }
+            });
+
+            $(".ordem").change(function(e){
+
+                e.preventDefault();
+
+                console.log($(this).val());
+                console.log($(this).attr("data-variavel"));
+                console.log( $('meta[name="_token"]').attr('content'));
+                var urlEnviar = '/variaveis/salvaOrdem';
+                $.ajax({
+                   
+                    type: 'POST',
+                    url: urlEnviar,
+                    data: {
+                            'ordem'  : $(this).val(),
+                            'variavel': $(this).attr("data-variavel")
+                    },
+                    success: function(data){
+                        if(data.success){
+                            alert("Ordem cadastrada com sucesso");
+                        }
+                    },
+                    error: function(){
+                        alert('Erro no Ajax !');
+                    }
+                });
+            });
+        });
+        
         $('#example1').DataTable({
             pageLength: 50,
             lengthMenu: [[50, 100, 200, -1], [50, 100, 200, "Todos"]],

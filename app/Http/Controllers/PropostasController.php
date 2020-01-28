@@ -17,6 +17,7 @@ use App\Perguntas;
 use App\PropostasRespostas;
 // This is important to add here. 
 use PDF;
+use Helper;
 
 class PropostasController extends Controller
 {
@@ -74,11 +75,8 @@ class PropostasController extends Controller
         return substr(str_shuffle(str_repeat($pool, 5)), 0, $length);
     }
 
-
     public function gerarProposta($id)
     {
-
-
         /* Recupero a proposta do cliente */
         $proposta       = Proposta::find($id);
 
@@ -102,19 +100,6 @@ class PropostasController extends Controller
         }
 
 
-        /*return view('propostas/pdf', 
-        compact('categoriaSoftware',
-        'categoriaHardwarePrincipal', 
-        'categoriaHardwareNacional', 
-        'categoriaParkEyesSoftware',
-        'categoriaParkEyesHWPrincipal',
-        'categoriaParkEyesHWNacional',
-        'categoriaParkEyesCompleta',
-        'categoriaIntegracaoAplicativos',
-        'proposta',
-        'categoriaInstalacaoCompleta',
-        'totalDeVagas', 
-        'vagasDescobertas'));*/
 
         $pdf = PDF::loadView('/propostas/pdf',  compact(
             'categoriaSoftware',
@@ -198,6 +183,52 @@ class PropostasController extends Controller
         return redirect('/propostas')->with('classe', 'alert-success')->with('mensagem', 'Proposta cadastrada com sucesso.');;
     }
 
+    public function showBasic($id){
+        /* Todas as categorias dos tipos de produtos */
+        $categoriaSoftware                  = Categoria::where('id', '=', 2)->get();
+        $categoriaHardwarePrincipal         = Categoria::where('id', '=', 4)->get();
+        $categoriaHardwareNacional          = Categoria::where('id', '=', 5)->get();
+        $categoriaInstalacaoCompleta        = Categoria::where('id', '=', 6)->get();
+        $categoriaParkEyesSoftware          = Categoria::where('id', '=', 7)->get();
+        $categoriaParkEyesHWPrincipal       = Categoria::where('id', '=', 8)->get();
+        $categoriaParkEyesHWNacional        = Categoria::where('id', '=', 9)->get();
+        $categoriaParkEyesCompleta          = Categoria::where('id', '=', 10)->get();
+        $categoriaIntegracaoAplicativos     = Categoria::where('id', '=', 11)->get();
+
+        /* Recupero a proposta do cliente */
+        $proposta       = Proposta::find($id);
+
+
+        $estrutura          = Estrutura::where('proposta_id', $id)->get();
+        $totalDeVagas       = 0;
+        $vagasDescobertas   = 0;
+        $vagasInternas      = 0;
+        foreach ($estrutura as $key => $total) {
+            $totalDeVagas       += $total['qtdVagasInternas'] + $total['qtdVagasExternas'];
+            $vagasDescobertas   += $total['qtdVagasExternas'];
+            $vagasInternas      += $total['qtdVagasInternas'];
+        }
+
+        return view(
+            'propostas/visualizarBasic',
+            compact(
+                'categoriaSoftware',
+                'categoriaHardwarePrincipal',
+                'categoriaHardwareNacional',
+                'categoriaParkEyesSoftware',
+                'categoriaParkEyesHWPrincipal',
+                'categoriaParkEyesHWNacional',
+                'categoriaParkEyesCompleta',
+                'categoriaIntegracaoAplicativos',
+                'proposta',
+                'categoriaInstalacaoCompleta',
+                'totalDeVagas',
+                'vagasDescobertas',
+                'vagasInternas'
+            )
+        );
+
+    }
 
     /**
      * Display the specified resource.
@@ -219,17 +250,39 @@ class PropostasController extends Controller
         $categoriaIntegracaoAplicativos     = Categoria::where('id', '=', 11)->get();
 
         /* Recupero a proposta do cliente */
-        $proposta       = Proposta::find($id);
+        $prop       = Proposta::where('propostas.id', '=', $id)
+                    ->join('propostas_respostas', 'propostas_respostas.proposta_id', 'propostas.id')
+                    ->select(   'propostas.cliente_id',
+                                'propostas.created_at',
+                                'propostas_respostas.proposta_id', 
+                                'propostas_respostas.campo', 
+                                'propostas_respostas.valor' )
+                    ->get();
 
+        $proposta = array();
+        foreach($prop as $key=>$val){
+            $proposta['created_at'] = $val['created_at'];
+            $proposta['id']         = $val['proposta_id'];
+            $proposta['cliente_id'] = $val['cliente_id'];
+            if($val['campo']    ==  'estabelecimento'){
+                $proposta['estabelecimento']    = $val['valor'];
+            }
+
+            if($val['campo']    ==  'responsavel'){
+                $proposta['responsavel']        = $val['valor'];
+            }
+        }
 
         $estrutura      = Estrutura::where('proposta_id', $id)->get();
-        $totalDeVagas = 0;
-        $vagasDescobertas = 0;
+        $totalDeVagas       = 0;
+        $vagasDescobertas   = 0;
+        $vagasInternas      = 0;
         foreach ($estrutura as $key => $total) {
             $totalDeVagas       += $total['qtdVagasInternas'] + $total['qtdVagasExternas'];
             $vagasDescobertas   += $total['qtdVagasExternas'];
+            $vagasInternas      += $total['qtdVagasInternas'];
         }
-
+    
         return view(
             'propostas/visualizar',
             compact(
@@ -244,7 +297,8 @@ class PropostasController extends Controller
                 'proposta',
                 'categoriaInstalacaoCompleta',
                 'totalDeVagas',
-                'vagasDescobertas'
+                'vagasDescobertas',
+                'vagasInternas'
             )
         );
  
@@ -285,6 +339,8 @@ class PropostasController extends Controller
     }
     public function retornaValor($totalVagas, $subcategoria_nome, $sub_fixo_id)
     {
+
+        
         $procuraVaga = Vagas::where('minimoDaCategoria', '<=', $totalVagas)
             ->where('maximoDaCategoria', '>=', $totalVagas)
             ->where('subcategoria_nome', $subcategoria_nome)
@@ -298,6 +354,12 @@ class PropostasController extends Controller
         foreach ($procuraVaga as $k => $v) {
             $preco = $v['preco'];
         }
+
+        if($subcategoria_nome == 'nobreak'){
+            $preco = ceil(5*$totalVagas/1000);
+            $preco = $preco*1200;
+        }
+
         return $preco;
     }
 }

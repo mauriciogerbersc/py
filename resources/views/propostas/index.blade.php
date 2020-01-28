@@ -61,14 +61,18 @@ x
                     <td>{!! Helper::retornaPropostaCliente('responsavel', $proposta['id']) !!}</td>
                     <td><span class="tx-12 tx-danger mg-b-0">Aguardando Finalização</span></td>
                     <td>
+
                         <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
                                 Ações
                             </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="/propostas/visualizar/{{$proposta['id']}}">Visualizar
-                                    Proposta</a>
+                            <div class="dropdown-menu tx-13">
+                                <h6 class="dropdown-header tx-uppercase tx-11 tx-bold tx-inverse tx-spacing-1">Gerar
+                                    Propostas</h6>
+                                <a class="dropdown-item" target="_blank" href="/propostas/visualizar/{{$proposta['id']}}">Full</a>
+                                <a class="dropdown-item" target="_blank"  href="/propostas/visualizarBasic/{{$proposta['id']}}">Basic</a>
+                                <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="/propostas/editar/{{$proposta['id']}}">Editar
                                     Proposta</a>
                                 <a class="dropdown-item" href="/propostas/delete/{{$proposta['id']}}">Excluir
@@ -80,7 +84,7 @@ x
                 @endforeach
             </tbody>
         </table>
-        
+
         @else
         Nenhuma Proposta Cadastrada.
         @endif

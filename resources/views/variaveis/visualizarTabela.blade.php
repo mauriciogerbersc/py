@@ -1,4 +1,4 @@
-@extends('layouts.app', ["current" => "tabela_precos"])
+@extends('layouts.app' , ["current" => "tabela_precos"])
 
 @section('vendor')
 <!-- vendor css -->
@@ -20,6 +20,7 @@
         touch-action: none;
     }
 </style>
+
 @endsection
 
 
@@ -33,18 +34,21 @@ x
         <ol class="breadcrumb df-breadcrumbs mg-b-10">
             <li class="breadcrumb-item"><a href="/dashboard">Painel de Controle</a></li>
             <li class="breadcrumb-item"><a href="/variaveis/subcategorias">Tabela de Preços</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Nova Tabela de Preços</li>
+            <li class="breadcrumb-item active" aria-current="page"> {!! Helper::retornaPai($subFixos['id']) !!}</li>
         </ol>
 
-        <form method="POST" id="formulario" action="/variaveis/subcategorias/nova">
+        <form method="POST" id="formulario">
             <div class="tx-14 mg-b-25">
+
+
+
                 <div class="form-row">
 
                     <div class="form-group col-md-12">
                         <label for="viariavel">Nome da Tabela</label>
-                        <input type="text" name="nomeSubGrupo"
+                        <input type="text" readonly name="nomeSubGrupo"
                             class="form-control @error('nomeSubGrupo') is-invalid @enderror"
-                            placeholder="Nome da Tabela" />
+                            placeholder="Nome do Sub grupo" value="{{$subFixos['nomeSub']}}" />
 
 
                         @error('nomeSubGrupo')
@@ -63,13 +67,9 @@ x
                             <span class="input-group-text" id="basic-addon1">%</span>
                         </div>
 
-                        <input id="descontoDado" type="text"
+                        <input id="descontoDado" type="text" readonly 
                             class="form-control descontoDado @error('descontoDado') is-invalid @enderror"
-                            name="descontoDado" value="0" />
-
-                        <div class="input-group-append">
-                            <button class="btn btn-primary" type="button" id="aplicarDesconto">Aplicar</button>
-                        </div>
+                            name="descontoDado" value="{{$subFixos['descontoDado']}}" />
 
                         @error('descontoDado')
                         <span class="invalid-feedback" role="alert">
@@ -82,6 +82,7 @@ x
                 @csrf
 
                 <div class="divider-text">Produtos/Variaveis</div>
+
                 @foreach($subs as $sub)
 
                 @foreach($vagas as $key => $vaga)
@@ -114,8 +115,14 @@ x
                                 <span class="input-group-text" id="basic-addon1">R$</span>
                             </div>
 
-                            <input type="text" class="form-control moeda" name="valor_fixo[][{{$sub['id']}}]"
-                                value="{{$sub['valor']}}">
+                            @foreach($categoriasPrecosFixos as $precosFixos)
+                                @if($sub['id'] == $precosFixos['sub_categoria_id'] 
+                                AND $precosFixos['vaga_id'] == $key+1)
+                                <input type="text" class="form-control moeda" 
+                                name="valor_fixo[][{{$sub['id']}}]" 
+                                value="{{$precosFixos['preco']}}" readonly >
+                                @endif
+                            @endforeach
                         </div>
                     </div>
 
@@ -127,6 +134,7 @@ x
                 @endforeach
 
                 <div class="divider-text">Produtos/Fixos</div>
+
 
 
                 <div class="table-responsive">
@@ -148,8 +156,10 @@ x
                                         <div class="input-group-prepend">
                                             <span class="input-group-text" id="basic-addon1">R$</span>
                                         </div>
-                                        <input id="valor" type="text" class="form-control valoresFixos moeda" name="valor[{{$var['id']}}]" value="{{$var['valorFormatado']}}"
-                                        data-valor="{{$var['valor']}}" >
+                                        <input id="valor" type="text" class="form-control valoresFixos"
+                                            name="valor[{{$var['id']}}]" 
+                                            value="{{$var['valorFormatado']}}"
+                                            data-valor="{{$var['valor']}}" readonly >
                                     </div>
                                 </td>
                                 @endif
@@ -157,12 +167,12 @@ x
                             @endforeach
                         </tbody>
                     </table>
-
-             
+                    <hr>
                     @endforeach
 
                 </div>
-                <button type="submit" class="btn btn-primary">{{ __('Cadastrar Tabela') }}</button>
+             
+            
         </form>
     </div>
 </div>
@@ -177,20 +187,10 @@ x
 
 <script src="{{asset('js/dashforge.js')}}"></script>
 <script src="{{asset('lib/jquery.maskMoney/jquery.maskMoney.js')}}" type="text/javascript"></script>
-<script src="{{asset('js/jquery.mask.min.js')}}"></script>
-
 <script>
     $(function() {
             'use strict'
 
-
-            $(".table").hide();
-        
-            $("table").has("tbody td").show().after("<hr>");
-
-
-            $(".moeda").mask('000.000.000.000.000,00', {reverse: true});
-           
             $(".valores").maskMoney();
 
             $("#aplicarDesconto").click(function() {
@@ -198,18 +198,15 @@ x
                 
                 
                 $(".valoresFixos").each(function(index, value) {
-                    console.log('input' + index + ':' + $(this).data('valor'));
+                    console.log('input' + index + ':' + $(this).val());
                 
-                    //var valor      = $(this).val();
-                    var valor         = $(this).data('valor');
-                    var descontado    = (parseFloat(valor)*(parseFloat(descontoDado))/100);
+                    var valor      = $(this).val();
+                    var descontado = (parseFloat(valor)*(parseFloat(descontoDado))/100);
                     
-                    var valorComDesconto = parseFloat(valor - descontado,10).toFixed(2).replace('.', ',').replace(/(\d)(?=(\d{3})+\,)/g, "$1.").toString();
+                    var valorComDesconto = parseFloat(valor - descontado,10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1").toString();
                     // seta novo valor 
-                  
                     $(this).val(valorComDesconto);
                 });
-
                 return false;
             });
         });

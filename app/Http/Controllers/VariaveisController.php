@@ -9,12 +9,13 @@ use App\Vagas;
 use App\User;
 
 use Helper;
+
 class VariaveisController extends Controller
 {
 
     public function __construct()
     {
-        $this->middleware('auth:admin');    
+        $this->middleware('auth:admin');
     }
 
     /**
@@ -22,23 +23,18 @@ class VariaveisController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id = null)
     {
-        
-        $variaveis = Variavel::all();
+        $categorias         = Categoria::all();
 
-        $arr = array();
-        foreach($variaveis as $var){
-            $arr[] = array(
-                'id'                => $var->id,
-                'nome'              => $var->nome,
-                'categoria_nome'    => $var->categoria->nome,
-                'valor'             => "R$ " . Helper::moedaReal($var->valor),
-            );
+        $variaveis          = Variavel::orderBy('ordem', 'asc')->get();
+
+        if ($id != null) {
+
+            $variaveis          = Variavel::where('tipo_variavel', '=', $id)->orderBy('ordem', 'asc')->get();
+     
         }
-        
-      
-        return view('variaveis/index', compact('arr'));
+        return view('variaveis/index', compact('categorias', 'variaveis'));
     }
 
     /**
@@ -53,15 +49,15 @@ class VariaveisController extends Controller
         $categorias = Categoria::all();
 
         $cats = array();
-        foreach($categorias as $key=>$val){
+        foreach ($categorias as $key => $val) {
             $cats[] = array('id' => $val->id, 'nome' => $val->nome);
         }
-       
+
         return view('variaveis/cadastro', compact('cats', 'vagas'));
     }
 
 
-   
+
     /**
      * Store a newly created resource in storage.
      *
@@ -80,7 +76,7 @@ class VariaveisController extends Controller
             'nome.max'      => 'O limite do Nome é de 255 caracteres',
             'nome.unique'   => 'A Nome informado já está registrado na base de dados'
         ];
-        
+
         $request->validate($rules, $messages);
 
 
@@ -89,10 +85,12 @@ class VariaveisController extends Controller
         $var->nome          = $request->input('nome');
         $var->categoria_id  = $request->input('categoria_id');
         $var->valor         = Helper::moedaDolar($request->input('valor'));
-     
+        $var->tipo_variavel = $request->input('tipo_variavel');
+        $var->unidade       = $request->input('unidade');
+
         $var->save();
 
-        return redirect('/variaveis');
+        return redirect('/variaveis/listar')->with('classe', 'alert-success')->with('mensagem', 'Variável cadastrada com sucesso.');
     }
 
     /**
@@ -117,9 +115,9 @@ class VariaveisController extends Controller
         $variavel       = Variavel::find($id);
         $cats           = Categoria::all();
         if (isset($variavel)) {
-            return view('variaveis/editar', compact('variavel','cats'));
+            return view('variaveis/editar', compact('variavel', 'cats'));
         } else {
-            return view('/');
+            return redirect('/variaveis')->with('classe', 'alert-danger')->with('mensagem', 'Variável Inexistente.');
         }
     }
 
@@ -133,7 +131,6 @@ class VariaveisController extends Controller
     public function update(Request $request, $id)
     {
 
-       
         $rules = [
             'nome' => 'required|max:255',
             'valor' => 'required'
@@ -145,7 +142,6 @@ class VariaveisController extends Controller
             'nome.max'      => 'O limite do Nome é de 255 caracteres'
         ];
 
-
         $request->validate($rules, $messages);
 
         $var = Variavel::find($id);
@@ -153,13 +149,15 @@ class VariaveisController extends Controller
         if (isset($var)) {
             $var->nome = $request->input('nome');
             $var->categoria_id = $request->input('categoria_id');
+            $var->tipo_variavel = $request->input('tipo_variavel');
             $var->valor = Helper::moedaDolar($request->input('valor'));
-         
+            $var->unidade = $request->input('unidade');
+
             $var->save();
         } else {
-            return view('/variaveis');
+            return redirect('/variaveis/listar')->with('classe', 'alert-danger')->with('mensagem', 'Erro ao atualizar variável. Tente novamente.');
         }
-        return redirect('/variaveis');
+        return redirect('/variaveis/listar')->with('classe', 'alert-info')->with('mensagem', 'Variável atualizada com sucesso.');
     }
 
     /**
@@ -174,31 +172,59 @@ class VariaveisController extends Controller
         if (isset($var)) {
             $var->delete();
         } else {
-            return view('/variaveis');
+            return redirect('/variaveis')->with('classe', 'alert-danger')->with('mensagem', 'Variável Inexistente.');
         }
-        return redirect('/variaveis');
+        return redirect('/variaveis')->with('classe', 'alert-danger')->with('mensagem', 'Variável removida com sucesso.');;
     }
 
 
+    public function salvaOrdem()
+    {
+        return view('salvaOrdem');
+    }
 
-    public function retornaVariaveisCliente($cliente_id, $categoria_id){
-        $variaveisDoCliente = User::where('users.id', '=', $cliente_id)
-                                    ->where('categorias.id', '=', $categoria_id)
-                                    ->join('sub_precos_fixos', 'sub_precos_fixos.sub_fixo_id', '=', 'users.sub_fixo_id')
-                                    ->join('variavels', 'variavels.id', '=', 'sub_precos_fixos.categoria_fixo_id')
-                                    ->join('categorias', 'categorias.id', '=', 'variavels.categoria_id')
-                                    ->leftjoin('regra_pergunta_variavels', 'regra_pergunta_variavels.variavel_id', '=', 'variavels.id')
-                                    ->select(   'categorias.id as categoria_id',
-                                                'regra_pergunta_variavels.regra_de_negocio', 
-                                                'variavels.nome',
-                                                'variavels.id as variavel_id',
-                                                'sub_precos_fixos.preco', 
-                                                'sub_precos_fixos.sub_fixo_id'
-                                            )
-                                    ->orderBy('variavels.nome', 'asc')
-                                    ->get();
+    /*ajax*/
+    public function salvaOrdemPost(Request $request)
+    {
+        $input = $request->all();
 
-        
+        $var = Variavel::find($input['variavel']);
+        if (isset($var)) {
+            $var->ordem = $input['ordem'];
+            $var->save();
+            return response()->json(['success' => true]);
+        } else {
+            return response()->json(['success' => false]);
+        }
+    }
+
+    public function retornaVariaveisCliente($cliente_id, $categoria_id, $tipo)
+    {
+
+            if($tipo=='full'){
+                $vars = array(0,2);
+            }else{
+                $vars = array(1,2);
+            }
+            $variaveisDoCliente = User::where('users.id', '=', $cliente_id)
+                ->where('categorias.id', '=', $categoria_id)
+                ->whereIn('variavels.tipo_variavel', $vars)
+                ->join('sub_precos_fixos', 'sub_precos_fixos.sub_fixo_id', '=', 'users.sub_fixo_id')
+                ->join('variavels', 'variavels.id', '=', 'sub_precos_fixos.categoria_fixo_id')
+                ->join('categorias', 'categorias.id', '=', 'variavels.categoria_id')
+                ->leftjoin('regra_pergunta_variavels', 'regra_pergunta_variavels.variavel_id', '=', 'variavels.id')
+                ->select(
+                    'categorias.id as categoria_id',
+                    'regra_pergunta_variavels.regra_de_negocio',
+                    'variavels.nome',
+                    'variavels.id as variavel_id',
+                    'sub_precos_fixos.preco',
+                    'sub_precos_fixos.sub_fixo_id',
+                    'variavels.unidade'
+                )
+                ->orderBy('variavels.ordem', 'asc')
+                ->get();
+     
         return $variaveisDoCliente;
     }
 }

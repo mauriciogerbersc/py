@@ -30,10 +30,9 @@
 </head>
 
 <body>
-    
-    @component('component_navbar', [ "current" => $current ?? '' ])
-    @endcomponent
-
+    @if(Auth::check())
+    @component('component_navbar', [ "current" => $current ?? '' ]) @endcomponent
+    @endif
     <main>
         @hasSection('body')
         @yield('body')

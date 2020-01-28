@@ -34,6 +34,7 @@ Route::get('/propostas/old/{id}', 'PropostasController@createOld');
 
 
 Route::get('/propostas/visualizar/{id}', 'PropostasController@show');
+Route::get('/propostas/visualizarBasic/{id}', 'PropostasController@showBasic');
 Route::get('/propostas/editar/{id}', 'PropostasController@edit');
 
 Route::get('/clientes', 'ClienteController@index')->name('clientes');
@@ -43,7 +44,9 @@ Route::get('/clientes/editar/{id}', 'ClienteController@edit');
 Route::post('/clientes/editar/{id}', 'ClienteController@update');
 
 
-Route::get('/variaveis', 'VariaveisController@index');
+Route::get('/variaveis/listar/{id?}', 'VariaveisController@index');
+Route::get('/variaveis/salvaOrdem', 'VariaveisController@salvaOrdem');
+Route::post('/variaveis/salvaOrdem', 'VariaveisController@salvaOrdemPost');
 Route::get('/variaveis/nova', 'VariaveisController@create');
 Route::post('/variaveis/nova', 'VariaveisController@store');
 Route::get('/variaveis/editar/{id}', 'VariaveisController@edit');
@@ -58,8 +61,9 @@ Route::post('/variaveis/categorias/editar/{id}', 'VariaveisCategoriasController@
 Route::get('/variaveis/categorias/remover/{id}', 'VariaveisCategoriasController@destroy');
 
 Route::get('/variaveis/subcategorias', 'VariaveisCategoriasController@subcategoriaIndex');
-Route::get('/variaveis/subcategorias/nova', 'VariaveisCategoriasController@subCategoriaNova');
+Route::get('/variaveis/subcategorias/nova/{tipo}', 'VariaveisCategoriasController@subCategoriaNova');
 Route::get('/variaveis/subcategorias/editar/{id}', 'VariaveisCategoriasController@editCategoriaNova');
+Route::get('/variaveis/subcategorias/visualizar/{id}', 'VariaveisCategoriasController@visualizar');
 Route::get('/variaveis/subcategorias/remover/{id}', 'VariaveisCategoriasController@removeCategoriaNova');
 Route::post('/variaveis/subcategorias/nova', 'VariaveisCategoriasController@storeSubCategoriaNova');
 Route::post('/variaveis/subcategorias/editar/{id}', 'VariaveisCategoriasController@saveCategoriaNova');

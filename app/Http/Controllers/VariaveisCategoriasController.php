@@ -23,11 +23,20 @@ class VariaveisCategoriasController extends Controller
 
     public function subcategoriaIndex()
     {
+
         $arr = SubFixos::orderBy('created_at', 'asc')->get();
         return view('variaveis/indexSubCategoria', compact('arr'));
     }
 
-    public function subcategoriaNova()
+
+    public function retornaPai($id){
+        $subFixo = SubFixos::where('id','=',$id)->select('nomeSub')->first();
+
+        return $subFixo['nomeSub'];
+
+    }
+
+    public function subcategoriaNova($tipo)
     {
 
         $categorias = Categoria::all();
@@ -43,7 +52,21 @@ class VariaveisCategoriasController extends Controller
                             'vaga_id'               => $val['vaga_id']);
         }
        
-        $vars = Variavel::orderBy('created_at', 'asc')->get();
+        $vars = Variavel::where('categoria_id', '!=', 11)
+                        ->orderBy('created_at', 'asc')->get();
+        
+        if($tipo == 'full'){
+            $vars = Variavel::where('tipo_variavel', '!=', 1)
+                            ->orderBy('ordem', 'asc')
+                            ->get();
+        }elseif($tipo == 'basic'){
+            $vars = Variavel::where('tipo_variavel', '!=', 0)
+                              ->where('tipo_variavel', '=', 2)
+                              ->orWhere('tipo_variavel', '=', 1)
+                              ->orderBy('ordem', 'asc')
+                              ->get();
+        }
+
         $variaveis = array();
         foreach ($vars as $k => $valores) 
         {
@@ -57,12 +80,15 @@ class VariaveisCategoriasController extends Controller
         return view('variaveis/cadastroSubCategoria', compact('variaveis', 'subs', 'vagas', 'categorias'));
     }
 
-    public function editCategoriaNova($id)
-    {
+
+    public function visualizar($id){
+       
         $vagas              = Vagas::all();
 
         $categorias         = Categoria::all();
         $subPrecosCad       = SubPrecosFixos::where('sub_fixo_id', $id)->get();
+        ## Variáveis já cadastradas das que estou editando
+        $categoriasPrecosFixos     = CategoriasPrecosFixos::where('sub_fixos_id', $id)->get();
 
         $subPrecos = array();
         foreach($subPrecosCad as $k=>$v)
@@ -70,7 +96,72 @@ class VariaveisCategoriasController extends Controller
             $subPrecos[] = array('id' => $v['id'],
                                 'categoria_fixo_id' => $v['categoria_fixo_id'],
                                 'preco' => $v['preco'],
-                                'precoFormatado' => number_format($v['preco'], 2),
+                                'precoFormatado' => number_format($v['preco'], 2,'.',''),
+                                'sub_fixo_id' => $v['sub_fixo_id']);
+        }
+     
+        $subFixos           = SubFixos::where('id', $id)->first();
+        
+        #$vars = Variavel::orderBy('created_at', 'asc')->get();
+        $vars = Variavel::join('sub_precos_fixos', 'sub_precos_fixos.categoria_fixo_id', '=', 'variavels.id')
+                        ->where('sub_precos_fixos.sub_fixo_id', '=', $id)
+                        ->select('sub_precos_fixos.preco', 'variavels.id', 'variavels.categoria_id', 'variavels.nome')
+                        ->get();
+
+        
+        $variaveis = array();
+        foreach ($vars as $k => $valores) 
+        {
+            $variaveis[] = array('valorFormatado'       => number_format($valores['preco'], 2,'.',''),
+                                'valor'                 => $valores['preco'],
+                                'id'                    => $valores['id'], 
+                                'nome'                  => $valores['nome'], 
+                                'categoria_id'          => $valores['categoria_id']);
+        }
+        
+        $subsCategorias = SubCategoriaVagas::orderBy('subcategoria_nome', 'asc')->get();
+        $subs = array();
+        foreach($subsCategorias as $key=>$val)
+        {
+            $subs[] = array('id'                    => $val['id'],
+                            'subcategoria_nome'     => $val['subcategoria_nome'],
+                            'valor'                 => number_format($val['valor'], 2),
+                            'vaga_id'               => $val['vaga_id']);
+        }
+
+      
+        if (isset($subPrecos)) {
+            return view('/variaveis/visualizarTabela', 
+            compact('vagas', 'subPrecos', 'variaveis', 'subs', 'categorias', 'subFixos', 'categoriasPrecosFixos')
+        );
+        } else {
+            return view('/variaveis/subcategorias');
+        }
+
+    }
+    public function editCategoriaNova($id)
+    {
+        $vagas              = Vagas::all();
+
+        $categorias         = Categoria::all();
+        $subPrecosCad       = SubPrecosFixos::where('sub_fixo_id', $id)->get();
+        ## Variáveis já cadastradas das que estou editando
+        $precosFixos     = CategoriasPrecosFixos::where('sub_fixos_id', $id)->get();
+        $categoriasPrecosFixos      = array();
+
+        foreach($precosFixos as $key=>$val){
+            $categoriasPrecosFixos[] = array('sub_categoria_id' => $val['sub_categoria_id'],
+            'vaga_id' => $val['vaga_id'],
+            'preco' => number_format($val['preco'], 2,'.',''),);
+        }
+       
+        $subPrecos = array();
+        foreach($subPrecosCad as $k=>$v)
+        {
+            $subPrecos[] = array('id' => $v['id'],
+                                'categoria_fixo_id' => $v['categoria_fixo_id'],
+                                'preco' => $v['preco'],
+                                'precoFormatado' => number_format($v['preco'], 2,'.',''),
                                 'sub_fixo_id' => $v['sub_fixo_id']);
         }
      
@@ -105,16 +196,79 @@ class VariaveisCategoriasController extends Controller
 
       
         if (isset($subPrecos)) {
-            return view('/variaveis/editarSubCategoria', compact('vagas', 'subPrecos', 'variaveis', 'subs', 'categorias', 'subFixos'));
+            return view('/variaveis/editarSubCategoria', 
+            compact('vagas', 'subPrecos', 'variaveis', 'subs', 'categorias', 'subFixos', 'categoriasPrecosFixos')
+        );
         } else {
             return view('/variaveis/subcategorias');
         }
     }
 
+
+    /*
+        Nesse caso eu devo criar uma nova categoria, herdando os dados da categoria pai.
+
+    */
+
     public function saveCategoriaNova(Request $request, $id)
     {
 
-        $subPrecos          = SubPrecosFixos::where('sub_fixo_id', $id)->get();
+        $rules = [
+            'nomeSubGrupo' => 'required',
+            'descontoDado' => 'required'
+        ];
+
+        $messages = [
+            'nomeSubGrupo.required' => 'O campo nome do sub grupo é obrigatório',
+            'descontoDado.required' => 'O campo desconto é obrigatório'
+        ];
+
+        $request->validate($rules, $messages);
+
+        /*
+        1. Criar nova categoria na tabela `sub_fixos` e armazeno o ID da tabela pai. 
+        (no caso a tabela que estou herdando os dados)
+        */
+        $subFixo = new SubFixos();
+
+        $subFixo->nomeSub      = $request->input('nomeSubGrupo');
+        $subFixo->descontoDado = $request->input('descontoDado');
+        $subFixo->tabela_pai   = $id;
+        $subFixo->save();
+
+        /*
+        2. Recupero o id da tabela de proposta criado na`sub_fixos`
+        */
+        $subId = $subFixo->id;
+
+        if ($subId) {
+            foreach ($_POST['valor'] as $key => $val) {
+                $subPrecosFixos = new SubPrecosFixos();
+                $subPrecosFixos->categoria_fixo_id  = $key;
+                $subPrecosFixos->preco              = Helper::brl2decimal($val);
+                $subPrecosFixos->sub_fixo_id        = $subId;
+                $subPrecosFixos->tabela_pai         = $id;
+                $subPrecosFixos->save();
+            }
+
+            foreach ($_POST['intervalo_vagas'] as $chave => $valor) {
+
+                foreach ($_POST['valor_fixo'] as $key => $val) {
+                    if ($chave == $key) {
+                        foreach ($val as $k => $v) {
+                            $categoriaPrecosFixos = new CategoriasPrecosFixos();
+                            $categoriaPrecosFixos->vaga_id          = $valor;
+                            $categoriaPrecosFixos->sub_categoria_id = $k;
+                            $categoriaPrecosFixos->preco            = Helper::brl2decimal($v);
+                            $categoriaPrecosFixos->sub_fixos_id     = $subId;
+                            $categoriaPrecosFixos->save();
+                        }
+                    }
+                }
+            }
+        }
+        
+       /* $subPrecos          = SubPrecosFixos::where('sub_fixo_id', $id)->get();
 
         // as variaveis específicas dessa categoria já cadastradas no banco
         $idsQueJaTenho = array();
@@ -139,17 +293,14 @@ class VariaveisCategoriasController extends Controller
                 $subPrecosFixos->save();
             }
         }
+        */
 
-
-
-
-        return redirect('/variaveis/subcategorias');
+        return redirect('/variaveis/subcategorias')->with('classe', 'alert-success')->with('mensagem', 'Tabela de Preços criada com sucesso.');
     }
 
+ 
     public function storeSubCategoriaNova(Request $request)
     {
-
-
         $rules = [
             'nomeSubGrupo' => 'required',
             'descontoDado' => 'required'

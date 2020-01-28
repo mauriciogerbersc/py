@@ -28,16 +28,25 @@ x
         </ol>
 
         <div class="pd-b-30 pd-t-20">
-            <a href="/variaveis/subcategorias/nova" class="btn btn-primary">Cadastrar nova Tabela de Valores</a>
+            <div class="dropdown dropright">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="droprightMenuButton"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Cadastrar Nova Tabela
+                </button>
+                <div class="dropdown-menu tx-13" aria-labelledby="droprightMenuButton">
+                    <a class="dropdown-item" href="/variaveis/subcategorias/nova/full">Tabela Full</a>
+                    <a class="dropdown-item" href="/variaveis/subcategorias/nova/basic">Tabela Basic</a>
+                </div>
+            </div>
         </div>
 
         @if(session('classe'))
-            <div class="alert {{session('classe')}} alert-dismissible fade show" role="alert">
-                {{ session('mensagem') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
+        <div class="alert {{session('classe')}} alert-dismissible fade show" role="alert">
+            {{ session('mensagem') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
         @endif
 
         @if(count($arr) > 0)
@@ -45,7 +54,8 @@ x
             <thead>
                 <tr>
                     <th>Data criação</th>
-                    <th class="dt-center">Cliente</th>
+                    <th class="dt-center">Tabela pai</th>
+                    <th class="dt-center">Tabela de Preços</th>
                     <th class="dt-center">Desconto Aplicado?</th>
                     <th class="dt-center">Ações</th>
                 </tr>
@@ -54,7 +64,19 @@ x
                 @foreach($arr as $a)
                 <tr>
                     <td class="dt-center">{!! Helper::formataDataHora($a['created_at']) !!}</td>
-                    <td class="dt-center">{{$a['nomeSub']}}</td>
+                    <td class="dt-center">
+                        <strong>
+                            @if($a['tabela_pai'] == 0)
+                            --
+                            @else
+                            <a href="/variaveis/subcategorias/visualizar/{{$a['tabela_pai']}}">
+                                {!! Helper::retornaPai($a['tabela_pai']) !!}
+                            </a>
+                            @endif
+                        </strong>
+                    </td>
+                    <td class="dt-center"><a
+                            href="/variaveis/subcategorias/visualizar/{{$a['id']}}">{{$a['nomeSub']}}</a></td>
                     <td class="dt-center">{{$a['descontoDado']}}%</td>
                     <td class="dt-center">
                         <div class="dropdown">
@@ -63,10 +85,10 @@ x
                                 Ações
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="/variaveis/subcategorias/editar/{{$a['id']}}">Editar
-                                    Tabela</a>
-                                <a class="dropdown-item" href="/variaveis/subcategorias/remover/{{$a['id']}}">Remover
-                                    Tabela</a>
+                                <a class="dropdown-item" href="/variaveis/subcategorias/editar/{{$a['id']}}">Nova a
+                                    partir desta</a>
+                                <!-- <a class="dropdown-item" href="/variaveis/subcategorias/remover/{{$a['id']}}">Remover
+                                    Tabela</a> -->
                             </div>
                         </div>
                     </td>

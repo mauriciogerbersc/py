@@ -33,15 +33,19 @@ class VagasController extends Controller
 
 
     public function totalDeVagas($proposta_id){
-        $estrutura      = Estrutura::where('proposta_id', $proposta_id)->get();
-        $totalDeVagas = 0;
-        $vagasDescobertas = 0;
+        $estrutura          = Estrutura::where('proposta_id', $proposta_id)->get();
+        $totalDeVagas       = 0;
+        $vagasDescobertas   = 0;
+        $vagasInternas      = 0;
         foreach ($estrutura as $key => $total) {
             $totalDeVagas       += $total['qtdVagasInternas'] + $total['qtdVagasExternas'];
             $vagasDescobertas   += $total['qtdVagasExternas'];
+            $vagasInternas      += $total['qtdVagasInternas'];
         }
 
-        return $totalDeVagas;
+
+        $arr = array('totalDeVagas' => $totalDeVagas, 'totalDeVagasInternas' => $vagasInternas);
+        return $arr;
     }
 
     public function indexSubCategorias()

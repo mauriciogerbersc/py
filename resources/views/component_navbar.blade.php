@@ -10,14 +10,10 @@
         </div><!-- navbar-menu-header -->
         <ul class="nav navbar-menu">
             <li class="nav-label pd-l-20 pd-lg-l-25 d-lg-none">navegação</li>
-      
 
-            <li @if($current=="administrativo" ) class="nav-item with-sub active" @else class="nav-item with-sub" @endif>
+            <li @if($current=="administrativo" ) class="nav-item with-sub active" @else class="nav-item with-sub"
+                @endif>
                 <a href="" class="nav-link"><i data-feather="package"></i> Administrativo</a>
-            
-
-
-
 
                 <div class="navbar-menu-sub">
                     <div class="d-lg-flex">
@@ -31,17 +27,19 @@
                             </li>
 
                             <li class="nav-sub-item">
-                                <a href="/clientes/cadastro" class="nav-sub-link"><i data-feather="users"></i>Novo Cliente</a>
+                                <a href="/clientes/cadastro" class="nav-sub-link"><i data-feather="users"></i>Novo
+                                    Cliente</a>
                             </li>
 
                         </ul>
- 
+
 
                         <ul>
                             <li class="nav-label">Proposta</li>
 
                             <li class="nav-sub-item">
-                                <a href="/variaveis" class="nav-sub-link"><i data-feather="file"></i> Estrutura de Proposta</a>
+                                <a href="/variaveis/listar" class="nav-sub-link"><i data-feather="file"></i> Estrutura de
+                                    Proposta</a>
                             </li>
 
                             <li class="nav-sub-item">
@@ -57,7 +55,7 @@
             </li>
 
 
-            
+
 
             <li @if($current=="propostas" ) class="nav-item with-sub active" @else class="nav-item with-sub" @endif>
                 <a href="" class="nav-link"><i data-feather="layers"></i> Propostas</a>
@@ -90,7 +88,7 @@
                     <div class="d-lg-flex">
                         <ul>
                             <li class="nav-label">Preços</li>
-                           <!-- <li><a href="/vagas/subcategorias" class="nav-sub-link"><i data-feather="file"></i>
+                            <!-- <li><a href="/vagas/subcategorias" class="nav-sub-link"><i data-feather="file"></i>
                                     Gerenciar Tabela de Preços</a>
                             </li> -->
                             <li class="nav-sub-item">
@@ -125,8 +123,8 @@
             </li>
 
 
-            <li @if($current=="configuracao")  class="nav-item with-sub active" @else class="nav-item with-sub" @endif>
-                <a href="" class="nav-link"><i data-feather="package"></i> Configuração</a> 
+            <li @if($current=="configuracao" ) class="nav-item with-sub active" @else class="nav-item with-sub" @endif>
+                <a href="" class="nav-link"><i data-feather="package"></i> Configuração</a>
 
                 <div class="navbar-menu-sub">
                     <div class="d-lg-flex">
@@ -140,7 +138,7 @@
                                 <a href="/configuracao/nova" class="nav-sub-link"><i data-feather="file"></i>
                                     Cadastrar Pergunta</a>
                             </li>
-                           
+
                         </ul>
 
                         <ul>
@@ -157,7 +155,7 @@
                     </div>
                 </div>
             </li>
-            
+
 
         </ul>
     </div><!-- navbar-menu-wrapper -->
@@ -174,7 +172,7 @@
                 <div class="avatar avatar-lg mg-b-15">
                     <img src="https://via.placeholder.com/500" class="rounded-circle" alt="">
                 </div>
-          
+
                 <p class="mg-b-25 tx-12 tx-color-03">Administrador</p>
 
                 <a href="" class="dropdown-item"><i data-feather="edit-3"></i> Editar Perfil</a>

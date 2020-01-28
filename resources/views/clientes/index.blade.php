@@ -66,8 +66,8 @@ x
                                 Ações
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="/propostas/nova/{{$user['id']}}">Nova Proposta</a>
-                                <a class="dropdown-item" href="/propostas/{{$user['id']}}">Visualizar Propostas</a>
+                                <a class="dropdown-item" href="/propostas/nova/{{$user['id']}}">Novo Projeto</a>
+                                <a class="dropdown-item" href="/propostas/{{$user['id']}}">Projetos do Cliente</a>
                                 <a class="dropdown-item" href="/clientes/editar/{{$user['id']}}">Editar Cliente</a>
                             </div>
                         </div>

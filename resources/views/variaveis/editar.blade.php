@@ -35,12 +35,24 @@ x
             <form method="POST" action="/variaveis/editar/{{$variavel->id}}">
                 @csrf
                 <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="categoria">Tipo</label>
+                        <select class="custom-select" name="tipo_variavel">
+                            <option value="0" {{ $variavel->tipo_variavel == 0 ? "selected" : ""}}>
+                                Full</option>
+                            <option value="1" {{ $variavel->tipo_variavel == 1 ? "selected" : ""}}>
+                                Basic</option>
+                            <option value="2" {{ $variavel->tipo_variavel == 2 ? "selected" : ""}}>
+                                Ambos</option>
+                        </select>
+                    </div>
 
                     <div class="form-group col-md-4">
                         <label for="categoria">Categoria</label>
                         <select class="custom-select" name="categoria_id">
                             @foreach($cats as $cat)
-                            <option value="{{$cat['id']}}" {{ $variavel->categoria_id == $cat['id'] ? "selected" : ""}}>{{$cat['nome']}}</option>
+                            <option value="{{$cat['id']}}" {{ $variavel->categoria_id == $cat['id'] ? "selected" : ""}}>
+                                {{$cat['nome']}}</option>
                             @endforeach
                         </select>
                     </div>
@@ -48,14 +60,12 @@ x
                     <div class="form-group col-md-4">
 
                         <label for="viariavel">Nome Variável</label>
-                      
-                        
-                        <input id="nome" type="text" 
-                        value="{{$variavel->nome}}"
-                        class="form-control @error('nome') is-invalid @enderror" 
-                        name="nome" value="{{ old('nome') }}" 
-                        required autocomplete="nome">
-                         
+
+
+                        <input id="nome" type="text" value="{{$variavel->nome}}"
+                            class="form-control @error('nome') is-invalid @enderror" name="nome"
+                            value="{{ old('nome') }}" required autocomplete="nome">
+
                         @error('nome')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
@@ -64,18 +74,32 @@ x
                     </div>
 
 
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-md-6">
                         <label for="valor">Valor</label>
                         <div class="input-group mg-b-10">
                             <div class="input-group-prepend">
                                 <span class="input-group-text" id="basic-addon1">R$</span>
                             </div>
-                            <input id="valor" type="text" 
-                            value="{{$variavel->valor}}"
-                            class="form-control @error('valor') is-invalid @enderror moeda" 
-                            name="valor" required  autocomplete="valor" />
+                            <input id="valor" type="text" value="{{$variavel->valor}}"
+                                class="form-control @error('valor') is-invalid @enderror moeda" name="valor" required
+                                autocomplete="valor" />
                         </div>
                         @error('valor')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group col-md-6">
+
+                        <label for="viariavel">Unidade.</label>
+
+                        <input id="nome" type="text" value="{{$variavel->unidade}}"
+                            class="form-control @error('unidade') is-invalid @enderror" name="unidade"
+                            value="{{ old('unidade') }}" autocomplete="unidade">
+
+                        @error('unidade')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
                         </span>

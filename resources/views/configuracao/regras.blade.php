@@ -28,6 +28,19 @@ x
             <li class="breadcrumb-item active" aria-current="page">Perguntas Cadastradas</li>
         </ol>
 
+
+        @if(session('classe'))
+        <div class="alert {{session('classe')}} alert-dismissible fade show" role="alert">
+            {{ session('mensagem') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+    @endif
+
+
+    
+    
         @if(count($regras) > 0)
         <table id="example1" class="table">
             <thead>

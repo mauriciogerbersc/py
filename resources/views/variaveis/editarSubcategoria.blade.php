@@ -118,9 +118,15 @@ x
                             <div class="input-group-prepend">
                                 <span class="input-group-text" id="basic-addon1">R$</span>
                             </div>
-
-                            <input type="text" class="form-control moeda" name="valor_fixo[][{{$sub['id']}}]"
-                                value="{{$sub['valor']}}">
+                           
+                            @foreach($categoriasPrecosFixos as $precosFixos)
+                                @if($sub['id'] == $precosFixos['sub_categoria_id'] 
+                                AND $precosFixos['vaga_id'] == $key+1)
+                                <input type="text" class="form-control moeda"
+                                name="valor_fixo[][{{$sub['id']}}]" 
+                                value="{{$precosFixos['preco']}}">
+                                @endif
+                            @endforeach
                         </div>
                     </div>
 
@@ -138,7 +144,7 @@ x
                 <div class="table-responsive">
 
                     @foreach($categorias as $categoria)
-                    <table class="table table-light ">
+                    <table class="table table-dark table-hover table-striped mg-b-0">
                         <thead>
                             <tr>
                                 <th colspan="2" scolpe="col">{{$categoria->nome}}</th>
@@ -154,10 +160,12 @@ x
                                         <div class="input-group-prepend">
                                             <span class="input-group-text" id="basic-addon1">R$</span>
                                         </div>
-                                        <input id="valor" type="text" class="form-control valoresFixos"
+                                        <input id="valor" type="text" class="form-control valoresFixos moeda"
                                             name="valor[{{$var['id']}}]" 
                                             value="{{$var['valorFormatado']}}"
                                             data-valor="{{$var['valor']}}">
+
+                            
                                     </div>
                                 </td>
                                 @endif
@@ -165,47 +173,11 @@ x
                             @endforeach
                         </tbody>
                     </table>
+            
                     @endforeach
 
                 </div>
-                <!--
-
-                <div class="table-responsive">
-
-    
-                    <div class="form-row">
-                    @foreach($variaveis as $var)
-
-                    <div class="form-group col-md-6">
-                       
-                        <label for="inputEmail3" class="col-sm-6 col-form-label">{{$var['nome']}}</label>
-         
-                    </div>
-
-                    <div class="form-group col-md-6">
-                       
-                        <div class="input-group mg-b-10">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon1">R$</span>
-                            </div>
-                            
-                        <input id="valor" 
-                        type="text" 
-                        class="form-control valoresFixos  @error('valor') is-invalid @enderror"
-                        name="valor[{{$var['id']}}]" 
-                        value="{!! Helper::moedaReal($var['valor']) !!}"
-                        data-thousands=""  ata-decimal=".">
-                        </div>
-                        @error('valorMinimo')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                        @enderror
-                    </div>
-                    @endforeach
-                </div>
-
-                -->
+        
                 <button type="submit" class="btn btn-primary">{{ __('Salvar Alterações') }}</button>
         </form>
     </div>
@@ -221,10 +193,18 @@ x
 
 <script src="{{asset('js/dashforge.js')}}"></script>
 <script src="{{asset('lib/jquery.maskMoney/jquery.maskMoney.js')}}" type="text/javascript"></script>
+<script src="{{asset('js/jquery.mask.min.js')}}"></script>
 <script>
     $(function() {
             'use strict'
 
+            $(".table").hide();
+        
+            $("table").has("tbody td").show().after("<hr>");
+
+
+            $(".moeda").mask('000.000.000.000.000,00', {reverse: true});
+        
             $(".valores").maskMoney();
 
             $("#aplicarDesconto").click(function() {

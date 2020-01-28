@@ -9,6 +9,8 @@ use App\Proposta;
 use App\RegraPerguntaVariavel;
 use App\Variavel;
 use App\Estrutura;
+use App\PropostasRespostas;
+use App\Acesso;
 use Helper;
 
 class ConfiguracaoController extends Controller
@@ -42,24 +44,98 @@ class ConfiguracaoController extends Controller
         return view('/configuracao/cadastroPergunta');
     }
 
-    public function distanciaEntreParques($proposta_id){
+    public function distanciaEntreParques($proposta_id, $totalDeVagas,$tipo){
       
-        $estrutura = Estrutura::where('estruturas.proposta_id', '=', $proposta_id)
-                                ->select('estruturas.alturaSistema',
-                                 'estruturas.alturaPeDireito', 
-                                 'estruturas.qtdVagasInternas', 
-                                 'estruturas.qtdVagasExternas')
-                                ->get();
-     
-        echo "<pre>";
-        print_r($estrutura);
-        exit;
-        foreach($estrutura as $key=>$val){
-            $diferencaCm = $val['alturaPeDireito'] - $val['alturaSistema'];
-            echo $diferencaCm . "<br>";
+        if($tipo=="distanciaEntreParques"){
+
+            $retornaValor = PropostasRespostas::where('propostas_respostas.proposta_id', '=', $proposta_id)
+                                                ->select('propostas_respostas.campo', 'propostas_respostas.valor')
+                                                ->get();         
+                                   
+            $distanciaAcessos = Acesso::where('proposta_id', '=', $proposta_id)->get();
+            $total = 0;
+            foreach($retornaValor as $k=>$v){
+                if($v['campo'] == 'distanciaCentroControle'){
+                    if($v['valor'] >= 100) {
+                        $total += $v['valor'];
+                    }
+                }
+
+                if(($v['campo'] == 'distanciaEntreParques')){
+                    if($v['valor'] >= 100) {
+                        $total += $v['valor'];
+                    }
+                }
+            }
+
+            foreach($distanciaAcessos as $k=>$v){
+                if($v['distanciaProximo'] >= 100) {
+                    $total += $v['distanciaProximo'];
+                }
+            }
+
+            return $total;
+        }else if($tipo=='distanciaCabeamentosCat5e'){
+            $retornaValor = PropostasRespostas::where('propostas_respostas.proposta_id', '=', $proposta_id)
+                                                ->select('propostas_respostas.campo', 'propostas_respostas.valor')
+                                                ->get();         
+                                   
+            $distanciaAcessos = Acesso::where('proposta_id', '=', $proposta_id)->get();
+            $total = 0;
+            foreach($retornaValor as $k=>$v){
+                if($v['campo'] == 'distanciaCentroControle'){
+                    if($v['valor'] < 80) {
+                        $total += $v['valor'];
+                    }
+                }
+
+                if(($v['campo'] == 'distanciaEntreParques')){
+                    if($v['valor'] < 80) {
+                        $total += $v['valor'];
+                    }
+                }
+            }
+
+            foreach($distanciaAcessos as $k=>$v){
+                if($v['distanciaProximo'] < 80) {
+                    $total += $v['distanciaProximo'];
+                }
+            }
+
+            return $total;
+        }else if($tipo=='distanciaEntreTodosParques'){
+            $retornaValor = PropostasRespostas::where('propostas_respostas.proposta_id', '=', $proposta_id)
+            ->select('propostas_respostas.campo', 'propostas_respostas.valor')
+            ->get();         
+
+            $distanciaAcessos = Acesso::where('proposta_id', '=', $proposta_id)->get();
+            $total = 0;
+
+            foreach($retornaValor as $k=>$v){
+                if($v['campo'] == 'distanciaCentroControle'){
+                    $total += $v['valor'];
+                }
+
+                if(($v['campo'] == 'distanciaEntreParques')){
+                    $total += $v['valor'];
+                }
+            }
+
+            foreach($distanciaAcessos as $k=>$v){
+                $total += $v['distanciaProximo'];
+            }
+
+            return $total;
+        }else if($tipo=="alturaEstrutura"){
+            $estrutura = Estrutura::where('estruturas.proposta_id', '=', $proposta_id)->get();
+            $total = 0;
+            foreach($estrutura as $key=>$val){
+                $qtdVagas = $val['qtdVagasInternas']+$val['qtdVagasExternas'];
+                $total += ($val['alturaPeDireito'] - $val['alturaSistema']) * $qtdVagas;
+            }
+            return $total/$totalDeVagas;
         }
 
-                    
     }
 
     public function totalParques($tabela, $proposta_id)
@@ -79,6 +155,7 @@ class ConfiguracaoController extends Controller
             ->select($tabela . "." . $field)
             ->get();
         }else{
+            #echo "Entrou aqui";
             $proposta = Proposta::where('propostas.id', '=', $proposta_id)
             ->leftjoin('acessos', 'acessos.proposta_id', '=', 'propostas.id')
             ->select($tabela . "." . $field)
@@ -158,7 +235,7 @@ class ConfiguracaoController extends Controller
             $regra->regra_de_negocio = $request->regra_negocio;
             $regra->save();
         } else {
-            return redirect('configuracao/regras');
+            return redirect('configuracao/regras')->with('classe', 'alert-success')->with('mensagem', 'Regra cadastrada com sucesso.');
         }
 
         return redirect('configuracao/regras');

@@ -36,24 +36,27 @@ x
         <table id="example1" class="table ">
             <thead>
                 <tr>
-                    <th class="dt-center">#ID</th>
+                    <th class="dt-center">#</th>
                     <th>Categoria</th>
                     <th class="dt-center">Ações</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($categorias as $categoria)
+                @foreach($categorias as $key=>$categoria)
                 <tr>
-                    <td class="dt-center">#{{$categoria['id']}}</td>
+                    <td class="dt-center">#{{$key+1}}</td>
                     <td class=>{{$categoria['nome']}}</td>
                     <td class="dt-center">
                         <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Ações
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="/variaveis/categorias/editar/{{$categoria['id']}}">Editar Categoria</a>
-                                <a class="dropdown-item" href="/variaveis/categorias/remover/{{$categoria['id']}}">Excluir Categoria</a>
+                                <a class="dropdown-item" href="/variaveis/categorias/editar/{{$categoria['id']}}">Editar
+                                    Categoria</a>
+                                <a class="dropdown-item"
+                                    href="/variaveis/categorias/remover/{{$categoria['id']}}">Excluir Categoria</a>
                             </div>
                         </div>
                     </td>
