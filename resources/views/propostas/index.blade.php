@@ -59,9 +59,14 @@ x
                     <td>{{$proposta['nomeCliente']}}</td>
                     <td>{!! Helper::retornaPropostaCliente('estabelecimento', $proposta['id']) !!}</td>
                     <td>{!! Helper::retornaPropostaCliente('responsavel', $proposta['id']) !!}</td>
-                    <td><span class="tx-12 tx-danger mg-b-0">Aguardando Finalização</span></td>
                     <td>
-
+                        @if($proposta['status']==0)
+                        <span class="tx-12 tx-danger mg-b-0">Proposta Aguardando Geração.</span>
+                        @elseif($proposta['status']==1)
+                        <span class="tx-12 tx-success mg-b-0">Proposta Gerada.</span>
+                        @endif
+                    </td>
+                    <td>
                         <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="false">
@@ -70,13 +75,20 @@ x
                             <div class="dropdown-menu tx-13">
                                 <h6 class="dropdown-header tx-uppercase tx-11 tx-bold tx-inverse tx-spacing-1">Gerar
                                     Propostas</h6>
-                                <a class="dropdown-item" target="_blank" href="/propostas/visualizar/{{$proposta['id']}}">Full</a>
-                                <a class="dropdown-item" target="_blank"  href="/propostas/visualizarBasic/{{$proposta['id']}}">Basic</a>
+                                @if($proposta['status']==0)
+                                    <a class="dropdown-item" target="_blank"
+                                        href="/propostas/visualizar/{{$proposta['id']}}">Visualizar Full</a>
+                                   <!-- <a class="dropdown-item" target="_blank"
+                                        href="/propostas/visualizarBasic/{{$proposta['id']}}">Visualizar Basic</a> -->
+                                @elseif($proposta['status']==1)
+                                    <a class="dropdown-item" target="_blank"
+                                    href="/propostas/gerarProposta/{{$proposta['id']}}">Visualizar Proposta</a>
+                                @endif
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="/propostas/editar/{{$proposta['id']}}">Editar
                                     Proposta</a>
-                                <a class="dropdown-item" href="/propostas/delete/{{$proposta['id']}}">Excluir
-                                    Proposta</a>
+                                <!--<a class="dropdown-item" href="/propostas/delete/{{$proposta['id']}}">Excluir
+                                    Proposta</a> -->
                             </div>
                         </div>
                     </td>

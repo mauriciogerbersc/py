@@ -30,16 +30,17 @@ class PropostasController extends Controller
     public function index($id = null)
     {
         $propostas = Proposta::join('users', 'users.id', 'propostas.cliente_id')
-                    ->select('users.name as nomeCliente', 'propostas.id', 'propostas.created_at')
+                    ->select('users.name as nomeCliente', 'propostas.id', 'propostas.created_at', 'propostas.status')
                     ->get();
         
      
         if ($id != null) {
             $propostas = Proposta::where('cliente_id', '=', $id)
                                 ->join('users', 'users.id', 'propostas.cliente_id')
-                                ->select('users.name as nomeCliente', 'propostas.id', 'propostas.created_at')
+                                ->select('users.name as nomeCliente', 'propostas.id', 'propostas.created_at', 'propostas.status')
                                 ->get();
         }
+
 
         return view('propostas/index', compact('propostas'));
     }
@@ -77,46 +78,11 @@ class PropostasController extends Controller
 
     public function gerarProposta($id)
     {
-        /* Recupero a proposta do cliente */
-        $proposta       = Proposta::find($id);
+        $proposta = Proposta::find($id);
+       
+        $base64_decode  = base64_decode($proposta['conteudo_base64']);
 
-
-        $categoriaSoftware                  = Categoria::where('id', '=', 2)->get();
-        $categoriaHardwarePrincipal         = Categoria::where('id', '=', 4)->get();
-        $categoriaHardwareNacional          = Categoria::where('id', '=', 5)->get();
-        $categoriaInstalacaoCompleta        = Categoria::where('id', '=', 6)->get();
-        $categoriaParkEyesSoftware          = Categoria::where('id', '=', 7)->get();
-        $categoriaParkEyesHWPrincipal       = Categoria::where('id', '=', 8)->get();
-        $categoriaParkEyesHWNacional        = Categoria::where('id', '=', 9)->get();
-        $categoriaParkEyesCompleta          = Categoria::where('id', '=', 10)->get();
-        $categoriaIntegracaoAplicativos     = Categoria::where('id', '=', 11)->get();
-
-        $estrutura      = Estrutura::where('proposta_id', $id)->get();
-        $totalDeVagas = 0;
-        $vagasDescobertas = 0;
-        foreach ($estrutura as $key => $total) {
-            $totalDeVagas       += $total['qtdVagasInternas'] + $total['qtdVagasExternas'];
-            $vagasDescobertas   += $total['qtdVagasExternas'];
-        }
-
-
-
-        $pdf = PDF::loadView('/propostas/pdf',  compact(
-            'categoriaSoftware',
-            'categoriaHardwarePrincipal',
-            'categoriaHardwareNacional',
-            'categoriaParkEyesSoftware',
-            'categoriaParkEyesHWPrincipal',
-            'categoriaParkEyesHWNacional',
-            'categoriaParkEyesCompleta',
-            'categoriaIntegracaoAplicativos',
-            'proposta',
-            'categoriaInstalacaoCompleta',
-            'totalDeVagas',
-            'vagasDescobertas'
-        ));
-
-        return $pdf->stream('document.pdf');
+        return view('propostas/pdf', compact('base64_decode'));
     }
     /**
      * Store a newly created resource in storage.
@@ -228,6 +194,48 @@ class PropostasController extends Controller
             )
         );
 
+    }
+
+
+    public function saveServerSide()
+    {
+        return view('saveServerSide');
+    }
+
+    public static function saveServerSidePost(Request $request){
+        
+        $input = $request->all();
+        $var = Proposta::find($input['propostaId']);
+        $proposta_base64 = base64_encode($input['imageData']);
+        if (isset($var)) {
+            $var->status            = 1;
+            $var->conteudo_base64   = $proposta_base64;
+            $var->save();
+            return response()->json(['success' => true]);
+        } else {
+            return response()->json(['success' => false]);
+        }
+    }
+
+
+    public function atualizaStatus()
+    {
+        return view('atualizaStatus');
+    }
+
+    /*ajax*/
+    public function atualizaStatusPost(Request $request)
+    {
+        $input = $request->all();
+
+        $var = Proposta::find($input['propostaId']);
+        if (isset($var)) {
+            $var->status = 1;
+            $var->save();
+            return response()->json(['success' => true]);
+        } else {
+            return response()->json(['success' => false]);
+        }
     }
 
     /**

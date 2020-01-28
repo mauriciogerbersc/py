@@ -93,7 +93,7 @@ x
                 <p class="mg-b-0 tx-color-03">{!! Helper::formataDataHora($proposta['created_at']) !!}</p>
             </div>
             <div class="mg-t-20 mg-sm-t-0">
-                <input type="hidden" value="{{$proposta['id']}}" />
+                <input type="hidden" value="{{$proposta['id']}}" id="propostaID" />
                 <button id="exportarProposta" class="btn btn-primary mg-l-5">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -205,7 +205,7 @@ x
                 <div class="col-sm-12 tx-left d-none d-md-block">
                     <strong>A/C {{$proposta['responsavel']}}</strong><br>
                     Segue proposta de venda e instalação do sistema de gerenciamento de estacionamentos, localização
-                    de  vagas livres e vigilância por CFTV denominado <strong>TIPO DE PROPOSTA</strong>
+                    de vagas livres e vigilância por CFTV denominado <strong>TIPO DE PROPOSTA</strong>
                 </div>
             </div><!-- row -->
 
@@ -310,7 +310,7 @@ x
                             <tr>
                                 <td></td>
                                 <td></td>
-                           
+
                                 <td colspan="2" class="tx-right valorTotalDoGrupo grupo1 tx-size-7"></td>
                             </tr>
                         </tfoot>
@@ -556,7 +556,7 @@ x
                     </table>
                     @endforeach
 
-             
+
                     <!-- ParkEyes Hardware Principal -->
                     @foreach($categoriaParkEyesHWPrincipal as $categoria)
                     <table id="tbl5" class="table table-dark table-hover table-striped mg-b-0 somarTabela">
@@ -779,7 +779,7 @@ x
 
                 </div>
 
-            
+
 
                 <div class="card">
                     <div class="card-header tx-bold ">
@@ -867,7 +867,7 @@ x
                 </div>
 
                 <hr>
-             
+
 
                 <div class="card">
                     <div class="card-header tx-bold">
@@ -925,7 +925,7 @@ x
                 </div>
 
                 <hr>
-                
+
                 <div class="card">
                     <div class="card-header tx-bold">
                         Considerações Finais
@@ -955,7 +955,7 @@ x
 
                     </div>
                 </div>
-                
+
 
                 <div class="row pd-t-150 ">
 
@@ -1109,24 +1109,31 @@ x
 <script>
     $(document).ready(function () {
 
-        function ExportPdf(){ 
-            kendo.drawing.drawDOM("#canvas", 
-                { 
-                    forcePageBreak: ".page-break", // add this class to each element where you want manual page break
-                    paperSize: "A4",
-                    margin: { top: "1cm", bottom: "1cm"},
-                    scale: 0.7,
-                    height: 400, 
-                    template: $("#page-template").html(),
-                    keepTogether: ".prevent-split"
-                })
-                .then(function(group){
-                    kendo.drawing.pdf.saveAs(group, "Exported.pdf")
-                });
-            
-        }
 
-        $('#exportarProposta').click(function() {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+            }
+        });
+            
+    
+        function ExportPdf(){ 
+            $.ajax({
+                type: "POST",
+                url: "/propostas/saveServerSide",
+                data: {'imageData' : $("#canvas").html(), 'propostaId'  : $("#propostaID").val() },
+                success: function(data){
+                    if(data.success){
+                        alert("Conteúdo salvo no servidor.");
+                    }
+                },error: function(){
+                    alert('Erro no Ajax !');
+                }
+            });      
+        }
+     
+
+        $('#exportarProposta').click(function(e) {
             ExportPdf();
         });
 
