@@ -18,7 +18,7 @@
                 <div class="wd-100p">
                     <form method="POST" action="{{ route('admin.login.submit') }}">
                         @csrf
-                        <h3 class="tx-color-01 mg-b-5">Acessardddd</h3>
+                        <h3 class="tx-color-01 mg-b-5">Acessar</h3>
                         <p class="tx-color-03 tx-16 mg-b-40">Painel do Administrador.</p>
 
                         <div class="form-group">
