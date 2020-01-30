@@ -123,7 +123,7 @@
             </li>
 
 
-           <!-- <li @if($current=="configuracao" ) class="nav-item with-sub active" @else class="nav-item with-sub" @endif>
+             <li @if($current=="configuracao" ) class="nav-item with-sub active" @else class="nav-item with-sub" @endif>
                 <a href="" class="nav-link"><i data-feather="package"></i> Configuração</a>
 
                 <div class="navbar-menu-sub">
@@ -154,7 +154,7 @@
                         </ul>
                     </div>
                 </div>
-            </li> -->
+            </li> 
 
 
         </ul>

@@ -200,7 +200,7 @@ class VariaveisController extends Controller
 
     public function retornaVariaveisCliente($cliente_id, $categoria_id, $tipo)
     {
-
+      
             if($tipo=='full'){
                 $vars = array(0,2);
             }else{
@@ -224,7 +224,7 @@ class VariaveisController extends Controller
                 )
                 ->orderBy('variavels.ordem', 'asc')
                 ->get();
-     
+                 
         return $variaveisDoCliente;
     }
 }

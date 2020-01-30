@@ -44,122 +44,166 @@ class ConfiguracaoController extends Controller
         return view('/configuracao/cadastroPergunta');
     }
 
-    public function distanciaEntreParques($proposta_id, $totalDeVagas,$tipo){
-      
-        if($tipo=="distanciaEntreParques"){
+    public function distanciaEntreParques($proposta_id, $totalDeVagas, $tipo)
+    {
+
+        if ($tipo == "distanciaEntreParques") {
 
             $retornaValor = PropostasRespostas::where('propostas_respostas.proposta_id', '=', $proposta_id)
-                                                ->select('propostas_respostas.campo', 'propostas_respostas.valor')
-                                                ->get();         
-                                   
+                ->select('propostas_respostas.campo', 'propostas_respostas.valor')
+                ->get();
+
             $distanciaAcessos = Acesso::where('proposta_id', '=', $proposta_id)->get();
             $total = 0;
-            foreach($retornaValor as $k=>$v){
-                if($v['campo'] == 'distanciaCentroControle'){
-                    if($v['valor'] >= 100) {
+            foreach ($retornaValor as $k => $v) {
+                if ($v['campo'] == 'distanciaCentroControle') {
+                    if ($v['valor'] >= 100) {
                         $total += $v['valor'];
                     }
                 }
 
-                if(($v['campo'] == 'distanciaEntreParques')){
-                    if($v['valor'] >= 100) {
+                if (($v['campo'] == 'distanciaEntreParques')) {
+                    if ($v['valor'] >= 100) {
                         $total += $v['valor'];
                     }
                 }
             }
 
-            foreach($distanciaAcessos as $k=>$v){
-                if($v['distanciaProximo'] >= 100) {
+            foreach ($distanciaAcessos as $k => $v) {
+                if ($v['distanciaProximo'] >= 100) {
                     $total += $v['distanciaProximo'];
                 }
             }
 
             return $total;
-        }else if($tipo=='distanciaCabeamentosCat5e'){
+        } else if ($tipo == 'distanciaCabeamentosCat5e') {
             $retornaValor = PropostasRespostas::where('propostas_respostas.proposta_id', '=', $proposta_id)
-                                                ->select('propostas_respostas.campo', 'propostas_respostas.valor')
-                                                ->get();         
-                                   
+                ->select('propostas_respostas.campo', 'propostas_respostas.valor')
+                ->get();
+
             $distanciaAcessos = Acesso::where('proposta_id', '=', $proposta_id)->get();
             $total = 0;
-            foreach($retornaValor as $k=>$v){
-                if($v['campo'] == 'distanciaCentroControle'){
-                    if($v['valor'] < 80) {
+            foreach ($retornaValor as $k => $v) {
+                if ($v['campo'] == 'distanciaCentroControle') {
+                    if ($v['valor'] < 80) {
                         $total += $v['valor'];
                     }
                 }
 
-                if(($v['campo'] == 'distanciaEntreParques')){
-                    if($v['valor'] < 80) {
+                if (($v['campo'] == 'distanciaEntreParques')) {
+                    if ($v['valor'] < 80) {
                         $total += $v['valor'];
                     }
                 }
             }
 
-            foreach($distanciaAcessos as $k=>$v){
-                if($v['distanciaProximo'] < 80) {
+            foreach ($distanciaAcessos as $k => $v) {
+                if ($v['distanciaProximo'] < 80) {
                     $total += $v['distanciaProximo'];
                 }
             }
 
             return $total;
-        }else if($tipo=='distanciaEntreTodosParques'){
+        } else if ($tipo == 'distanciaEntreTodosParques') {
             $retornaValor = PropostasRespostas::where('propostas_respostas.proposta_id', '=', $proposta_id)
-            ->select('propostas_respostas.campo', 'propostas_respostas.valor')
-            ->get();         
+                ->select('propostas_respostas.campo', 'propostas_respostas.valor')
+                ->get();
 
             $distanciaAcessos = Acesso::where('proposta_id', '=', $proposta_id)->get();
             $total = 0;
 
-            foreach($retornaValor as $k=>$v){
-                if($v['campo'] == 'distanciaCentroControle'){
+            foreach ($retornaValor as $k => $v) {
+                if ($v['campo'] == 'distanciaCentroControle') {
                     $total += $v['valor'];
                 }
 
-                if(($v['campo'] == 'distanciaEntreParques')){
+                if (($v['campo'] == 'distanciaEntreParques')) {
                     $total += $v['valor'];
                 }
             }
 
-            foreach($distanciaAcessos as $k=>$v){
+            foreach ($distanciaAcessos as $k => $v) {
                 $total += $v['distanciaProximo'];
             }
 
             return $total;
-        }else if($tipo=="alturaEstrutura"){
-            $estrutura = Estrutura::where('estruturas.proposta_id', '=', $proposta_id)->get();
+        } else if ($tipo == "alturaEstrutura") {
+            $estrutura = Estrutura::where('estruturas.proposta_id', '=', $proposta_id)
+                                    ->where('estruturas.qtdVagasInternas', '>', 0)
+                                    ->get();
             $total = 0;
-            foreach($estrutura as $key=>$val){
-                $qtdVagas = $val['qtdVagasInternas']+$val['qtdVagasExternas'];
+            foreach ($estrutura as $key => $val) {
+                $qtdVagas = $val['qtdVagasInternas'];
+                
                 $total += ($val['alturaPeDireito'] - $val['alturaSistema']) * $qtdVagas;
             }
-            return $total/$totalDeVagas;
-        }
+            return $total / $totalDeVagas;
+        } else if ($tipo == "distanciaEntreParquesAcessos"){
+            $acessos = Acesso::where('proposta_id', '=', $proposta_id)
+                            ->select('distanciaProximo')
+                            ->get();
 
+            $total = 0;
+            foreach($acessos as $key=>$val){
+               
+                $total += $val['distanciaProximo'];
+            }
+
+            return $total;
+        }
     }
 
-    public function totalParques($tabela, $proposta_id)
+    public function totalParquesCobertos($tabela, $proposta_id)
     {
-        $estrutura = Estrutura::where('proposta_id', '=', $proposta_id)->count();
+        $estrutura = Estrutura::where('proposta_id', '=', $proposta_id)
+            ->where('qtdVagasInternas', '>', 0)->count();
         return $estrutura;
+    }
+
+
+    public function qtdEntradasSaidas($proposta_id,$tipo)
+    {
+        $propostas = PropostasRespostas::where('proposta_id', '=', $proposta_id)
+            ->get();
+
+
+        $total = 0;
+
+
+        foreach ($propostas as $k => $v) {
+            if ($v['campo'] == 'qtdEntradas') {
+                $total += $v['valor'];
+            }
+
+            if ($v['campo'] == 'qtdSaidas') {
+                $total += $v['valor'];
+            }
+        }
+        if($tipo == 'loops'){
+            $total = $total+$total;
+        }else if($tipo == 'detectorLoops') {
+            $total = $total;
+        }
+        return $total;
     }
 
     public function subRegrasDaProposta($tabela, $field, $proposta_id)
     {
-        
+
         $total = 0;
 
-        if($tabela=='estruturas'){
+        if ($tabela == 'estruturas') {
+            #echo "<Strong>Entrou aquiEntrou aqui</strong> ." . __LINE__;
             $proposta = Proposta::where('propostas.id', '=', $proposta_id)
-            ->leftjoin('estruturas', 'estruturas.proposta_id', '=', 'propostas.id')
-            ->select($tabela . "." . $field)
-            ->get();
-        }else{
-            #echo "Entrou aqui";
+                ->leftjoin('estruturas', 'estruturas.proposta_id', '=', 'propostas.id')
+                ->select($tabela . "." . $field)
+                ->get();          
+        } else {
+           # echo "<Strong>Entrou aquiEntrou aqui</strong> ." . __LINE__;
             $proposta = Proposta::where('propostas.id', '=', $proposta_id)
-            ->leftjoin('acessos', 'acessos.proposta_id', '=', 'propostas.id')
-            ->select($tabela . "." . $field)
-            ->get();
+                ->leftjoin('acessos', 'acessos.proposta_id', '=', 'propostas.id')
+                ->select($tabela . "." . $field)
+                ->get();
         }
 
         foreach ($proposta as $val) {
@@ -173,15 +217,13 @@ class ConfiguracaoController extends Controller
     {
 
         if (!empty($field)) {
-            $valor = RegraPerguntaVariavel::where('variavel_id', '=', $variavel_id)
-                ->where('proposta_id', '=', $proposta_id)
+            $valor = RegraPerguntaVariavel::where('proposta_id', '=', $proposta_id)
                 ->where('campo', '=', $field)
                 ->join('propostas_respostas', 'propostas_respostas.pergunta_id', '=', 'regra_pergunta_variavels.pergunta_id')
                 ->select('propostas_respostas.valor')
                 ->take(1)
                 ->first();
         } else {
-          
             $valor = RegraPerguntaVariavel::where('variavel_id', '=', $variavel_id)
                 ->where('proposta_id', '=', $proposta_id)
                 ->join('propostas_respostas', 'propostas_respostas.pergunta_id', '=', 'regra_pergunta_variavels.pergunta_id')
@@ -189,9 +231,8 @@ class ConfiguracaoController extends Controller
                 ->take(1)
                 ->first();
         }
-  
+
         return $valor['valor'];
-        
     }
 
     public function regras()
@@ -356,6 +397,16 @@ class ConfiguracaoController extends Controller
             redirect('/configuracao/regras');
         }
     }
+
+    public function procuraRespostas($id_pergunta, $proposta_id)
+    {
+        $resposta = PropostasRespostas::where('pergunta_id', '=', $id_pergunta)
+            ->where('proposta_id', '=', $proposta_id)
+            ->first();
+
+        return $resposta['valor'];
+    }
+
 
     public function retornoResposta($id_pergunta)
     {

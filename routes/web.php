@@ -33,7 +33,7 @@ Route::get('/propostas/nova/{id}', 'PropostasController@create');
 Route::get('/propostas/old/{id}', 'PropostasController@createOld');
 Route::get('/propostas/visualizar/{id}', 'PropostasController@show');
 Route::get('/propostas/visualizarBasic/{id}', 'PropostasController@showBasic');
-Route::get('/propostas/editar/{id}', 'PropostasController@edit');
+Route::get('/propostas/regerar/{id}', 'PropostasController@regerar');
 Route::get('/propostas/atualizaStatus', 'PropostasController@atualizaStatus');
 Route::post('/propostas/atualizaStatus', 'PropostasController@atualizaStatusPost');
 Route::get('/propostas/saveServerSide', 'PropostasController@saveServerSide');

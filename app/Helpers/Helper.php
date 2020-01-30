@@ -7,6 +7,7 @@ use App\Http\Controllers\VariaveisController;
 use App\Http\Controllers\PropostasController;
 use App\Http\Controllers\VagasController;
 use App\Http\Controllers\VariaveisCategoriasController;
+use App\PropostasRespostas;
 
 class Helper
 {
@@ -30,6 +31,11 @@ class Helper
         return $respostas->retornoResposta($pergunta_id);
     }
 
+    public static function procuraRespostas($pergunta_id, $proposta_id)
+    {
+        $respostas = new ConfiguracaoController();
+        return $respostas->procuraRespostas($pergunta_id, $proposta_id);
+    }
 
     public static function matheval($equation)
     {
@@ -54,7 +60,7 @@ class Helper
     public static function regraDeNegocio($regra, $variavel_id, $proposta_id, $totalDeVagas)
     {
 
-        //echo $regra; 
+        #echo $regra .  ' ' . $variavel_id .  ' ' . $proposta_id .  ' ' . $totalDeVagas . "<br>"; 
 
         if (strpos($regra, "[[") !== false) {
             $regra = str_replace("[[", "{{", $regra);
@@ -67,7 +73,7 @@ class Helper
 
             if (preg_match_all("/(\{\{(tbl|field)\=)(?<conteudo>.{1,30})(\}\})(.[ ]?([0-9]*[.])?[0-9]{1,3})?/i", $regra, $out)) {
 
-                
+
                 $tabela = $out['conteudo'][0];
                 $field  = $out['conteudo'][1];
                 #echo "tbl {$tabela} field {$field} <br>";
@@ -76,86 +82,104 @@ class Helper
 
                 if ($field == 'countParaCisco') {
                     $estruturas = new ConfiguracaoController();
-                    $total = $estruturas->totalParques($tabela, $proposta_id);
+                    $total = $estruturas->totalParquesCobertos($tabela, $proposta_id);
                     return $total * 2;
                 } elseif ($field == 'alturaEstrutura') {
 
                     $estruturas = new ConfiguracaoController();
                     $totalDistancias = $estruturas->distanciaEntreParques($proposta_id, $totalDeVagas, $field);
 
-                
+                    #echo $totalDeVagas . "<br>";
                     if (!empty($out[5][1])) {
-                        $total = "$totalDeVagas"."*".$totalDistancias.$out[5][1];
+                        $total = "$totalDeVagas" . "*" . $totalDistancias . $out[5][1];
+                        #echo $total."<br>";
                         return Helper::matheval($total);
                     }
-
-                }elseif($field == 'distanciaCabeamentosCat5e'){
+                } elseif ($field == 'distanciaCabeamentosCat5e') {
 
                     $estruturas = new ConfiguracaoController();
                     $totalDistancias = $estruturas->distanciaEntreParques($proposta_id, $totalDeVagas, $field);
                     return $totalDistancias;
-               
-                } else if($field == 'distanciaEntreParques'){
+                } else if ($field == 'distanciaEntreParques') {
                     $estruturas = new ConfiguracaoController();
                     $total = $estruturas->distanciaEntreParques($proposta_id, $totalDeVagas, $field);
                     return $total;
-                }else if($field == 'distanciaEntreTodosParques'){
+                } else if($field == 'distanciaEntreParquesAcessos') {
                     $estruturas = new ConfiguracaoController();
                     $total = $estruturas->distanciaEntreParques($proposta_id, $totalDeVagas, $field);
                     return $total;
+                } else if ($field == 'distanciaEntreTodosParques') {
+                    $estruturas = new ConfiguracaoController();
+                    $total = $estruturas->distanciaEntreParques($proposta_id, $totalDeVagas, $field);
+                    return $total;
+                }else if($field == 'entradasSaidasLoops'){
+                    $tipo = "loops";
+                    $propostasRespostas = new ConfiguracaoController();
+                    $total = $propostasRespostas->qtdEntradasSaidas($proposta_id,$tipo);
+                    return $total;
+                }else if($field == 'entradasSaidasDetectorLoops'){
+                    $tipo = "detectorLoops";
+                    $propostasRespostas = new ConfiguracaoController();
+                    $total = $propostasRespostas->qtdEntradasSaidas($proposta_id,$tipo);
+                    if (!empty($out[5][1])) {
+                        $total = $total . $out[5][1];
+                    }
+                    return Helper::matheval($total);
                 }
 
 
                 $acessos = new ConfiguracaoController();
                 $total = $acessos->subRegrasDaProposta($tabela, $field, $proposta_id);
-                
-                if(!empty($out[5][1])){
+
+                if (!empty($out[5][1])) {
                     $total = $total . $out[5][1];
                 }
 
                 return  Helper::matheval($total);
             }
         }
-        
-        if(strpos($regra, "{{variavel}}") !== false){
-            
+
+        if (strpos($regra, "{{variavel}}") !== false) {
+            #echo "entrou aqui <br>";
             $valorQuestionario = new ConfiguracaoController();
             $valor = $valorQuestionario->valorQuestionario($variavel_id, $proposta_id, $field = null);
-       
-            $variaveis = array(26, 57, 55, 56);
-            if(in_array($variavel_id, $variaveis)){
-     
-                if(($variavel_id == 26) or ($variavel_id == 57) or ($variavel_id = 55) or ($variavel_id = 55)){
-                    $valor = $valorQuestionario->valorQuestionario($variavel_id, $proposta_id, 'quantidadeCamerasExtras');
-                }
+          
+            $variaveis = array(26, 57, 55, 56, 51);
+            $variaveisLPR = array(9,34);
+
+            if (in_array($variavel_id, $variaveis)) {
+                #echo __LINE__ ." <br> $variavel_id <br>";
+                $valor = $valorQuestionario->valorQuestionario($variavel_id, $proposta_id, 'quantidadeCamerasExtras');
+            } else if (in_array($variavel_id, $variaveisLPR)) {
+                #echo __LINE__ ." <br> $variavel_id <br>";
+                $valor = $valorQuestionario->valorQuestionario($variavel_id, $proposta_id, 'quantidadeCamerasLPR');
             }
 
             $regra = str_replace("{{variavel}}", $valor, $regra);
-
-          
         }
 
-        if(strpos($regra, "{{totalDeVagas}}") !== false){
+        if (strpos($regra, "{{totalDeVagas}}") !== false) {
             $vagas = new VagasController();
             $totalDeVagas = $vagas->totalDeVagas($proposta_id);
             $regra = str_replace("{{totalDeVagas}}", $totalDeVagas['totalDeVagas'], $regra);
         }
 
-        if(strpos($regra, "{{totalDeVagasInternas}}") !== false){
+        if (strpos($regra, "{{totalDeVagasInternas}}") !== false) {
             $vagas = new VagasController();
             $totalDeVagas = $vagas->totalDeVagas($proposta_id);
             $regra = str_replace("{{totalDeVagasInternas}}", $totalDeVagas['totalDeVagasInternas'], $regra);
         }
 
-        
-        if(preg_match("/[(.+)]/", $regra)){
+
+        if (preg_match("/[(.+)]/", $regra)) {
             return Helper::matheval($regra);
         }
 
         return ceil($regra);
     }
 
-    public static function retornaPai($idPai){
+    public static function retornaPai($idPai)
+    {
         $tabelas = new VariaveisCategoriasController();
         return $tabelas->retornaPai($idPai);
     }

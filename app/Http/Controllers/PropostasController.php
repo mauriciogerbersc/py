@@ -46,17 +46,24 @@ class PropostasController extends Controller
     }
 
 
-    public function createOld($id)
+    public function regerar($id)
     {
+        
+        $perguntas          = Perguntas::where('perguntas.id', '<>', 999)->get();
+        $proposta_id        = $id;
+        $propostasRespostas = PropostasRespostas::where('propostas_respostas.proposta_id', '=', $id)->first();
+        $estruturas         = Estrutura::where('proposta_id', $id)->get();
+        $cliente            = Proposta::find($id);
 
-        $cliente       = User::find($id);
+        $cliente_id         = $cliente['cliente_id'];
 
-        if (isset($cliente)) {
-            return view('propostas/cadastro', compact('cliente'));
-        } else {
-            return view('propostas/index');
-        }
+        return view('propostas/regerar', compact('estruturas', 
+                                                'cliente_id', 
+                                                'perguntas', 
+                                                'propostasRespostas',
+                                                'proposta_id'));
     }
+
 
     public function create($id)
     {
@@ -360,7 +367,7 @@ class PropostasController extends Controller
 
 
         foreach ($procuraVaga as $k => $v) {
-            $preco = $v['preco'];
+            $preco =  number_format($v['preco'], 2,',','');
         }
 
         if($subcategoria_nome == 'nobreak'){

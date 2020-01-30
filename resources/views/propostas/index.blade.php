@@ -85,8 +85,7 @@ x
                                     href="/propostas/gerarProposta/{{$proposta['id']}}">Visualizar Proposta</a>
                                 @endif
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="/propostas/editar/{{$proposta['id']}}">Editar
-                                    Proposta</a>
+                                <a class="dropdown-item" href="/propostas/regerar/{{$proposta['id']}}">Nova a partir desta</a>
                                 <!--<a class="dropdown-item" href="/propostas/delete/{{$proposta['id']}}">Excluir
                                     Proposta</a> -->
                             </div>
