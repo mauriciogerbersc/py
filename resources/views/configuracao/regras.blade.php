@@ -24,27 +24,24 @@ x
 <div class="content content-fixed">
     <div class="container">
         <ol class="breadcrumb df-breadcrumbs mg-b-10">
-            <li class="breadcrumb-item"><a href="/dashboard.">Painel de Controle</a></li>
+            <li class="breadcrumb-item"><a href="/">Painel de Controle</a></li>
             <li class="breadcrumb-item active" aria-current="page">Perguntas Cadastradas</li>
         </ol>
 
-
         @if(session('classe'))
-        <div class="alert {{session('classe')}} alert-dismissible fade show" role="alert">
-            {{ session('mensagem') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">×</span>
-            </button>
-        </div>
-    @endif
-
-
-    
+            <div class="alert {{session('classe')}} alert-dismissible fade show" role="alert">
+                {{ session('mensagem') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+        @endif
     
         @if(count($regras) > 0)
         <table id="example1" class="table">
             <thead>
                 <tr>
+                    <th>Categoria Regra</th>
                     <th>Variavel</th>
                     <th>Pergunta</th>
                     <th>Regra</th>
@@ -54,6 +51,15 @@ x
             <tbody>
                 @foreach($regras as $regra)
                 <tr>
+                    <td>
+                        @if($regra['categoria'] == 0)
+                        Full
+                        @elseif( $regra['categoria'] == 1 )
+                        Basic
+                        @else
+                        Ambos
+                        @endif
+                    </td>
                     <td>{{$regra['variavel']}}</td>
                     <td>{{$regra['pergunta']}}</td>
                     <td>{{$regra['regra_de_negocio']}}
@@ -94,9 +100,10 @@ x
 
         $('#example1').DataTable({
             columns: [
-                { "width": "35%" },
-                { "width": "35%" },
-                { "width" : "20%" },
+                { "width": "10%" },
+                { "width": "25%"},
+                { "width": "25%" },
+                { "width" : "20%"},
                 { "width" : "10%"}
             ],
             responsive: true,

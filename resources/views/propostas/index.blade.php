@@ -39,65 +39,83 @@ x
         @endif
 
         @if(count($propostas) > 0)
-        <table id="example1" class="table">
-            <thead>
-                <tr>
-                    <th>#COD</th>
-                    <th>Data da Proposta</th>
-                    <th>Cliente</th>
-                    <th>Projeto</th>
-                    <th>Responsável</th>
-                    <th>Status da Proposta</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($propostas as $key=>$proposta)
-                <tr>
-                    <td>#{{++$key}}</td>
-                    <td>{!! Helper::formataDataHora($proposta['created_at']) !!}</td>
-                    <td>{{$proposta['nomeCliente']}}</td>
-                    <td>{!! Helper::retornaPropostaCliente('estabelecimento', $proposta['id']) !!}</td>
-                    <td>{!! Helper::retornaPropostaCliente('responsavel', $proposta['id']) !!}</td>
-                    <td>
-                        @if($proposta['status']==0)
-                        <span class="tx-12 tx-danger mg-b-0">Proposta Aguardando Geração.</span>
-                        @elseif($proposta['status']==1)
-                        <span class="tx-12 tx-success mg-b-0">Proposta Gerada.</span>
-                        @endif
-                    </td>
-                    <td>
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false">
-                                Ações
-                            </button>
-                            <div class="dropdown-menu tx-13">
-                                <h6 class="dropdown-header tx-uppercase tx-11 tx-bold tx-inverse tx-spacing-1">Gerar
-                                    Propostas</h6>
-                                @if($proposta['status']==0)
-                                    <a class="dropdown-item" target="_blank"
-                                        href="/propostas/visualizar/{{$proposta['id']}}">Visualizar Full</a>
-                                   <!-- <a class="dropdown-item" target="_blank"
-                                        href="/propostas/visualizarBasic/{{$proposta['id']}}">Visualizar Basic</a> -->
-                                @elseif($proposta['status']==1)
-                                    <a class="dropdown-item" target="_blank"
-                                    href="/propostas/gerarProposta/{{$proposta['id']}}">Visualizar Proposta</a>
+
+
+        <div id="accordion7" class="accordion">
+            @foreach($propostas as $key=>$proposta)
+            <h6 class="accordion-title">{{$proposta['nomeCliente']}}</h6>
+            <div class="accordion-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Categoria</th>
+                            <th>Tabela Utilizada</th>
+                            <th>Data da Proposta</th>
+                            <th class="dt-center">Projeto</th>
+                            <th class="dt-center">Responsável</th>
+                            <th>Status da Proposta</th>
+                            <th class="dt-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(Helper::retornaPropostasClientes($proposta['cliente_id']) as $key=>$a)
+                        <tr>
+                            <td>{{ $a['tp_proposta'] == 0 ? "Full" : "Basic"}}</td>
+                            <td><a href="/variaveis/subcategorias/visualizar/{{$a['sub_id']}}" target="_blank">{{$a['nomeSub']}}</a></td>
+                            <td>{!! Helper::formataDataHora($a['created_at']) !!}</td>
+                            <td>{!! Helper::retornaPropostaCliente('estabelecimento', $a['id']) !!}</td>
+                            <td>{!! Helper::retornaPropostaCliente('responsavel', $a['id']) !!}</td>
+                            <td>
+                                @if($a['status']==0)
+                                    <span class="tx-12 tx-danger mg-b-0">Proposta Aguardando Geração.</span>
+                                @elseif($a['status']==1)
+                                    <span class="tx-12 tx-success mg-b-0">Proposta Gerada.</span>
                                 @endif
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="/propostas/regerar/{{$proposta['id']}}">Nova a partir desta</a>
-                                <!--<a class="dropdown-item" href="/propostas/delete/{{$proposta['id']}}">Excluir
-                                    Proposta</a> -->
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false">
+                                        Ações
+                                    </button>
+                                    <div class="dropdown-menu tx-13">
+                                        <h6 class="dropdown-header tx-uppercase tx-11 tx-bold tx-inverse tx-spacing-1">Gerar
+                                            Propostas</h6>
+                                        @if($a['status']==0)
+                                            @if($a['tp_proposta']==0)
+                                            <a class="dropdown-item" target="_blank"
+                                                href="/propostas/visualizar/{{$a['id']}}">Visualizar Full</a>
+                                           @else 
+                                           <a class="dropdown-item" target="_blank"
+                                                href="/propostas/visualizarBasic/{{$a['id']}}">Visualizar Basic</a>
+                                            @endif
+                                        @elseif($proposta['status']==1)
+                                            <a class="dropdown-item" target="_blank"
+                                            href="/propostas/gerarProposta/{{$a['id']}}">Visualizar Proposta</a>
+                                            <a class="dropdown-item" target="_blank"
+                                            href="/propostas/">Gerar Contrato</a>
+                                        @endif
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" target="_blank" href="/propostas/regerar/{{$a['id']}}/basic">Nova Basic</a>
+                                        <a class="dropdown-item" target="_blank" href="/propostas/regerar/{{$a['id']}}/full">Nova Full</a>
+                                        
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+
+            </div>
+            @endforeach
+        </div>
+
+      
 
         @else
-        Nenhuma Proposta Cadastrada.
+            Nenhuma Proposta Cadastrada.
         @endif
     </div><!-- container -->
 </div><!-- content -->
@@ -111,12 +129,18 @@ x
 <script src="{{asset('lib/datatables.net-dt/js/dataTables.dataTables.min.js')}}"></script>
 <script src="{{asset('lib/datatables.net-responsive/js/dataTables.responsive.min.js')}}"></script>
 <script src="{{asset('lib/datatables.net-responsive-dt/js/responsive.dataTables.min.js')}}"></script>
-<script src="{{asset('lib/select2/js/select2.min.js')}}"></script>
+
+<script src="{{asset('/lib/jqueryui/jquery-ui.min.js')}}"></script>
 
 <script src="{{asset('js/dashforge.js')}}"></script>
 <script>
     $(function() {
         'use strict'
+
+        $('#accordion7').accordion({
+          heightStyle: 'content',
+          
+        });
 
         $('#example1').DataTable({
 

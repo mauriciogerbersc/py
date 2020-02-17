@@ -11,10 +11,10 @@ use App\SubFixos;
 class ClienteController extends Controller
 {
 
-    
+
     public function __construct()
     {
-        $this->middleware('auth:admin');    
+        $this->middleware('auth:admin');
     }
 
 
@@ -24,18 +24,34 @@ class ClienteController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {   
-        
-        $users = User::leftJoin('sub_fixos', 'sub_fixos.id', '=', 'users.sub_fixo_id')
-                        ->select('users.id', 'users.name', 'sub_fixos.nomeSub')    
-                        ->get();
+    {
 
+        $us = User::leftJoin('sub_fixos', 'sub_fixos.id', '=', 'users.sub_fixo_id')
+            ->select('users.id', 'users.name', 'sub_fixos.nomeSub', 'sub_fixos.id as sub_id', 'users.status')
+            ->get();
+
+        $users = array();
+        foreach ($us as $key => $val) {
+            $proposta = $this->propostasClienteDados($val['id']);
+            $total = $proposta->count();
+            $users[] = array(
+                'id' => $val['id'],
+                'sub_id' => $val['sub_id'],
+                'name' => $val['name'],
+                'nomeSub' => $val['nomeSub'],
+                'total' => $total,
+                'status' => $val['status']
+            );
+        }
+
+        
         return view('clientes/index', compact('users'));
     }
 
 
-    public function propostasClienteDados($cliente_id){
-        $proposta = Proposta::where('cliente_id',$cliente_id)->get();
+    public function propostasClienteDados($cliente_id)
+    {
+        $proposta = Proposta::where('cliente_id', $cliente_id)->get();
 
         return $proposta;
     }
@@ -46,7 +62,7 @@ class ClienteController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {   
+    {
         $subFixo       = SubFixos::All();
         return view('clientes/cadastro', compact("subFixo"));
     }
@@ -74,7 +90,7 @@ class ClienteController extends Controller
             'password.confirmed'        => 'Confirme sua senha',
             'password.min'      => 'O mínimo para o campo senha é de 4 caracteres'
         ];
-        
+
         $request->validate($rules, $messages);
 
         $user = new User();
@@ -114,7 +130,7 @@ class ClienteController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {   
+    {
 
         $rules = [
             'email' => 'required',
@@ -126,22 +142,21 @@ class ClienteController extends Controller
             'name.max'              => 'O limite do Nome é de 255 caracteres',
             'email.required'        => 'O campo Email é obrigatório'
         ];
-        
+
         $request->validate($rules, $messages);
 
         $user = User::find($id);
 
-        
+
         $user->name         = $request->input('name');
         $user->email        = $request->input('email');
         $user->sub_fixo_id  = $request->input('categoriaPrecos');
-        if($request->input('password')!=''){
+        if ($request->input('password') != '') {
             $user->password = Hash::make($request->input('password'));
         }
         $user->save();
 
         return redirect('/clientes')->with('classe', 'alert-info')->with('mensagem', 'Dados do Cliente atualizados com sucesso.');
-
     }
 
     /**
@@ -150,8 +165,21 @@ class ClienteController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id,$status)
     {
-        //
+        $user = User::find($id);
+        if (isset($user)) {
+            $user->status         = $status;
+
+            $user->save();
+            if($status == 1){
+                return redirect('/clientes')->with('classe', 'alert-success')->with('mensagem', 'Cliente ativado com sucesso.');
+            }else{
+             return redirect('/clientes')->with('classe', 'alert-danger')->with('mensagem', 'Cliente excluído com sucesso.');
+            }
+        } else {
+            return redirect('/clientes')->with('classe', 'alert-danger')->with('mensagem', 'Cliente não encontrado.');
+        }
+
     }
 }

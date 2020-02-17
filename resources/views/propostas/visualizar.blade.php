@@ -134,89 +134,23 @@ x
                 </div><!-- col -->
             </div><!-- row -->
             <br>
-            <!--<div data-label="Example" class="df-example pd-t-20">
-                <div class="row row-sm">
-                    <div class="col-sm mg-t-10 mg-sm-t-0">
-                        <img src="https://d33wubrfki0l68.cloudfront.net/f5812b8e56d58e5d042aa1f0000cf256c693962f/d0dcb/assets/images/luz2.png"
-                            class="img-fluid op-5" alt="">
-                    </div>
-                    <div class="col-sm">
-                        <div class="card card-body tx-white bg-gray-200 ht-100p op-4">
-                            <h5 class="tx-inverse mg-b-20">ParkEyes Lighting</h5>
-                            <p class="mg-b-0 tx-black">
-                                Avançado sistema de iluminação em Led dimerizado, que controla a intensidade das
-                                luminárias do mínimo ao máximo de acordo com o
-                                movimento detectado pelas câmeras do Sistema ParkEyes, potencializando o retorno
-                                sobre o investimento.
-                            </p>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <div data-label="Example" class="df-example pd-t-20">
-                <div class="row row-sm">
-                    <div class="col-sm mg-t-10 mg-sm-t-0">
-                        <img src="https://d33wubrfki0l68.cloudfront.net/20bc10d03ab6282d72503b0faae2df003eaf3086/a0273/assets/images/inspector.png"
-                            class="img-fluid op-5" alt="">
-                    </div>
-                    <div class="col-sm">
-                        <div class="card card-body tx-white bg-gray-200 ht-100p op-4">
-                            <h5 class="tx-inverse mg-b-20">ParkEyes Inspector</h5>
-                            <p class="mg-b-0 tx-black">
-                                Sistema líder que inspeciona a parte inferior dos veículos para shoppings,
-                                aeroportos,
-                                centros militares, embaixadas, usinas nucleares, prisões,
-                                portos e outros locais de segurança máxima. Escanea veículos e caminhões de qualquer
-                                tamanho
-                                e peso.
-                            </p>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <div data-label="Example" class="df-example pd-t-20">
-                <div class="row row-sm">
-                    <div class="col-sm mg-t-10 mg-sm-t-0">
-                        <img src="https://d33wubrfki0l68.cloudfront.net/a7fa451f14b0cfe77d20e53bda83a28cb8087340/24bc0/assets/images/clpr.png"
-                            class="img-fluid op-5" alt="">
-                    </div>
-                    <div class="col-sm">
-                        <div class="card card-body tx-white bg-gray-200 ht-100p op-4">
-                            <h5 class="tx-inverse mg-b-20">Parkeyes CLPR</h5>
-                            <p class="mg-b-0 tx-black">
-                             Sistema inovador autônomo de reconhecimento de placas 
-                             de veículos para estacionamentos, cidades e controle de tráfego em estradas.
-                            A ferramenta conta com uma interface web exclusiva e software completo para gestão do
-                            reconhecimento de placas de veículos.
-                            </p>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-             -->
-
 
             <div class="row pd-t-20">
                 <div class="col-sm-12 tx-left d-none d-md-block">
                     <strong>A/C {{$proposta['responsavel']}}</strong><br>
                     Segue proposta de venda e instalação do sistema de gerenciamento de estacionamentos, localização
-                    de vagas livres e vigilância por CFTV denominado <strong>TIPO DE PROPOSTA</strong>
+                    de vagas livres e vigilância por CFTV denominado <strong>ParkEyes Full</strong>
                 </div>
             </div><!-- row -->
 
             <div class="row pd-t-20">
                 <div class="col-sm-12 pd-t-20">
                     <ul class="list-group">
-                        <li class="list-group-item">Sistema de Localização de vagas: <strong>variavel</strong></li>
+                        <li class="list-group-item">Sistema de Localização de vagas: <strong>Sim</strong></li>
                         <li class="list-group-item">Vídeo Vigilância: <strong>Sim</strong></li>
-                        <li class="list-group-item">Vídeo Gravação <strong>5</strong> dias: Sim</li>
+                        <li class="list-group-item">Vídeo Gravação {{$totalDiasGravacao}}: <strong>Sim</strong></li>
                         <li class="list-group-item">Localize seu carro: <strong>Sim</strong></li>
-                        <li class="list-group-item">Câmeras IP: Sim</li>
+                        <li class="list-group-item">Câmeras IP: <strong>Sim</strong></li>
                         <li class="list-group-item">Alimentação de Câmeras e Painéis Internos com tecnologia POE:
                             <strong>Sim</strong></li>
                     </ul>
@@ -249,20 +183,26 @@ x
 
                 <div class="table-responsive mg-t-40">
                     <input id="totalDeVagas" type="hidden" value="{{$totalDeVagas}}" />
+                    <input id="totalDeVagasInternas" type="hidden" value="{{$vagasInternas}}" />
+                    <input id="totalDeVagasExternas" type="hidden" value="{{$vagasDescobertas}}" />
                     <!-- ParkEyes - Software -->
                     @foreach($categoriaSoftware as $categoria)
                     <table id="tbl1" class="table table-dark table-hover table-striped mg-b-0 somarTabela">
                         <thead>
+                            @php
+                            $categoriaNome = str_replace("[[TIPO]]",'FULL',$categoria->nome);
+                            @endphp
                             <tr>
-                                <th class="wd-40p">{{$categoria->nome}}</th>
+                                <th class="wd-40p">{{$categoriaNome}}</th>
                                 <th class="wd-20p">PREÇOS</th>
                                 <th class="tx-center">QUANTIDADES</th>
                                 <th class="tx-right">PROJETO</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach(Helper::retornaVariaveis($proposta['cliente_id'], 2, 'full') as $key=>$val)
-                            
+                            @foreach(Helper::retornaVariaveis($proposta['cliente_id'], 2,0,$proposta['id']) as
+                            $key=>$val)
+                            @if(Helper::regraDeNegocio($val['regra_de_negocio'],$val['variavel_id'], $proposta['id'], $vagasInternas) != 0)
                             <tr>
                                 <td>{{$val['nome']}}</td>
                                 <td>
@@ -271,7 +211,7 @@ x
                                     @else
                                     R$ {!! Helper::moedaReal($val['preco']) !!}
                                     @endif
-                                    
+
                                     @if($val['preco']==0)
                                     <input type="hidden" class="valor"
                                         value="{!! Helper::valorPorVaga($vagasInternas, 'Licenças', $val['sub_fixo_id']); !!}" />
@@ -281,27 +221,28 @@ x
                                 </td>
 
                                 <td class="tx-center">
-                                  
-                                     {!! Helper::regraDeNegocio($val['regra_de_negocio'], 
-                                        $val['variavel_id'],
-                                        $proposta['id'], 
-                                        $vagasInternas) !!}
-    
+
+                                    {!! Helper::regraDeNegocio($val['regra_de_negocio'],
+                                    $val['variavel_id'],
+                                    $proposta['id'],
+                                    $vagasInternas) !!}
+
                                     @if($val['unidade'] !== '')
-                                        {{$val['unidade']}}
+                                    {{$val['unidade']}}
                                     @endif
-    
+
                                     <input type="hidden" class="quantidade"
                                         value="{!! Helper::regraDeNegocio($val['regra_de_negocio'], $val['variavel_id'], $proposta['id'], $vagasInternas) !!}" />
                                 </td>
-    
+
                                 <td class="tx-right total">
                                     <span class="totalSpan"></span>
-    
+
                                     <input type="hidden" class="valorTotal" value="" />
                                 </td>
-                           
+
                             </tr>
+                            @endif
                             @endforeach
                         </tbody>
                         <tfoot>
@@ -320,65 +261,66 @@ x
                     @foreach($categoriaHardwarePrincipal as $categoria)
                     <table id="tbl2" class="table table-dark table-hover table-striped mg-b-0 somarTabela">
                         <thead>
+                            @php
+                            $categoriaNome = str_replace("[[TIPO]]",'FULL',$categoria->nome);
+                            @endphp
                             <tr>
-                                <th class="wd-40p">{{$categoria->nome}}</th>
+                                <th class="wd-40p">{{$categoriaNome}}</th>
                                 <th class="wd-20p">PREÇOS</th>
                                 <th class="tx-center">QUANTIDADES</th>
                                 <th class="tx-right">PROJETO</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach(Helper::retornaVariaveis($proposta['cliente_id'], 4, 'full') as $key=>$val)
-                         
+                            @foreach(Helper::retornaVariaveis($proposta['cliente_id'], 4,0, $proposta['id']) as
+                            $key=>$val)
+                            @if(Helper::regraDeNegocio($val['regra_de_negocio'],$val['variavel_id'], $proposta['id'], $vagasInternas) != 0)
                             <tr>
                                 <td>{{$val['nome']}}</td>
-                          
-                            
-                            <td>
-                                @if($val['preco']==0)
+                                <td>
+                                    @if($val['preco']==0)
                                     @if($val['variavel_id'] == 53 OR $val['variavel_id'] == 57)
-                                        @php $var = "Cameras+"; @endphp
+                                    @php $var = "Cameras+"; @endphp
                                     @elseif($val['variavel_id'] == 54)
-                                        @php $var = "Caixas Secundárias"; @endphp
+                                    @php $var = "Caixas Secundárias"; @endphp
                                     @else
-                                        @php $var = "Licenças"; @endphp
+                                    @php $var = "Licenças"; @endphp
                                     @endif
-                                        R$ {!! Helper::valorPorVaga($vagasInternas, $var, $val['sub_fixo_id']); !!}
+                                    R$ {!! Helper::valorPorVaga($vagasInternas, $var, $val['sub_fixo_id']); !!}
                                     @else
-                                        R$ {!! Helper::moedaReal($val['preco']) !!}
-                                @endif
+                                    R$ {!! Helper::moedaReal($val['preco']) !!}
+                                    @endif
 
-                                @if($val['preco']==0)
+                                    @if($val['preco']==0)
 
                                     @if($val['variavel_id'] == 53 OR $val['variavel_id'] == 57)
-                                        @php $var = "Cameras+"; @endphp
+                                    @php $var = "Cameras+"; @endphp
                                     @elseif($val['variavel_id'] == 54)
-                                        @php $var = "Caixas Secundárias"; @endphp
+                                    @php $var = "Caixas Secundárias"; @endphp
                                     @else
-                                        @php $var = "Licenças"; @endphp
+                                    @php $var = "Licenças"; @endphp
                                     @endif
                                     <input type="hidden" class="valor"
                                         value="{!! Helper::valorPorVaga($vagasInternas, $var, $val['sub_fixo_id']); !!}" />
                                     @else
-                                        <input type="hidden" class="valor" value="{{$val['preco']}}" />
-                                @endif
-                            </td>
-                            <td class="tx-center">
-                                {!! Helper::regraDeNegocio($val['regra_de_negocio'], 
-                                $val['variavel_id'],
-                                $proposta['id'], $vagasInternas) !!}
+                                    <input type="hidden" class="valor" value="{{$val['preco']}}" />
+                                    @endif
+                                </td>
+                                <td class="tx-center">
+                                    {!! Helper::regraDeNegocio($val['regra_de_negocio'],
+                                    $val['variavel_id'],
+                                    $proposta['id'], $vagasInternas) !!}
 
-                                <input type="hidden" class="quantidade"
-                                    value="{!! Helper::regraDeNegocio($val['regra_de_negocio'], 
+                                    <input type="hidden" class="quantidade" value="{!! Helper::regraDeNegocio($val['regra_de_negocio'], 
                                     $val['variavel_id'], $proposta['id'], $vagasInternas) !!}" />
-                            </td>   
-                            <td class="tx-right total">
-                                <span class="totalSpan"></span>
+                                </td>
+                                <td class="tx-right total">
+                                    <span class="totalSpan"></span>
 
-                                <input type="hidden" class="valorTotal" value="" />
-                            </td>
-                        </TR>
-                           
+                                    <input type="hidden" class="valorTotal" value="" />
+                                </td>
+                            </TR>
+                            @endif
                             @endforeach
                         </tbody>
                         <tfoot>
@@ -397,17 +339,21 @@ x
                     @foreach($categoriaHardwareNacional as $categoria)
                     <table id="tbl3" class="table table-dark table-hover table-striped mg-b-0 somarTabela">
                         <thead>
+                            @php
+                            $categoriaNome = str_replace("[[TIPO]]",'FULL',$categoria->nome);
+                            @endphp
                             <tr>
-                                <th class="wd-40p">{{$categoria->nome}}</th>
+                                <th class="wd-40p">{{$categoriaNome}}</th>
                                 <th class="wd-20p">PREÇOS</th>
                                 <th class="tx-center">QUANTIDADES</th>
                                 <th class="tx-right">PROJETO</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach(Helper::retornaVariaveis($proposta['cliente_id'], 5, 'full') as $key=>$val)
-                            <!--@if(Helper::regraDeNegocio($val['regra_de_negocio'],$val['variavel_id'], $proposta['id'],
-                                $vagasInternas) != 0) -->
+                            @foreach(Helper::retornaVariaveis($proposta['cliente_id'], 5,0, $proposta['id']) as
+                            $key=>$val)
+                            @if(Helper::regraDeNegocio($val['regra_de_negocio'],$val['variavel_id'], $proposta['id'],
+                            $vagasInternas) != 0)
                             <tr>
                                 <td>{{$val['nome']}}</td>
                                 <td>
@@ -439,7 +385,7 @@ x
                                     <input type="hidden" class="valorTotal" value="" />
                                 </td>
                             </tr>
-                            <!--@endif-->
+                            @endif
                             @endforeach
                         </tbody>
                         <tfoot>
@@ -456,35 +402,60 @@ x
                     @foreach($categoriaInstalacaoCompleta as $categoria)
                     <table id="tbl4" class="table table-dark table-hover table-striped mg-b-0 somarTabela">
                         <thead>
+                            @php
+                            $categoriaNome = str_replace("[[TIPO]]",'FULL',$categoria->nome);
+                            @endphp
                             <tr>
-                                <th class="wd-40p">{{$categoria->nome}}</th>
+                                <th class="wd-40p">{{$categoriaNome}}</th>
                                 <th class="wd-20p">PREÇOS</th>
                                 <th class="tx-center">QUANTIDADES</th>
                                 <th class="tx-right">PROJETO</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach(Helper::retornaVariaveis($proposta['cliente_id'], 6, 'full') as $key=>$val)
-                           
+                            @foreach(Helper::retornaVariaveis($proposta['cliente_id'], 6,0, $proposta['id']) as
+                            $key=>$val)
+                            @if(Helper::regraDeNegocio($val['regra_de_negocio'],$val['variavel_id'], $proposta['id'],
+                              $vagasInternas) != 0)
                             <tr>
                                 <td>{{$val['nome']}}</td>
                                 <td>
+
                                     @if($val['preco']==0)
-                                    R$ {!! Helper::valorPorVaga($vagasInternas, 'Licenças', $val['sub_fixo_id']); !!}
+                                    @if($val['variavel_id'] == 55)
+                                    @php $var = "Instalação"; @endphp
+                                    @elseif($val['variavel_id'] == 56)
+                                    @php $var = "Homologação"; @endphp
+                                    @endif
+                                    R$ {!! Helper::valorPorVaga($vagasInternas, $var, $val['sub_fixo_id']); !!}
                                     @else
                                     R$ {!! Helper::moedaReal($val['preco']) !!}
                                     @endif
+
+
+                                    @if($val['preco']==0)
+                                    @if($val['variavel_id'] == 55)
+                                    @php $var = "Instalação"; @endphp
+                                    @elseif($val['variavel_id'] == 56)
+                                    @php $var = "Homologação"; @endphp
+                                    @endif
+
+                                    <input type="hidden" class="valor"
+                                        value="{!! Helper::valorPorVaga($vagasInternas, $var, $val['sub_fixo_id']); !!}" />
+                                    @else
+
                                     <input type="hidden" class="valor" value="{{$val['preco']}}" />
+                                    @endif
+
                                 </td>
                                 <td class="tx-center">
                                     {!! Helper::regraDeNegocio($val['regra_de_negocio'],
-                                     $val['variavel_id'],
+                                    $val['variavel_id'],
                                     $proposta['id'], $vagasInternas) !!}
 
-                                    <input type="hidden" class="quantidade"
-                                        value="{!! Helper::regraDeNegocio($val['regra_de_negocio'], 
-                                        $val['variavel_id'], $proposta['id'],
-                                         $vagasInternas) !!}" />
+                                    <input type="hidden" class="quantidade" value="{!! Helper::regraDeNegocio($val['regra_de_negocio'], 
+                                            $val['variavel_id'], $proposta['id'],
+                                             $vagasInternas) !!}" />
 
                                 </td>
                                 <td class="tx-right total">
@@ -493,7 +464,7 @@ x
                                     <input type="hidden" class="valorTotal" value="" />
                                 </td>
                             </tr>
-                            
+                            @endif
                             @endforeach
                         </tbody>
                         <tfoot>
@@ -505,6 +476,8 @@ x
                         </tfoot>
                     </table>
                     @endforeach
+
+
 
                     <!-- ParkEyes Software -->
                     @foreach($categoriaParkEyesSoftware as $categoria)
@@ -519,7 +492,8 @@ x
                         </thead>
 
                         <tbody>
-                            @foreach(Helper::retornaVariaveis($proposta['cliente_id'], 7, 'full') as $key=>$val)
+                            @foreach(Helper::retornaVariaveis($proposta['cliente_id'], 7,0, $proposta['id']) as
+                            $key=>$val)
                             @if(Helper::regraDeNegocio($val['regra_de_negocio'],$val['variavel_id'], $proposta['id'],
                             $totalDeVagas) != 0)
                             <tr>
@@ -559,7 +533,6 @@ x
                     </table>
                     @endforeach
 
-
                     <!-- ParkEyes Hardware Principal -->
                     @foreach($categoriaParkEyesHWPrincipal as $categoria)
                     <table id="tbl5" class="table table-dark table-hover table-striped mg-b-0 somarTabela">
@@ -572,7 +545,8 @@ x
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach(Helper::retornaVariaveis($proposta['cliente_id'], 8, 'full') as $key=>$val)
+                            @foreach(Helper::retornaVariaveis($proposta['cliente_id'], 8,0,$proposta['id']) as
+                            $key=>$val)
                             @if(Helper::regraDeNegocio($val['regra_de_negocio'],$val['variavel_id'],
                             $proposta['id'],
                             $totalDeVagas) != 0)
@@ -616,8 +590,6 @@ x
                     @endforeach
 
 
-                
-
                     <!-- ParkEyes Outdoor Hardware Nacional -->
                     @foreach($categoriaParkEyesHWNacional as $categoria)
                     <table id="tbl9" class="table table-dark table-hover table-striped mg-b-0 somarTabela">
@@ -630,7 +602,8 @@ x
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach(Helper::retornaVariaveis($proposta['cliente_id'], 9, 'full') as $key=>$val)
+                            @foreach(Helper::retornaVariaveis($proposta['cliente_id'], 9,0,$proposta['id']) as
+                            $key=>$val)
                             @if(Helper::regraDeNegocio($val['regra_de_negocio'],$val['variavel_id'],
                             $proposta['id'],
                             $totalDeVagas) != 0)
@@ -642,7 +615,7 @@ x
                                     !!}
                                     @else
                                     R$ {!! Helper::moedaReal($val['preco']) !!}
-                                    @endif 
+                                    @endif
                                     <input type="hidden" class="valor" value="{{$val['preco']}}" />
                                 </td>
                                 <td class="tx-center">
@@ -672,60 +645,62 @@ x
                     @endforeach
 
 
-                        <!-- ParkEyes Instalação Completa -->
-                        @foreach($categoriaParkEyesCompleta as $categoria)
-                        <table id="tbl6" class="table table-dark table-hover table-striped mg-b-0 somarTabela">
-                            <thead>
-                                <tr>
-                                    <th class="wd-40p">{{$categoria->nome}}</th>
-                                    <th class="wd-20p">PREÇOS</th>
-                                    <th class="tx-center">QUANTIDADES</th>
-                                    <th class="tx-right">PROJETO</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach(Helper::retornaVariaveis($proposta['cliente_id'], 10, 'full') as $key=>$val)
-                                @if(Helper::regraDeNegocio($val['regra_de_negocio'],$val['variavel_id'],
-                                $proposta['id'],
-                                $totalDeVagas) != 0)
-                                <tr>
-                                    <td>{{$val['nome']}}</td>
-                                    <td>
-                                        @if($val['preco']==0)
-                                        R$ {!! Helper::valorPorVaga($totalDeVagas, 'Licenças', $val['sub_fixo_id']);
-                                        !!}
-                                        @else
-                                        R$ {!! Helper::moedaReal($val['preco']) !!}
-                                        @endif
-                                        <input type="hidden" class="valor" value="{{$val['preco']}}" />
-                                    </td>
-                                    <td class="tx-center">
-                                        {!! Helper::regraDeNegocio($val['regra_de_negocio'], $val['variavel_id'],
-                                        $proposta['id'], $totalDeVagas) !!}
-    
-    
-                                        <input type="hidden" class="quantidade" value="{!! Helper::regraDeNegocio($val['regra_de_negocio'], $val['variavel_id'],
-                                        $proposta['id'], $totalDeVagas) !!}" />
-                                    </td>
-                                    <td class="tx-right total">
-                                        <span class="totalSpan"></span>
-    
-                                        <input type="hidden" class="valorTotal" value="" />
-                                    </td>
-                                </tr>
-                                @endif
-                                @endforeach
-    
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td colspan="2" class="tx-right valorTotalDoGrupo tx-size-7">Total: </td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                        @endforeach
+                    <!-- ParkEyes Instalação Completa -->
+                    @foreach($categoriaParkEyesCompleta as $categoria)
+                    <table id="tbl6" class="table table-dark table-hover table-striped mg-b-0 somarTabela">
+                        <thead>
+                            <tr>
+                                <th class="wd-40p">{{$categoria->nome}}</th>
+                                <th class="wd-20p">PREÇOS</th>
+                                <th class="tx-center">QUANTIDADES</th>
+                                <th class="tx-right">PROJETO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(Helper::retornaVariaveis($proposta['cliente_id'], 10,0,$proposta['id']) as
+                            $key=>$val)
+                            @if(Helper::regraDeNegocio($val['regra_de_negocio'],$val['variavel_id'],
+                            $proposta['id'],
+                            $vagasInternas) != 0)
+                            <tr>
+                                <td>{{$val['nome']}}</td>
+                                <td>
+                                    @if($val['preco']==0)
+                                    R$ {!! Helper::valorPorVaga($vagasInternas, 'Licenças', $val['sub_fixo_id']);
+                                    !!}
+                                    @else
+                                    R$ {!! Helper::moedaReal($val['preco']) !!}
+                                    @endif
+                                    <input type="hidden" class="valor" value="{{$val['preco']}}" />
+                                </td>
+                                <td class="tx-center">
+                                    {!! Helper::regraDeNegocio($val['regra_de_negocio'], $val['variavel_id'],
+                                    $proposta['id'], $vagasInternas) !!}
+
+
+                                    <input type="hidden" class="quantidade" value="{!! Helper::regraDeNegocio($val['regra_de_negocio'], $val['variavel_id'],
+                                    $proposta['id'], $vagasInternas) !!}" />
+                                </td>
+                                <td class="tx-right total">
+                                    <span class="totalSpan"></span>
+
+                                    <input type="hidden" class="valorTotal" value="" />
+                                </td>
+                            </tr>
+                            @endif
+                            @endforeach
+
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td colspan="2" class="tx-right valorTotalDoGrupo tx-size-7">Total: </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    @endforeach
+
 
                     <!-- ParkEyes Integração e aplicativos -->
                     @foreach($categoriaIntegracaoAplicativos as $categoria)
@@ -739,7 +714,8 @@ x
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach(Helper::retornaVariaveis($proposta['cliente_id'], 11, 'full') as $key=>$val)
+                            @foreach(Helper::retornaVariaveis($proposta['cliente_id'], 11,0,$proposta['id']) as
+                            $key=>$val)
                             @if(Helper::regraDeNegocio($val['regra_de_negocio'],$val['variavel_id'],
                             $proposta['id'],
                             $totalDeVagas) != 0)
@@ -751,7 +727,7 @@ x
                                     !!}
                                     @else
                                     R$ {!! Helper::moedaReal($val['preco']) !!}
-                                    @endif 
+                                    @endif
 
                                     <input type="hidden" class="valor" value="{{$val['preco']}}" />
                                 </td>
@@ -759,8 +735,8 @@ x
                                     {!! Helper::regraDeNegocio($val['regra_de_negocio'], $val['variavel_id'],
                                     $proposta['id'], $totalDeVagasInternas) !!}
 
-                                <input type="hidden" class="quantidade"
-                                value="{!! Helper::regraDeNegocio($val['regra_de_negocio'], $val['variavel_id'], $proposta['id'], $totalDeVagasInternas) !!}" />
+                                    <input type="hidden" class="quantidade"
+                                        value="{!! Helper::regraDeNegocio($val['regra_de_negocio'], $val['variavel_id'], $proposta['id'], $totalDeVagasInternas) !!}" />
 
                                 </td>
                                 <td class="tx-right total">
@@ -781,6 +757,62 @@ x
                         </tfoot>
                     </table>
                     @endforeach
+
+
+                    <table class="table table-dark table-hover table-striped mg-b-0">
+                        <thead>
+                            <tr>
+                                <th class="wd-40p">TOTAL PARKEYES FULL</th>
+                                <th class="tx-right">PROJETO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Sistema ParkEyes:</td>
+                                <td class="tx-right" id="sistemaParkEyes"></td>
+                            </tr>
+                            <tr>
+                                <td>Instalação do Sistema ParkEyes </td>
+                                <td class="tx-right" id="instalacaoSistemaParkEyes"></td>
+                            </tr>
+                            <tr>
+                                <td>Total:</td>
+                                <td class="tx-right" id="totalEntreSistemaInstalacao"></td>
+                            </tr>
+                            <tr>
+                                <td>Total por vaga: </td>
+                                <td class="tx-right" id="totalEntreSistemaInstalacaoPorVaga"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                    <table class="table table-dark table-hover table-striped mg-b-0">
+                        <thead>
+                            <tr>
+                                <th class="wd-40p">TOTAL PARKEYES OUTDOOR</th>
+                                <th class="tx-right">PROJETO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Sistema ParkEyes Outdoor:</td>
+                                <td class="tx-right" id="sistemaParkEyesOutdoor"></td>
+                            </tr>
+                            <tr>
+                                <td>Instalação do Sistema ParkEyes Outdoor: </td>
+                                <td class="tx-right" id="instalacaoSistemaParkEyesOutdoor"></td>
+                            </tr>
+                            <tr>
+                                <td>Total:</td>
+                                <td class="tx-right" id="totalEntreSistemaInstalacaoOutdoor"></td>
+                            </tr>
+                            <tr>
+                                <td>Total por vaga: </td>
+                                <td class="tx-right" id="totalEntreSistemaInstalacaoOutdoorPorVaga"></td>
+                            </tr>
+                        </tbody>
+                    </table>
 
                     <table class="table table-dark table-hover table-striped mg-b-0">
                         <thead>
@@ -856,15 +888,43 @@ x
                         <p class="tx-bold">
                             Garantia
                         </p>
-                        <p>Garantia de dois (2) anos para equipamentos contra defeitos de fabricação e materiais.
-                        </p>
+
+                        <p>Garantia de dois (2) anos para equipamentos contra defeitos de fabricação e materiais.</p>
+
+                        @php
+                        $manutencao_mensal = Helper::valorPorVaga($vagasInternas, "Manutenção Mensal",
+                        $val['sub_fixo_id']);
+                        $manutencao_mensalDolar = Helper::moedaDolar($manutencao_mensal);
+                        $parcelasMensais =
+                        (($manutencao_mensalDolar*Helper::regraDeNegocio("[[totalDeVagasInternas]]+[[variavel]]", 5,
+                        $proposta['id'], $vagasInternas))/12);
+
+
+
+                        $qtdParksOutdoor = Helper::quantidadeParquesOutdoor($proposta['id']);
+                        $mensalOutdoor = 420*$qtdParksOutdoor;
+
+
+                        $totalMensal = $parcelasMensais+$mensalOutdoor;
+
+                        $mensalOutdoor = Helper::moedaReal($mensalOutdoor);
+                        $totalMensal = Helper::moedaReal($totalMensal);
+                        $parcelasMensais = Helper::moedaReal($parcelasMensais);
+
+                        @endphp
 
                         <p class="tx-bold">Exploração de software e manutenção preventiva obrigatória:</p>
+                        <ul class="list-group">
+                            <li class="list-group-item">Custo anual por Vaga de R$
+                                <strong>{{$manutencao_mensal}}</strong> a serem quitadas
+                                em parcelas mensais com total de R$ <strong>{{$parcelasMensais}}</strong>.</li>
+                            <li class="list-group-item">Custo mensal por parque de estacionamento outdoor de R$
+                                <strong>420,00</strong>
+                                totalizando R$ <strong>{{$mensalOutdoor}}</strong>.</li>
+                            <li class="list-group-item">Mensalidade total de manutenção preventiva obrigatória R$
+                                <strong>{{$totalMensal}}</strong>.</li>
+                        </ul>
 
-
-                        <p>Custo anual por Vaga de R$ .000 a serem quitadas em parcelas mensais com total de R$
-                            .000.
-                        </p>
                     </div>
 
                 </div>
@@ -1161,9 +1221,9 @@ x
             ExportPdf();
         });
 
-        $(".table").hide();
+       $(".table").hide();
         
-        $("table").has("tbody td").show().after("<hr>");
+       $("table").has("tbody td").show().after("<hr>");
         //$(".total").maskMoney();
         $('.somarTabela tr').each(function(){
                 var total = 0;
@@ -1258,6 +1318,28 @@ x
         $("#tbl8").find(".valorTotalDoGrupo").html("<strong>Subtotal - R$ " +formatMoney(vTotalTb8) + "</strong>");
         $("#tbl9").find(".valorTotalDoGrupo").html("<strong>Subtotal - R$ " +formatMoney(vTotalTb9) + "</strong>");
         
+
+        var totalDeVagasInternas = $("#totalDeVagasInternas").val();
+        var totalDeVagasExternas = $("#totalDeVagasExternas").val();
+
+        var sistemaParkEyes = vTotalTb1+vTotalTb2+vTotalTb3+vTotalTb7;
+        $("#sistemaParkEyes").html("<strong>R$ "+formatMoney(sistemaParkEyes)+"</strong>");
+        $("#instalacaoSistemaParkEyes").html("<strong>R$ "+formatMoney(vTotalTb4)+"</strong>");
+        var totalEntreSistemaInstalacao = sistemaParkEyes+vTotalTb4;
+        $("#totalEntreSistemaInstalacao").html("<strong>R$ "+formatMoney(totalEntreSistemaInstalacao)+"</strong>");
+        var totalEntreSistemaInstalacaoPorVaga = totalEntreSistemaInstalacao/totalDeVagasInternas;
+        $("#totalEntreSistemaInstalacaoPorVaga").html("<strong>R$ "+formatMoney(totalEntreSistemaInstalacaoPorVaga)+"</strong>");
+
+        var sistemaParkEyesOutdoor = vTotalTb5+vTotalTb8+vTotalTb9;
+        $("#sistemaParkEyesOutdoor").html("<strong>R$ "+formatMoney(sistemaParkEyesOutdoor)+"</strong>");
+        $("#instalacaoSistemaParkEyesOutdoor").html("<strong>R$ "+formatMoney(vTotalTb6)+"</strong>");
+        var totalEntreSistemaInstalacaoOutdoor  = sistemaParkEyesOutdoor+vTotalTb6;
+        $("#totalEntreSistemaInstalacaoOutdoor").html("<strong>R$ "+formatMoney(totalEntreSistemaInstalacaoOutdoor)+"</strong>");
+        var totalEntreSistemaInstalacaoOutdoorPorVaga = totalEntreSistemaInstalacaoOutdoor/totalDeVagasExternas;
+        $("#totalEntreSistemaInstalacaoOutdoorPorVaga").html("<strong>R$ "+formatMoney(totalEntreSistemaInstalacaoOutdoorPorVaga)+"</strong>");
+     
+
+
         var valorGrupo1 = vTotalTb1+vTotalTb2+vTotalTb8+vTotalTb5;
         console.log('grupo1 ' + valorGrupo1);
         $("#primeiraGrupo1").html("<strong>1ª R$ " +formatMoney(valorGrupo1*0.50) + "</strong>");
@@ -1276,6 +1358,7 @@ x
 
         var valorTotal = vTotalTb1+vTotalTb2+vTotalTb3+vTotalTb4+vTotalTb5+vTotalTb6+vTotalTb7+vTotalTb8+vTotalTb9;
         console.log("Valor total: "+ parseFloat(valorTotal));
+
         var totalDeVagas = $("#totalDeVagas").val();
         var totalPorVaga = valorTotal/totalDeVagas;
         console.log("Valor total por vaga: "+ totalPorVaga);

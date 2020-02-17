@@ -24,8 +24,14 @@ class VariaveisCategoriasController extends Controller
     public function subcategoriaIndex()
     {
 
-        $arr = SubFixos::orderBy('created_at', 'asc')->get();
-        return view('variaveis/indexSubCategoria', compact('arr'));
+
+        $ids = array(53,54);
+        $arr = SubFixos::whereNotIn('id',$ids)
+                        ->orderBy('id', 'asc')
+                        ->get();
+                      
+        $tabelas = SubFixos::whereNotIn('id',$ids)->orderBy('id', 'desc')->groupBy('tabela_pai')->get();
+        return view('variaveis/indexSubCategoria', compact('arr','tabelas'));
     }
 
 

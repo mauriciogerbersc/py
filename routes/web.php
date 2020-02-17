@@ -23,6 +23,9 @@ Route::get('/admin', 'AdminController@index')->name('admin.dashboard');
 Route::get('/admin/login', 'Auth\AdminLoginController@index')->name('admin.login');
 Route::post('/admin/login', 'Auth\AdminLoginController@login')->name('admin.login.submit');
 
+Route::get('/admin/estados', 'AdminController@estados');
+Route::post('/admin/estados', 'AdminController@estadosPost');
+
 Route::get('/propostas/{id?}', 'PropostasController@index');
 Route::get('/propostas/gerarProposta/{id}', 'PropostasController@gerarProposta');
 
@@ -30,21 +33,25 @@ Route::post('/propostas/nova/{id}', 'PropostasController@store');
 
 
 Route::get('/propostas/nova/{id}', 'PropostasController@create');
+Route::get('/propostas/novaBasic/{id}', 'PropostasController@createBasic');
 Route::get('/propostas/old/{id}', 'PropostasController@createOld');
 Route::get('/propostas/visualizar/{id}', 'PropostasController@show');
 Route::get('/propostas/visualizarBasic/{id}', 'PropostasController@showBasic');
-Route::get('/propostas/regerar/{id}', 'PropostasController@regerar');
+Route::get('/propostas/regerar/{id}/{tipo}', 'PropostasController@regerar');
 Route::get('/propostas/atualizaStatus', 'PropostasController@atualizaStatus');
 Route::post('/propostas/atualizaStatus', 'PropostasController@atualizaStatusPost');
 Route::get('/propostas/saveServerSide', 'PropostasController@saveServerSide');
 Route::post('/propostas/saveServerSide', 'PropostasController@saveServerSidePost');
+Route::get('/propostas/valorCampo', 'PropostasController@valorCampo');
+Route::post('/propostas/valorCampo', 'PropostasController@valorCampoPost');
+Route::post('/propostas/regerarNova/{id}', 'PropostasController@regerarNova');
 
 Route::get('/clientes', 'ClienteController@index')->name('clientes');
 Route::get('/clientes/cadastro', 'ClienteController@create');
 Route::post('/clientes/cadastro', 'ClienteController@store');
 Route::get('/clientes/editar/{id}', 'ClienteController@edit');
 Route::post('/clientes/editar/{id}', 'ClienteController@update');
-
+Route::get('/clientes/status/{id}/{status}', 'ClienteController@destroy');
 
 Route::get('/variaveis/listar/{id?}', 'VariaveisController@index');
 Route::get('/variaveis/salvaOrdem', 'VariaveisController@salvaOrdem');

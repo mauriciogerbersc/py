@@ -63,20 +63,20 @@ x
         </div>
 
         <div class="row row-xs">
-            <div class="col-lg-12 col-xl-12 mg-t-12">
+            <!-- <div class="col-lg-12 col-xl-12 mg-t-12">
                 <div class="card">
                     <div class="card-header pd-t-20 pd-b-0 bd-b-0">
                         <h6 class="mg-b-5">Propostas x Contratos</h6>
                         <p class="tx-12 tx-color-03 mg-b-0">Número de propostas que viraram contratos.</p>
-                    </div><!-- card-header -->
+                    </div>
                     <div class="card-body pd-20">
                         <div class="chart-two mg-b-20">
                             <div id="flotChart2" class="flot-chart"></div>
-                        </div><!-- chart-two -->
+                        </div>
 
-                    </div><!-- card-body -->
-                </div><!-- card -->
-            </div>
+                    </div>
+                </div>
+            </div>-->
             <div class="col-md-6 col-xl-4 mg-t-10 order-md-1 order-xl-0">
                 <div class="card ht-lg-100p">
                     <div class="card-header d-flex align-items-center justify-content-between">
@@ -95,26 +95,16 @@ x
                                 <thead>
                                     <tr>
                                         <th class="wd-40">Estado</th>
-                                        <th class="wd-25 text-right">COD da Proposta</th>
-                                        <th class="wd-35 text-right">Data de Geração</th>
+                                        <th class="wd-25 text-right">Total de Propostas</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @foreach($propostasPorUfs as $key=>$v)
                                     <tr>
-                                        <td class="tx-medium">São Paulo</td>
-                                        <td class="text-right">12201</td>
-                                        <td class="text-right">22/10/2019</td>
+                                        <td class="tx-medium">{{$v['uf']}}</td>
+                                        <td class="text-right">{{$v['total']}}</td>
                                     </tr>
-                                    <tr>
-                                        <td class="tx-medium">Paraná</td>
-                                        <td class="text-right">11950</td>
-                                        <td class="text-right">18/10/2019</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="tx-medium">Santa Catarina</td>
-                                        <td class="text-right">11198</td>
-                                        <td class="text-right">11/10/2019</td>
-                                    </tr>
+                                   @endforeach
                                 </tbody>
                             </table>
                         </div><!-- table-responsive -->
@@ -199,6 +189,10 @@ x
     </div><!-- container -->
 </div><!-- content -->
 
+@php 
+    $admin = Helper::estadosComPropostas();
+    $estadosComUfs = $admin;
+@endphp
 
 @endsection
 
@@ -301,14 +295,14 @@ x
                 color: '#fff',
             }
         });
-
+        
 
         $('#vmap').vectorMap({
             map: 'brazil_br',
             showTooltip: true,
             backgroundColor: '#fff',
             color: '#d1e6fa',
-            selectedRegions: ['Rondônia', 'sp', 'pr', 'FL'],
+            selectedRegions: [@php echo "'" . implode("','", $estadosComUfs) . "'" @endphp],
             selectedColor: '#69b2f8',
             enableZoom: false,
             borderWidth: 1,

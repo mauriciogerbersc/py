@@ -33,7 +33,7 @@ class ConfiguracaoController extends Controller
     public function index()
     {
 
-        $perguntas = Perguntas::all();
+        $perguntas = Perguntas::where('status', '=', 1)->get();
         return view('/configuracao/index', compact('perguntas'));
     }
 
@@ -49,24 +49,23 @@ class ConfiguracaoController extends Controller
 
         if ($tipo == "distanciaEntreParques") {
 
-            $retornaValor = PropostasRespostas::where('propostas_respostas.proposta_id', '=', $proposta_id)
-                ->select('propostas_respostas.campo', 'propostas_respostas.valor')
-                ->get();
+
+            $distanciaEstrutura = Estrutura::where('estruturas.proposta_id', '=', $proposta_id)
+                                                    ->select('estruturas.distanciaEntreParques', 'estruturas.distanciaCentralizado')
+                                                    ->get();
 
             $distanciaAcessos = Acesso::where('proposta_id', '=', $proposta_id)->get();
             $total = 0;
-            foreach ($retornaValor as $k => $v) {
-                if ($v['campo'] == 'distanciaCentroControle') {
-                    if ($v['valor'] >= 100) {
-                        $total += $v['valor'];
-                    }
+            foreach ($distanciaEstrutura as $k => $v) {
+                
+                if ($v['distanciaEntreParques'] >= 100) {
+                    $total += $v['distanciaEntreParques'];
                 }
 
-                if (($v['campo'] == 'distanciaEntreParques')) {
-                    if ($v['valor'] >= 100) {
-                        $total += $v['valor'];
-                    }
+                if ($v['distanciaCentralizado'] >= 100) {
+                    $total += $v['distanciaCentralizado'];
                 }
+                
             }
 
             foreach ($distanciaAcessos as $k => $v) {
@@ -105,20 +104,25 @@ class ConfiguracaoController extends Controller
 
             return $total;
         } else if ($tipo == 'distanciaEntreTodosParques') {
-            $retornaValor = PropostasRespostas::where('propostas_respostas.proposta_id', '=', $proposta_id)
-                ->select('propostas_respostas.campo', 'propostas_respostas.valor')
-                ->get();
+
+
+            
+            $distanciaEstrutura = Estrutura::where('estruturas.proposta_id', '=', $proposta_id)
+                                                    ->select('estruturas.distanciaEntreParques', 'estruturas.distanciaCentralizado')
+                                                    ->get();
+
+
 
             $distanciaAcessos = Acesso::where('proposta_id', '=', $proposta_id)->get();
             $total = 0;
 
-            foreach ($retornaValor as $k => $v) {
-                if ($v['campo'] == 'distanciaCentroControle') {
-                    $total += $v['valor'];
+            foreach ($distanciaEstrutura as $k => $v) {
+                if ($v['distanciaEntreParques']) {
+                    $total += $v['distanciaEntreParques'];
                 }
 
-                if (($v['campo'] == 'distanciaEntreParques')) {
-                    $total += $v['valor'];
+                if ($v['distanciaCentralizado']) {
+                    $total += $v['distanciaCentralizado'];
                 }
             }
 
@@ -134,9 +138,11 @@ class ConfiguracaoController extends Controller
             $total = 0;
             foreach ($estrutura as $key => $val) {
                 $qtdVagas = $val['qtdVagasInternas'];
-                
+                #echo $val['alturaPeDireito']."-".$val['alturaSistema']."*".$qtdVagas."<br>";
                 $total += ($val['alturaPeDireito'] - $val['alturaSistema']) * $qtdVagas;
+                #echo $total . "<br>"
             }
+           
             return $total / $totalDeVagas;
         } else if ($tipo == "distanciaEntreParquesAcessos"){
             $acessos = Acesso::where('proposta_id', '=', $proposta_id)
@@ -231,8 +237,16 @@ class ConfiguracaoController extends Controller
                 ->take(1)
                 ->first();
         }
-
+     
         return $valor['valor'];
+    }
+
+    public function quantidadeParquesOutdoor($proposta_id){
+        $estrutura = Estrutura::where('estruturas.proposta_id', '=', $proposta_id)
+                                    ->where('estruturas.qtdVagasExternas', '>', 0)
+                                    ->count();
+    
+        return $estrutura;
     }
 
     public function regras()
@@ -240,7 +254,7 @@ class ConfiguracaoController extends Controller
 
         $regra = RegraPerguntaVariavel::join('variavels', 'variavels.id', '=', 'regra_pergunta_variavels.variavel_id')
             ->join('perguntas', 'perguntas.id', '=', 'regra_pergunta_variavels.pergunta_id')
-            ->select('variavels.nome', 'perguntas.pergunta', 'regra_pergunta_variavels.id', 'regra_pergunta_variavels.regra_de_negocio')
+            ->select('variavels.nome', 'perguntas.pergunta', 'regra_pergunta_variavels.categoria','regra_pergunta_variavels.id', 'regra_pergunta_variavels.regra_de_negocio')
             ->get();
 
         $regras = array();
@@ -248,6 +262,7 @@ class ConfiguracaoController extends Controller
         foreach ($regra as $val) {
 
             $regras[] = array(
+                'categoria' => $val->categoria,
                 'pergunta' => $val->pergunta,
                 'variavel' => $val->nome,
                 'regra_de_negocio' => $val->regra_de_negocio,
@@ -274,12 +289,13 @@ class ConfiguracaoController extends Controller
             $regra->pergunta_id = $request->pergunta_id;
             $regra->variavel_id = $request->variavel_id;
             $regra->regra_de_negocio = $request->regra_negocio;
+            $regra->categoria = $request->categoria;
             $regra->save();
         } else {
-            return redirect('configuracao/regras')->with('classe', 'alert-success')->with('mensagem', 'Regra cadastrada com sucesso.');
+            return redirect('configuracao/regras');
         }
 
-        return redirect('configuracao/regras');
+        return redirect('configuracao/regras')->with('classe', 'alert-info')->with('mensagem', 'Regra alterada com sucesso.');
     }
 
     public function storeRegra(Request $request)
@@ -289,9 +305,10 @@ class ConfiguracaoController extends Controller
         $regra->pergunta_id = $request->pergunta_id;
         $regra->variavel_id = $request->variavel_id;
         $regra->regra_de_negocio = $request->regra_negocio;
+        $regra->categoria = $request->categoria;
         $regra->save();
 
-        return redirect('/configuracao/regras');
+        return redirect('/configuracao/regras')->with('classe', 'alert-successo')->with('mensagem', 'Regra criada com sucesso.');
     }
 
     public function store(Request $request)
@@ -316,20 +333,26 @@ class ConfiguracaoController extends Controller
         $pergunta->id_campo             = $request->input('id_campo');
         $pergunta->name_campo           = $request->input('name_campo');
         $pergunta->html_apendice        = $request->input('html_apendice');
+        $pergunta->session_status       = 1;
 
-        $pergunta->save();
+        if( $pergunta->save()) {
 
-        $pergunta_id = $pergunta->id;
+            $pergunta_id = $pergunta->id;
 
-        if ($request->input('tipo_campo') == 3) {
-            foreach ($_POST['opcao'] as $key => $val) {
-                $opcoes_perguntas = new OpcoesPerguntas();
-                $opcoes_perguntas->pergunta_id = $pergunta_id;
-                $opcoes_perguntas->valor_pergunta = $val;
-                $opcoes_perguntas->save();
+            if ($request->input('tipo_campo') == 3) {
+                foreach ($_POST['opcao'] as $key => $val) {
+                    $opcoes_perguntas = new OpcoesPerguntas();
+                    $opcoes_perguntas->pergunta_id = $pergunta_id;
+                    $opcoes_perguntas->valor_pergunta = $val;
+                    $opcoes_perguntas->save();
+                }
             }
+
+            return redirect('/configuracao')->with('classe', 'alert-success')->with('mensagem', 'Pergunta criada com sucesso.');
+        }else{
+      
+            return redirect('/configuracao')->with('classe', 'alert-warning')->with('mensagem', 'Erro ao cadastrar pergunta.');
         }
-        return redirect('/configuracao');
     }
 
 
@@ -367,7 +390,7 @@ class ConfiguracaoController extends Controller
             return redirect('configuracao');
         }
 
-        return redirect('configuracao');
+        return redirect('configuracao')->with('classe', 'alert-info')->with('mensagem', 'Regra alterada com sucesso.');
     }
 
 
@@ -425,10 +448,13 @@ class ConfiguracaoController extends Controller
     {
         $pergunta = Perguntas::find($id);
         if (isset($pergunta)) {
-            $pergunta->delete();
+            $pergunta->status        = 0;
+            $pergunta->save();
+           return redirect('configuracao')->with('classe', 'alert-warning')->with('mensagem', 'Pergunta excluída com sucesso.');
         } else {
-            return view('/configuracao');
+           return redirect('configuracao')->with('classe', 'alert-warning')->with('mensagem', 'Erro ao excluir pergunta.');
         }
-        return redirect('/configuracao');
+        
+      
     }
 }

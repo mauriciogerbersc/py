@@ -82,24 +82,9 @@
             </li>
 
 
-            <li @if($current=="tabela_precos" ) class="nav-item with-sub active" @else class="nav-item with-sub" @endif>
-                <a href="" class="nav-link"><i data-feather="layers"></i> Tabelas de Preços</a>
-                <div class="navbar-menu-sub">
-                    <div class="d-lg-flex">
-                        <ul>
-                            <li class="nav-label">Preços</li>
-                            <!-- <li><a href="/vagas/subcategorias" class="nav-sub-link"><i data-feather="file"></i>
-                                    Gerenciar Tabela de Preços</a>
-                            </li> -->
-                            <li class="nav-sub-item">
-                                <a href="/variaveis/subcategorias" class="nav-sub-link"><i data-feather="file"></i>
-                                    Criar Tabela de Preços</a>
-                            </li>
-                        </ul>
-
-
-                    </div>
-                </div><!-- nav-sub -->
+            <li @if($current=="tabela_precos" ) class="nav-item active" @else class="nav-item" @endif>
+                <a href="/variaveis/subcategorias" class="nav-link"><i data-feather="layers"></i> Tabelas de Preços</a>
+           
             </li>
 
 

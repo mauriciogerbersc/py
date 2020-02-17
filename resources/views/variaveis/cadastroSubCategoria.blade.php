@@ -140,20 +140,38 @@ x
                         </thead>
                         <tbody>
                             @foreach($variaveis as $var)
-                            <tr>
-                                @if($categoria->id == $var['categoria_id'])
-                                <td scope="row" style="line-height:3; width:40%">{{$var['nome']}}</td>
-                                <td style="width:59%">
-                                    <div class="input-group mg-b-10">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text" id="basic-addon1">R$</span>
-                                        </div>
-                                        <input id="valor" type="text" class="form-control valoresFixos moeda" name="valor[{{$var['id']}}]" value="{{$var['valorFormatado']}}"
-                                        data-valor="{{$var['valor']}}" >
-                                    </div>
-                                </td>
+                            
+                                @if($var['valor'] == 0)
+                                    <tr style="display:none;">
+                                        @if($categoria->id == $var['categoria_id'])
+                                        <td scope="row" style="line-height:3; width:40%">{{$var['nome']}}</td>
+                                        <td style="width:59%">
+                                            <div class="input-group mg-b-10">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text" id="basic-addon1">R$</span>
+                                                </div>
+                                                <input id="valor" type="text" class="form-control valoresFixos moeda" name="valor[{{$var['id']}}]" value="{{$var['valorFormatado']}}"
+                                                data-valor="{{$var['valor']}}" >
+                                            </div>
+                                        </td>
+                                        @endif
+                                    </tr>
+                                @else 
+                                    <tr>
+                                        @if($categoria->id == $var['categoria_id'])
+                                        <td scope="row" style="line-height:3; width:40%">{{$var['nome']}}</td>
+                                        <td style="width:59%">
+                                            <div class="input-group mg-b-10">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text" id="basic-addon1">R$</span>
+                                                </div>
+                                                <input id="valor" type="text" class="form-control valoresFixos moeda" name="valor[{{$var['id']}}]" value="{{$var['valorFormatado']}}"
+                                                data-valor="{{$var['valor']}}" >
+                                            </div>
+                                        </td>
+                                        @endif
+                                    </tr>
                                 @endif
-                            </tr>
                             @endforeach
                         </tbody>
                     </table>

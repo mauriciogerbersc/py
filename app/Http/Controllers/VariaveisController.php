@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Categoria;
+use App\TabelaPrecosPropostas;
 use App\Variavel;
 use App\Vagas;
 use App\User;
@@ -198,33 +199,53 @@ class VariaveisController extends Controller
         }
     }
 
-    public function retornaVariaveisCliente($cliente_id, $categoria_id, $tipo)
+    public function retornaVariaveisCliente($cliente_id, $categoria_id, $tipo, $proposta_id)
     {
-      
-            if($tipo=='full'){
+            // o tipo sempre excluirá os demais.
+            // Ex1: Tipo = 0 (full)
+            // Exibir todos menos o FULL
+            // Ex2: Tipo = 1 (basic)
+            // exibirá todos menos o BASIC
+            if($tipo==0){
+                // vars 0 full / 1 basic / 2 ambos
                 $vars = array(0,2);
-            }else{
+                // perguntasCategorias 0 full / 1 basic  / 2 ambos	
+                $perguntasCategorias = array(0,2);
+            }else if($tipo==1) {
+                 // vars 0 full / 1 basic / 2 ambos
                 $vars = array(1,2);
+                // perguntasCategorias 0 full / 1 basic  / 2 ambos	
+                $perguntasCategorias = array(1,2);
             }
-            $variaveisDoCliente = User::where('users.id', '=', $cliente_id)
-                ->where('categorias.id', '=', $categoria_id)
-                ->whereIn('variavels.tipo_variavel', $vars)
-                ->join('sub_precos_fixos', 'sub_precos_fixos.sub_fixo_id', '=', 'users.sub_fixo_id')
-                ->join('variavels', 'variavels.id', '=', 'sub_precos_fixos.categoria_fixo_id')
-                ->join('categorias', 'categorias.id', '=', 'variavels.categoria_id')
-                ->leftjoin('regra_pergunta_variavels', 'regra_pergunta_variavels.variavel_id', '=', 'variavels.id')
-                ->select(
-                    'categorias.id as categoria_id',
-                    'regra_pergunta_variavels.regra_de_negocio',
-                    'variavels.nome',
-                    'variavels.id as variavel_id',
-                    'sub_precos_fixos.preco',
-                    'sub_precos_fixos.sub_fixo_id',
-                    'variavels.unidade'
-                )
-                ->orderBy('variavels.ordem', 'asc')
-                ->get();
-                 
+
+            /*echo "cliente id {$cliente_id}<br>";
+            print_r($categoria_id)."<br>";
+            print_r($vars)."<br>";
+            print_r($perguntasCategorias); */
+            
+
+            $variaveisDoCliente = TabelaPrecosPropostas::where('tabela_precos_proposta.proposta_id', '=', $proposta_id)
+                                                        ->where('categorias.id', '=', $categoria_id)
+                                                        ->whereIn('variavels.tipo_variavel', $vars)
+                                                        ->whereIn('regra_pergunta_variavels.categoria', $perguntasCategorias)
+                                                        ->join('sub_precos_fixos', 'sub_precos_fixos.sub_fixo_id', '=', 'sub_fixos_id')
+                                                        ->join('variavels', 'variavels.id', '=', 'sub_precos_fixos.categoria_fixo_id')
+                                                        ->join('categorias', 'categorias.id', '=', 'variavels.categoria_id')    
+                                                        ->leftJoin('regra_pergunta_variavels', 'regra_pergunta_variavels.variavel_id', '=', 'variavels.id')
+                                                        ->select(
+                                                            'categorias.id as categoria_id',
+                                                            'regra_pergunta_variavels.regra_de_negocio',
+                                                            'variavels.nome',
+                                                            'variavels.id as variavel_id',
+                                                            'sub_precos_fixos.preco',
+                                                            'sub_precos_fixos.sub_fixo_id',
+                                                            'variavels.unidade'
+                                                        )
+                                                        ->orderBy('variavels.ordem', 'asc')
+                                                        ->get();
+       
+         
+             
         return $variaveisDoCliente;
     }
 }

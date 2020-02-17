@@ -38,86 +38,90 @@ x
 
                 @csrf
                 <input type="hidden" name="cliente_id" value="{{$cliente_id}}" />
+                <input type="hidden" name="proposta_id" class="proposta_id" value="{{$proposta->id}}" />
+                <input type="hidden"   name="tipo_proposta" value="{{$tipo_proposta}}" />
                 <div id="wizard4">
 
 
                     <h3>Informações do Estabelecimento</h3>
                     <section>
+                        <div class="row row-sm">
+                            <div class="form-group col-sm-2">
+                                <label for="cep">CEP</label>
+                                <input type="text" class="form-control cep" size="10" value="{{$proposta->cep}}"
+                                    maxlength="9" id="cep" name="cep" />
+                            </div>
+
+                            <div class="form-group col-sm-6">
+                                <label for="rua">Rua</label>
+                                <input type="text" class="form-control" id="rua" value="{{$proposta->rua}}"
+                                    name="rua" />
+                            </div>
+
+                            <div class="form-group col-sm-3">
+                                <label for="cidade">Cidade</label>
+                                <input type="text" class="form-control" id="cidade" value="{{$proposta->cidade}}"
+                                    name="cidade" />
+                            </div>
+
+                            <div class="form-group col-sm-1">
+                                <label for="uf">UF</label>
+                                <input type="text" class="form-control" id="uf" value="{{$proposta->uf}}" name="uf" />
+                            </div>
+                        </div>
+
                         @foreach($perguntas as $pergunta)
-                            
-                            @if($pergunta['categoria_id'] == 1)
-                            <div class="form-row">
-                                <label for="{{$pergunta['id_campo']}}" class="d-block">{!! $pergunta['pergunta'] !!}</label>
-                                @if($pergunta['tipo_campo'] == 1) 
-                               
-                                    <input type="text" 
-                                        @if(!empty($pergunta['id_campo']))
-                                            id="{{$pergunta['id_campo']}}"
-                                        @endif
 
-                                        @if(!empty($pergunta['name_campo']))
-                                            name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}"
-                                        @endif
+                        @if($pergunta['categoria_id'] == 1)
+                        <div class="form-row">
+                            <label for="{{$pergunta['id_campo']}}" class="d-block">{!! $pergunta['pergunta'] !!}</label>
+                            @if($pergunta['tipo_campo'] == 1)
 
-                                        
-                                        @if(!empty($pergunta['id']))
-                                            value="{!! Helper::procuraRespostas($pergunta['id'], $proposta_id) !!}"
-                                        @endif
-                                    class="form-control">
+                            <input type="text" @if(!empty($pergunta['id_campo'])) id="{{$pergunta['id_campo']}}" @endif
+                                @if(!empty($pergunta['name_campo']))
+                                name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}" @endif
+                                @if(!empty($pergunta['id']))
+                                value="{!! Helper::procuraRespostas($pergunta['id'], $proposta_id) !!}" @endif
+                                class="form-control">
 
 
 
-                                @elseif($pergunta['tipo_campo'] == 2)
-                                    <textarea 
-                                        @if(!empty($pergunta['id_campo']))
-                                            id="{{$pergunta['id_campo']}}"
-                                        @endif
+                            @elseif($pergunta['tipo_campo'] == 2)
+                            <textarea @if(!empty($pergunta['id_campo'])) id="{{$pergunta['id_campo']}}" @endif
+                                @if(!empty($pergunta['name_campo']))
+                                name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}" @endif class="form-control"
+                                rows="5">
 
-                                        @if(!empty($pergunta['name_campo']))
-                                            name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}"
-                                        @endif  class="form-control" rows="5">
-                                        
                                         @if(!empty($pergunta['id']))
                                             {!! Helper::procuraRespostas($pergunta['id'], $proposta_id) !!}
                                         @endif
                                     </textarea>
 
-                                @elseif($pergunta['tipo_campo'] == 3)
-                                    <div class="form-group col-md-12">
-                                        <select 
-                                        @if(!empty($pergunta['id_campo']))
-                                            id="{{$pergunta['id_campo']}}"
-                                        @endif
-                                        @if(!empty($pergunta['name_campo']))
-                                        name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}"
-                                        @endif
-                                        class="custom-select">
-                                            @foreach(Helper::retornaRespostas($pergunta['id']) as $key=>$val)
-                                              <option value="{{$val['valor']}}" {{ $val['opcao_selecionada'] == 0 ? 'selected' : '' }} >{{$val['valor']}}</option>
-                                            @endforeach
-                                        </select>  
-                                    </div>
-                                    @if($pergunta['html_apendice'] != '')
-                                        {!! $pergunta['html_apendice'] !!}
-                                    @endif
-
-                                @elseif($pergunta['tipo_campo'] == 4)
-                                    <input type="number" 
-                                    @if(!empty($pergunta['id_campo']))
-                                        id="{{$pergunta['id_campo']}}"
-                                    @endif
-
+                            @elseif($pergunta['tipo_campo'] == 3)
+                            <div class="form-group col-md-12">
+                                <select @if(!empty($pergunta['id_campo'])) id="{{$pergunta['id_campo']}}" @endif
                                     @if(!empty($pergunta['name_campo']))
-                                        name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}"
-                                    @endif class="form-control"
-                                    
-                                    @if(!empty($pergunta['id']))
-                                        value="{!! Helper::procuraRespostas($pergunta['id'], $proposta_id) !!}"
-                                    @endif
-                                    >
-                                @endif
+                                    name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}" @endif class="custom-select">
+                                    @foreach(Helper::retornaRespostas($pergunta['id']) as $key=>$val)
+                                    <option value="{{$val['valor']}}"
+                                        {{ $val['opcao_selecionada'] == 0 ? 'selected' : '' }}>{{$val['valor']}}
+                                    </option>
+                                    @endforeach
+                                </select>
                             </div>
+                            @if($pergunta['html_apendice'] != '')
+                            {!! $pergunta['html_apendice'] !!}
                             @endif
+
+                            @elseif($pergunta['tipo_campo'] == 4)
+                            <input type="number" @if(!empty($pergunta['id_campo'])) id="{{$pergunta['id_campo']}}"
+                                @endif @if(!empty($pergunta['name_campo']))
+                                name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}" @endif class="form-control"
+                                @if(!empty($pergunta['id']))
+                                value="{!! Helper::procuraRespostas($pergunta['id'], $proposta_id) !!}" @endif>
+                            @endif
+                        </div>
+                        @endif
                         @endforeach
                     </section>
 
@@ -155,52 +159,47 @@ x
                                     </td>
 
                                     <td>
-                                        <input type="text" 
-                                                class="form-control" 
-                                                id="nomeParque" 
-                                                name="nomeParque[]"
-                                                value="{{$estrutura->nomeParque}}">
+                                        <input type="text" class="form-control" id="nomeParque" name="nomeParque[]"
+                                            value="{{$estrutura->nomeParque}}">
                                     </td>
 
                                     <td>
-                                        <input type="number" 
-                                            class="form-control" 
-                                            id="quantidadeVagasInternas"
-                                            name="quantidadeVagasInternas[]" 
-                                            value="{{$estrutura->qtdVagasInternas}}">
+                                        <input type="number" class="form-control" id="quantidadeVagasInternas"
+                                            name="quantidadeVagasInternas[]" value="{{$estrutura->qtdVagasInternas}}">
                                     </td>
 
                                     <td>
-                                        <input type="number" 
-                                        class="form-control" 
-                                        id="quantidadeVagasExternas"
-                                        name="quantidadeVagasExternas[]"
-                                        value="{{$estrutura->qtdVagasExternas}}">
+                                        <input type="number" class="form-control" id="quantidadeVagasExternas"
+                                            name="quantidadeVagasExternas[]" value="{{$estrutura->qtdVagasExternas}}">
                                     </td>
 
                                     <td>
-                                        <input type="text" 
-                                        class="form-control" 
-                                        id="alturaSistema"
-                                        name="alturaSistema[]" 
-                                        value="{{$estrutura->alturaSistema}}">
+                                        <input type="text" class="form-control" id="alturaSistema"
+                                            name="alturaSistema[]" value="{{$estrutura->alturaSistema}}">
                                     </td>
 
                                     <td>
-                                        <input type="text" 
-                                        class="form-control" 
-                                        id="peDireito" 
-                                        name="peDireito[]"
-                                        value="{{$estrutura->alturaPeDireito}}">
+                                        <input type="text" class="form-control" id="peDireito" name="peDireito[]"
+                                            value="{{$estrutura->alturaPeDireito}}">
                                     </td>
 
                                     <td>
-                                        <select name="parqueMaisCentralizado[]" 
-                                            class="custom-select radioCentralizado">
-                                            <option value="0" {{ $estrutura->parqueCentralizado == 0 ? "selected" : ""}}>Não</option>
-                                            <option value="1" {{ $estrutura->parqueCentralizado == 1 ? "selected" : ""}}>Sim</option>
+                                        <select name="parqueMaisCentralizado[]" class="custom-select radioCentralizado">
+                                            <option value="0"
+                                                {{ $estrutura->parqueCentralizado == 0 ? "selected" : ""}}>Não</option>
+                                            <option value="1"
+                                                {{ $estrutura->parqueCentralizado == 1 ? "selected" : ""}}>Sim</option>
                                         </select>
                                     </td>
+                                    <td>
+                                    @if($estrutura->distanciaCentralizado!=0)
+                                    <input type="text" class="form-control distancias" id="distanciaEntreParques"
+                                    placeholder="Rel. Centralizado." name="distanciaEntreParques[]" value="{{$estrutura->distanciaCentralizado}}" />
+                                    @else 
+                                    <input type="text" class="form-control distancias" id="distanciaEntreParques"
+                                    placeholder="Rel. Centralizado." name="distanciaEntreParques[]" value="{{$estrutura->distanciaEntreParques}}" />
+                                    @endif
+                                </td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -213,146 +212,110 @@ x
                         <hr>
 
                         @foreach($perguntas as $pergunta)
-                            @if($pergunta['categoria_id'] == 2)
-                            <div class="form-row">
-                                <label for="estabelecimento" class="d-block">
-                                    <strong> {{$pergunta['id']}}</strong>  - {!! $pergunta['pergunta'] !!}
-                                
-                               </label>
-                                
-                                @if($pergunta['tipo_campo'] == 1) 
-                                    <input type="text" 
-                                    @if(!empty($pergunta['id_campo']))
-                                        id="{{$pergunta['id_campo']}}"
-                                    @endif
-                                    @if(!empty($pergunta['name_campo']))
-                                        name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}"
-                                    @endif
+                        @if($pergunta['categoria_id'] == 2)
+                        <div class="form-row">
+                            <label for="estabelecimento" class="d-block">
+                                 {!! $pergunta['pergunta'] !!}
+                            </label>
 
-                                    @if(!empty($pergunta['id']))
-                                        value="{!! Helper::procuraRespostas($pergunta['id'],$proposta_id) !!}"
-                                    @endif
-                                    class="form-control">
+                            @if($pergunta['tipo_campo'] == 1)
+                            <input type="text" @if(!empty($pergunta['id_campo'])) id="{{$pergunta['id_campo']}}" @endif
+                                @if(!empty($pergunta['name_campo']))
+                                name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}" @endif
+                                @if(!empty($pergunta['id']))
+                                value="{!! Helper::procuraRespostas($pergunta['id'],$proposta_id) !!}" @endif
+                                class="form-control">
 
 
-                                @elseif($pergunta['tipo_campo'] == 2)
-                                    <textarea 
-                                    @if(!empty($pergunta['id_campo']))
-                                        id="{{$pergunta['id_campo']}}"
-                                    @endif
-
-                                    @if(!empty($pergunta['name_campo']))
-                                        name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}"
-                                    @endif  class="form-control" rows="5">
-                                        {!! Helper::procuraRespostas($pergunta['id'],$proposta_id) !!}
+                            @elseif($pergunta['tipo_campo'] == 2)
+                            <textarea @if(!empty($pergunta['id_campo'])) id="{{$pergunta['id_campo']}}" @endif
+                                @if(!empty($pergunta['name_campo']))
+                                name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}" @endif class="form-control"
+                                rows="5">{!! Helper::procuraRespostas($pergunta['id'],$proposta_id) !!}
                                     </textarea>
 
-                                @elseif($pergunta['tipo_campo'] == 3)
-                                    <div class="form-group col-md-12">
-                                        <select 
-                                        @if(!empty($pergunta['id_campo']))
-                                            id="{{$pergunta['id_campo']}}"
-                                        @endif
-                                        @if(!empty($pergunta['name_campo']))
-                                            name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}"
-                                        @endif
-                                        class="custom-select">
-                                        @foreach(Helper::retornaRespostas($pergunta['id']) as $key=>$val)
-                                            <option value="{{$val['valor']}}" 
-                                                {{ Helper::procuraRespostas($pergunta['id'],$proposta_id) == $val['valor'] ? 'selected' : '' }}>
-                                                {{$val['valor']}}
-                                            </option>
-                                        @endforeach
-                                        </select>  
-                                    </div>
-
-                                    @if(Helper::procuraRespostas($pergunta['id'],$proposta_id) == 'Sim')
-                                        @if($pergunta['html_apendice'] != '')
-                                            {!! $pergunta['html_apendice'] !!}
-                                        @endif
-                                    @endif
-
-                                @elseif($pergunta['tipo_campo'] == 4)
-                                    <input type="number" 
-                                    @if(!empty($pergunta['id_campo']))
-                                        id="{{$pergunta['id_campo']}}"
-                                    @endif
-
+                            @elseif($pergunta['tipo_campo'] == 3)
+                            <div class="form-group col-md-12">
+                                <select @if(!empty($pergunta['id_campo'])) id="{{$pergunta['id_campo']}}" @endif
                                     @if(!empty($pergunta['name_campo']))
-                                        name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}"
-                                    @endif class="form-control"
-                                    
-                                    @if(!empty($pergunta['id']))
-                                        value="{!! Helper::procuraRespostas($pergunta['id'], $proposta_id) !!}"
-                                    @else
-                                        value="0"
-                                    @endif>
-                                @endif
-
+                                    name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}" @endif class="custom-select">
+                                    @foreach(Helper::retornaRespostas($pergunta['id']) as $key=>$val)
+                                    <option value="{{$val['valor']}}"
+                                        {{ Helper::procuraRespostas($pergunta['id'],$proposta_id) == $val['valor'] ? 'selected' : '' }}>
+                                        {{$val['valor']}}
+                                    </option>
+                                    @endforeach
+                                </select>
                             </div>
+
+                            @if(Helper::procuraRespostas($pergunta['id'],$proposta_id) == 'Sim')
+                            @if($pergunta['html_apendice'] != '')
+                            {!! $pergunta['html_apendice'] !!}
                             @endif
+                            @endif
+
+                            @elseif($pergunta['tipo_campo'] == 4)
+                            <input type="number" @if(!empty($pergunta['id_campo'])) id="{{$pergunta['id_campo']}}"
+                                @endif @if(!empty($pergunta['name_campo']))
+                                name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}" @endif class="form-control"
+                                @if(!empty($pergunta['id']))
+                                value="{!! Helper::procuraRespostas($pergunta['id'], $proposta_id) !!}" @else value="0"
+                                @endif>
+                            @endif
+
+                        </div>
+                        @endif
                         @endforeach
                     </section>
 
 
-                    
+                    @if( isset($isBasic) and $isBasic == false)
                     <h3>Find Your Car</h3>
                     <section>
                         @foreach($perguntas as $pergunta)
-                            @if($pergunta['categoria_id'] == 3)
-                            <div class="form-row">
-                                <label for="estabelecimento" class="d-block">{!! $pergunta['pergunta'] !!}</label>
-                                @if($pergunta['tipo_campo'] == 1) 
-                                <input type="text" 
-                                @if(!empty($pergunta['id_campo']))
-                                    id="{{$pergunta['id_campo']}}"
-                                @endif
+                        @if($pergunta['categoria_id'] == 3)
+                        <div class="form-row">
+                            <label for="estabelecimento" class="d-block">{!! $pergunta['pergunta'] !!}</label>
+                            @if($pergunta['tipo_campo'] == 1)
+                            <input type="text" value="{!! Helper::procuraRespostas($pergunta['id'],$proposta_id) !!}"
+                                 @if(!empty($pergunta['id_campo'])) id="{{$pergunta['id_campo']}}" @endif
                                 @if(!empty($pergunta['name_campo']))
-                                    name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}"
-                                @endif
-                                class="form-control">
-                                @elseif($pergunta['tipo_campo'] == 2)
-                                    <textarea 
-                                        @if(!empty($pergunta['id_campo']))
-                                            id="{{$pergunta['id_campo']}}"
-                                        @endif
-                                        @if(!empty($pergunta['name_campo']))
-                                        name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}"
-                                        @endif  class="form-control" rows="5">
+                                name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}" @endif class="form-control">
+                            @elseif($pergunta['tipo_campo'] == 2)
+                            <textarea @if(!empty($pergunta['id_campo'])) id="{{$pergunta['id_campo']}}" @endif
+                                @if(!empty($pergunta['name_campo']))
+                                name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}" @endif class="form-control"
+                                rows="5">
                                     </textarea>
-                                @elseif($pergunta['tipo_campo'] == 3)
-                                    <div class="form-group col-md-12">
-                                        <select 
-                                        @if(!empty($pergunta['id_campo']))
-                                            id="{{$pergunta['id_campo']}}"
-                                        @endif
-                                        @if(!empty($pergunta['name_campo']))
-                                        name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}"
-                                        @endif
-                                        class="custom-select">
-                                            @foreach(Helper::retornaRespostas($pergunta['id']) as $key=>$val)
-                                            <option value="{{$val['valor']}}" {{ $val['opcao_selecionada'] == 0 ? 'selected' : '' }} >{{$val['valor']}}</option>
-                                            @endforeach
-                                        </select>  
-                                    </div>
-                                    @if($pergunta['html_apendice'] != '')
-                                        {!! $pergunta['html_apendice'] !!}
-                                    @endif
-                                @elseif($pergunta['tipo_campo'] == 4)
-                                    <input type="number" 
-                                    @if(!empty($pergunta['id_campo']))
-                                        id="{{$pergunta['id_campo']}}"
-                                    @endif
+                            @elseif($pergunta['tipo_campo'] == 3)
+                            <div class="form-group col-md-12">
+                                <select @if(!empty($pergunta['id_campo'])) id="{{$pergunta['id_campo']}}" @endif
                                     @if(!empty($pergunta['name_campo']))
-                                        name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}"
-                                    @endif class="form-control" value="0">
-                                @endif
+                                    name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}" @endif class="custom-select">
+                                    @foreach(Helper::retornaRespostas($pergunta['id']) as $key=>$val)
+                                    <option value="{{$val['valor']}}"
+                                        {{ Helper::procuraRespostas($pergunta['id'],$proposta_id) == $val['valor'] ? 'selected' : '' }}>
+                                        {{$val['valor']}}
+                                    </option>
+                                    @endforeach
+                                </select>
                             </div>
+                            @if($pergunta['html_apendice'] != '')
+                            {!! $pergunta['html_apendice'] !!}
                             @endif
+                            @elseif($pergunta['tipo_campo'] == 4)
+                            <input type="number" value="{!! Helper::procuraRespostas($pergunta['id'],$proposta_id) !!}" @if(!empty($pergunta['id_campo'])) id="{{$pergunta['id_campo']}}"
+                                @endif @if(!empty($pergunta['name_campo']))
+                                name="{{$pergunta['name_campo']}}_{{$pergunta['id']}}" @endif class="form-control"
+                                value="0">
+                            @endif
+                        </div>
+                        @endif
                         @endforeach
                     </section>
+                    @endif
                 </div>
-
+                <input type="hidden" id="_token" value="{{ csrf_token() }}">
                 <input type="submit" style="display:none;" id="enviarForm">
             </form>
         </div><!-- df-example -->
@@ -380,24 +343,74 @@ x
 
 <script>
     $(function() {
-        'use strict'
-        $('#wizard4').steps({
-            headerTag: 'h3',
-            bodyTag: 'section',
-            autoFocus: true,
-            labels: {
-                next: 'Próximo',
-                previous: 'Anterior',
-                finish: 'Finalizar'
-            },
-            titleTemplate: '<span class="number">#index#</span> <span class="title">#title#</span>',
-    
-            onFinishing: function (event, currentIndex) { 
-                $("#enviarForm").trigger('click');
-                return true; 
-            }
-        });
+       
 
+        function limpa_formulário_cep() {
+            // Limpa valores do formulário de cep.
+            $("#rua").val("");
+            $("#cidade").val("");
+            $("#uf").val("");
+        }
+        'use strict'
+        $(document).ready(function() {
+            $('#wizard4').steps({
+                headerTag: 'h3',
+                bodyTag: 'section',
+                autoFocus: true,
+                labels: {
+                    next: 'Próximo',
+                    previous: 'Anterior',
+                    finish: 'Finalizar'
+                },
+                titleTemplate: '<span class="number">#index#</span> <span class="title">#title#</span>',
+        
+                onFinishing: function (event, currentIndex) { 
+                    $("#enviarForm").trigger('click');
+                    return true; 
+                }
+            });
+
+         
+
+            $(".cep").blur(function() {
+                var cep = $(this).val().replace(/\D/g, '');
+                //Verifica se campo cep possui valor informado.
+                if(cep != ""){
+                    //Expressão regular para validar o CEP.
+                    var validacep = /^[0-9]{8}$/;
+                    //Valida o formato do CEP.
+                    if(validacep.test(cep)) {
+
+                        //Preenche os campos com "..." enquanto consulta webservice.
+                        $("#rua").val("...");
+                        $("#cidade").val("...");
+                        $("#uf").val("...");
+
+                        //Consulta o webservice viacep.com.br/
+                        $.getJSON("https://viacep.com.br/ws/"+ cep +"/json/?callback=?", function(dados) {
+
+                            if (!("erro" in dados)) {
+                                //Atualiza os campos com os valores da consulta.
+                                $("#rua").val(dados.logradouro);
+                                $("#cidade").val(dados.localidade);
+                                $("#uf").val(dados.uf);
+                            } //end if.
+                            else {
+                                //CEP pesquisado não foi encontrado.
+                                limpa_formulário_cep();
+                                alert("CEP não encontrado.");
+                            }
+                        });
+                    } else {
+                        //cep é inválido.
+                        limpa_formulário_cep();
+                        alert("Formato de CEP inválido.");
+                    }
+                } else {
+                    //cep sem valor, limpa formulário.
+                    limpa_formulário_cep();
+                }
+            });
 
         $(".add-row").click(function() {
             var rows = '';
@@ -423,15 +436,14 @@ x
             rows += '<td>';
             rows += '<select name="parqueMaisCentralizado[]" class="custom-select radioCentralizado"><option value="0" selected>Não</option><option value="1">Sim</option></select>';
             rows += '</td>';
+            rows += '<td>';
+            rows += '<input type="text" class="form-control" id="distanciaEntreParques" placeholder="Rel. Centralizado." name="distanciaEntreParques[]" />';
+            rows += '</td>';
             rows += '</tr>';
             $("#tabelaParques > tbody:last").append(rows);
         });
 
-        $("#tabelaParques").on("change", ".radioCentralizado", function(){
-            $(".radioCentralizado").removeAttr("selected","").val(0);
-            $(this).attr('selected',"selected").val(1);
-           // $(this).val(1);
-        });
+
 
         $("#tabelaParques").on("click", ".removeRow", function() {
             $(this).closest("tr").remove();
@@ -512,7 +524,59 @@ x
             }
         }).trigger("change");
 
+        
+
+        $("#tabelaParques .radioCentralizado").change(function(){
+            //$(".radioCentralizado").removeAttr("selected","").val(0);
+            //$(this).attr('selected',"selected").val(1);
+            if(this.options[this.selectedIndex].text == 'Sim'){
+               // var valor = retornaValorCampo('distanciaCentralizado');
+                //console.log(valor);
+                var idCampo = $(this).closest('td').next('td').find('#distanciaEntreParques').attr('placeholder', '+ Centralizado');
+                $(".radioCentralizado").removeAttr("selected","").val(0);
+                $(this).attr('selected',"selected").val(1);
+            }else{
+              //var valor = retornaValorCampo('distanciaEntreParques');
+               //console.log(valor);
+               var idCampo = $(this).closest('td').next('td').find('#distanciaEntreParques').attr('placeholder', 'Rel. Centralizado.');
+            }
+        }).trigger("change");
+
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+            }
+        });
+
+        function retornaValorCampo(tipo){
+            var token = $('meta[name="_token"]').attr('content');
+            var tp = tipo;
+            var urlEnviar = '/propostas/valorCampo';
+            var proposta_id = $(".proposta_id").val();
+            $.ajax({
+                type: 'POST',
+                url: urlEnviar,
+                data: { '_token': token, 'tipo'  : tp, 'proposta_id': proposta_id },
+                success: function(data){
+                    if(data.success){
+                        //console.log(data.valor);
+                           return data.valor;
+                    }
+                   
+                },
+                error: function(){
+                    console.log('Erro no Ajax !');
+                }
+            });
+
+            return false;
+          
+        }
+            
+       
         $('[data-toggle="tooltip"]').tooltip();
+        });
     });
 </script>
 

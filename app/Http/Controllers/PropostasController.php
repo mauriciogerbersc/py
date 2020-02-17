@@ -15,6 +15,7 @@ use App\SubPrecosFixos;
 use App\Vagas;
 use App\Perguntas;
 use App\PropostasRespostas;
+use App\TabelaPrecosPropostas;
 // This is important to add here. 
 use PDF;
 use Helper;
@@ -30,14 +31,18 @@ class PropostasController extends Controller
     public function index($id = null)
     {
         $propostas = Proposta::join('users', 'users.id', 'propostas.cliente_id')
-                    ->select('users.name as nomeCliente', 'propostas.id', 'propostas.created_at', 'propostas.status')
+                    ->select('users.name as nomeCliente', 'propostas.cliente_id','propostas.tp_proposta', 'propostas.id', 'propostas.created_at', 'propostas.status')
+                    ->groupBy('propostas.cliente_id')
+                    ->orderBy('propostas.id', 'desc')
                     ->get();
         
      
         if ($id != null) {
             $propostas = Proposta::where('cliente_id', '=', $id)
                                 ->join('users', 'users.id', 'propostas.cliente_id')
-                                ->select('users.name as nomeCliente', 'propostas.id', 'propostas.created_at', 'propostas.status')
+                                ->select('users.name as nomeCliente', 'propostas.cliente_id', 'propostas.tp_proposta', 'propostas.id', 'propostas.created_at', 'propostas.status')
+                                ->groupBy('propostas.cliente_id')
+                                ->orderBy('propostas.id', 'desc')
                                 ->get();
         }
 
@@ -46,22 +51,43 @@ class PropostasController extends Controller
     }
 
 
-    public function regerar($id)
-    {
-        
-        $perguntas          = Perguntas::where('perguntas.id', '<>', 999)->get();
+    public function regerar($id,$tipo)
+    {   
+       
+        if($tipo=='full'){
+            $tipo_proposta = 0;
+            $perguntas = Perguntas::where('perguntas.id', '<>', 999)
+                                    ->where('tipo_proposta', '=', 1)
+                                    ->orWhere('tipo_proposta', '=', 3)
+                                    ->where('status', '=', 1)
+                                    ->get();
+           $isBasic       = false;                         
+        }else{
+            $tipo_proposta = 1;
+            $perguntas     = Perguntas::where('perguntas.id', '<>', 999)
+                                ->where('tipo_proposta', '=', 3)
+                                ->where('status', '=', 1)
+                                ->get();
+             $isBasic       = true;
+        }
+       
         $proposta_id        = $id;
         $propostasRespostas = PropostasRespostas::where('propostas_respostas.proposta_id', '=', $id)->first();
         $estruturas         = Estrutura::where('proposta_id', $id)->get();
-        $cliente            = Proposta::find($id);
+        $proposta           = Proposta::find($id);
 
-        $cliente_id         = $cliente['cliente_id'];
+        $cliente_id         = $proposta['cliente_id'];
 
+      
         return view('propostas/regerar', compact('estruturas', 
-                                                'cliente_id', 
+                                                'cliente_id',
+                                                'proposta', 
+                                                'isBasic',
                                                 'perguntas', 
                                                 'propostasRespostas',
-                                                'proposta_id'));
+                                                'proposta_id', 
+                                                'tipo_proposta')
+                                            );
     }
 
 
@@ -69,12 +95,31 @@ class PropostasController extends Controller
     {
 
         $cliente       = User::find($id);
-
-        $perguntas     = Perguntas::where('perguntas.id', '<>', 999)->get();
-
-        return view('propostas/cadastroNovo', compact('cliente', 'perguntas'));
+        $tipo_proposta = 0;
+        $perguntas     = Perguntas::where('perguntas.id', '<>', 999)
+                                    ->where('perguntas.tipo_proposta', '=', 1)
+                                    ->orWhere('perguntas.tipo_proposta', '=', 3)
+                                    ->where('perguntas.status', '=', 1)
+                                    ->get();
+        $tabelas       = SubFixos::all();
+        $isBasic       = false;
+        return view('propostas/cadastroNovo', compact('cliente', 'perguntas', 'isBasic', 'tipo_proposta', 'tabelas'));
     }
 
+    public function createBasic($id)
+    {
+        $cliente       = User::find($id);
+        $tipo_proposta = 1;
+        $perguntas     = Perguntas::where('perguntas.id', '<>', 999)
+                                    ->where('tipo_proposta', '=', 3)
+                                    ->where('status', '=', 1)
+                                    ->get();
+
+        $isBasic       = true;
+
+        $tabelas       = SubFixos::all();
+        return view('propostas/cadastroNovo', compact('cliente', 'perguntas','isBasic' , 'tipo_proposta', 'tabelas'));
+    }
 
     public static function quickRandom($length = 16)
     {
@@ -91,6 +136,80 @@ class PropostasController extends Controller
 
         return view('propostas/pdf', compact('base64_decode'));
     }
+
+
+    public function regerarNova(Request $request, $id){
+
+      
+        $proposta = new Proposta();
+
+        $proposta->cliente_id                = $request->input('cliente_id');
+        $proposta->cep                       = $request->input('cep');
+        $proposta->cidade                    = $request->input('cidade');
+        $proposta->uf                        = $request->input('uf');
+        $proposta->rua                       = $request->input('rua'); 
+        $proposta->proposta_pai              = $id;
+        $proposta->tp_proposta               = $request->input('tipo_proposta');
+        $proposta->save();
+
+        $proposta_id = $proposta->id;
+
+
+        foreach ($request->input() as $key => $val) {
+            if (!is_array($val)) {
+                if (strpos($key, "_") !== false) {
+                    if (($key != '_token') and ($key != 'cliente_id')) {
+                        $proposta_respostas = new PropostasRespostas();
+                        $exp = explode("_", $key);
+                        $id_pergunta = $exp[1];
+                        $campo_name  = $exp[0];
+                        $proposta_respostas->pergunta_id = $id_pergunta;
+                        $proposta_respostas->campo       = $campo_name;
+                        $proposta_respostas->valor       = $request->input($key);
+                        $proposta_respostas->proposta_id = $proposta_id;
+                        $proposta_respostas->save();
+                    }
+                }
+            }
+        }
+
+        foreach ($_POST['nomeParque'] as $chave => $valor) {
+            $estrutura = new Estrutura();
+            //$parqueCentralizado             = (isset($_POST['parqueMaisCentralizado'][$chave])) ? 1 : 0;
+            $pkMaisCentralizado             = $_POST['parqueMaisCentralizado'][$chave];
+            $estrutura->nomeParque          = $valor;
+            $estrutura->qtdVagasInternas    = $_POST['quantidadeVagasInternas'][$chave];
+            $estrutura->qtdVagasExternas    = $_POST['quantidadeVagasExternas'][$chave];
+            $estrutura->alturaSistema       = $_POST['alturaSistema'][$chave];
+            $estrutura->alturaPeDireito     = $_POST['peDireito'][$chave];
+            $estrutura->parqueCentralizado  = $_POST['parqueMaisCentralizado'][$chave];
+            $estrutura->proposta_id         = $proposta_id;
+             if($pkMaisCentralizado == 1){
+                $estrutura->distanciaCentralizado = $_POST['distanciaEntreParques'][$chave];
+                $estrutura->distanciaEntreParques =  0;
+             }else{
+                $estrutura->distanciaCentralizado =  0;
+                $estrutura->distanciaEntreParques =  $_POST['distanciaEntreParques'][$chave];
+             }
+   
+             $estrutura->save();
+         }
+
+
+         for ($i = 0; $i <  $_POST['qtdAcessosExternos_11']; $i++) {
+            $acesso = new Acesso();
+            $acesso->nomeAcesso             = $_POST['nomeAcessoExterno'][$i];
+            $acesso->qtdLinhasPaineis       = $_POST['quantidadeLinhasPaineis'][$i];
+            $acesso->distanciaProximo       = $_POST['distanciaAcessoProximo'][$i];
+            $acesso->proposta_id            = $proposta_id;
+            $acesso->save();
+        }
+
+        
+        return redirect('/propostas')->with('classe', 'alert-success')->with('mensagem', 'Proposta criada com sucesso.');
+
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -100,14 +219,26 @@ class PropostasController extends Controller
 
     public function store(Request $request)
     {
-
-
-
         $proposta = new Proposta();
 
         $proposta->cliente_id                = $request->input('cliente_id');
+        $proposta->cep                       = $request->input('cep');
+        $proposta->cidade                    = $request->input('cidade');
+        $proposta->uf                        = $request->input('uf');
+        $proposta->rua                       = $request->input('rua'); 
+        $proposta->tp_proposta               = $request->input('tipo_proposta');
         $proposta->save();
+
         $proposta_id = $proposta->id;
+
+
+        /* Salvando o relacionamento da  tabela de preços utilizada, cliente e projeto. */
+        $tabelaPrecosPropostas = new TabelaPrecosPropostas();
+        $tabelaPrecosPropostas->cliente_id  = $request->input('cliente_id');
+        $tabelaPrecosPropostas->proposta_id = $proposta_id;
+        $tabelaPrecosPropostas->sub_fixos_id = $request->input('tabela_id');
+        $tabelaPrecosPropostas->save();
+
 
         foreach ($request->input() as $key => $val) {
             if (!is_array($val)) {
@@ -128,9 +259,11 @@ class PropostasController extends Controller
         }
 
 
+        
         foreach ($_POST['nomeParque'] as $chave => $valor) {
             $estrutura = new Estrutura();
-            $parqueCentralizado             = (isset($_POST['parqueMaisCentralizado'][$chave])) ? 1 : 0;
+            //$parqueCentralizado             = (isset($_POST['parqueMaisCentralizado'][$chave])) ? 1 : 0;
+            $pkMaisCentralizado             = $_POST['parqueMaisCentralizado'][$chave];
             $estrutura->nomeParque          = $valor;
             $estrutura->qtdVagasInternas    = $_POST['quantidadeVagasInternas'][$chave];
             $estrutura->qtdVagasExternas    = $_POST['quantidadeVagasExternas'][$chave];
@@ -138,11 +271,30 @@ class PropostasController extends Controller
             $estrutura->alturaPeDireito     = $_POST['peDireito'][$chave];
             $estrutura->parqueCentralizado  = $_POST['parqueMaisCentralizado'][$chave];
             $estrutura->proposta_id         = $proposta_id;
+             if($pkMaisCentralizado == 1){
+                $estrutura->distanciaCentralizado = $_POST['distanciaEntreParques'][$chave];
+                $estrutura->distanciaEntreParques =  0;
+             }else{
+                $estrutura->distanciaCentralizado =  0;
+                $estrutura->distanciaEntreParques =  $_POST['distanciaEntreParques'][$chave];
+             }
+   
+             $estrutura->save();
+         }
+
+         
+       /* foreach ($_POST['nomeParque'] as $chave => $valor) {
+           
+            if($chave !== $pkMaisCentralizado) {
+                $estrutura->distanciaEntreParques = $_POST['distanciaEntreParques'][$chave];
+                $estrutura->distanciaCentralizado = 0;   
+            }else{
+                $estrutura->distanciaCentralizado = $_POST['distanciaEntreParques'][$chave];
+                $estrutura->distanciaEntreParques =  0;
+            }
+           
             $estrutura->save();
-        }
-
-
-
+        }*/
 
         for ($i = 0; $i <  $_POST['qtdAcessosExternos_11']; $i++) {
             $acesso = new Acesso();
@@ -153,56 +305,107 @@ class PropostasController extends Controller
             $acesso->save();
         }
 
-        return redirect('/propostas')->with('classe', 'alert-success')->with('mensagem', 'Proposta cadastrada com sucesso.');;
+        return redirect('/propostas')->with('classe', 'alert-success')->with('mensagem', 'Proposta criada com sucesso.');
     }
 
     public function showBasic($id){
-        /* Todas as categorias dos tipos de produtos */
-        $categoriaSoftware                  = Categoria::where('id', '=', 2)->get();
-        $categoriaHardwarePrincipal         = Categoria::where('id', '=', 4)->get();
-        $categoriaHardwareNacional          = Categoria::where('id', '=', 5)->get();
-        $categoriaInstalacaoCompleta        = Categoria::where('id', '=', 6)->get();
-        $categoriaParkEyesSoftware          = Categoria::where('id', '=', 7)->get();
-        $categoriaParkEyesHWPrincipal       = Categoria::where('id', '=', 8)->get();
-        $categoriaParkEyesHWNacional        = Categoria::where('id', '=', 9)->get();
-        $categoriaParkEyesCompleta          = Categoria::where('id', '=', 10)->get();
-        $categoriaIntegracaoAplicativos     = Categoria::where('id', '=', 11)->get();
+          /* Todas as categorias dos tipos de produtos */
+          $categoriaSoftware                  = Categoria::where('id', '=', 2)->get();
+          $categoriaHardwarePrincipal         = Categoria::where('id', '=', 4)->get();
+          $categoriaHardwareNacional          = Categoria::where('id', '=', 5)->get();
+          $categoriaInstalacaoCompleta        = Categoria::where('id', '=', 6)->get();
+          $categoriaParkEyesSoftware          = Categoria::where('id', '=', 7)->get();
+          $categoriaParkEyesHWPrincipal       = Categoria::where('id', '=', 8)->get();
+          $categoriaParkEyesHWNacional        = Categoria::where('id', '=', 9)->get();
+          $categoriaParkEyesCompleta          = Categoria::where('id', '=', 10)->get();
+         // $categoriaIntegracaoAplicativos     = Categoria::where('id', '=', 11)->get();
+  
+          /* Recupero a proposta do cliente */
+          $prop       = Proposta::where('propostas.id', '=', $id)
+                      ->join('propostas_respostas', 'propostas_respostas.proposta_id', 'propostas.id')
+                      ->select(   'propostas.cliente_id',
+                                  'propostas.created_at',
+                                  'propostas_respostas.proposta_id', 
+                                  'propostas_respostas.campo', 
+                                  'propostas_respostas.valor' )
+                      ->get();
 
-        /* Recupero a proposta do cliente */
-        $proposta       = Proposta::find($id);
+          $proposta = array();
+          foreach($prop as $key=>$val){
+              $proposta['created_at'] = $val['created_at'];
+              $proposta['id']         = $val['proposta_id'];
+              $proposta['cliente_id'] = $val['cliente_id'];
+              if($val['campo']    ==  'estabelecimento'){
+                  $proposta['estabelecimento']    = $val['valor'];
+              }
+  
+              if($val['campo']    ==  'responsavel'){
+                  $proposta['responsavel']        = $val['valor'];
+              }
+          }
+  
+          $estrutura      = Estrutura::where('proposta_id', $id)->get();
+          $totalDeVagas       = 0;
+          $vagasDescobertas   = 0;
+          $vagasInternas      = 0;
+          foreach ($estrutura as $key => $total) {
+              $totalDeVagas       += $total['qtdVagasInternas'] + $total['qtdVagasExternas'];
+              $vagasDescobertas   += $total['qtdVagasExternas'];
+              $vagasInternas      += $total['qtdVagasInternas'];
+          }
+          
+  
+          $totalDias = PropostasRespostas::where('campo', '=', 'qtdDiasDeGravacao')
+                                          ->where('proposta_id', '=', $id)
+                                          ->select('valor')
+                                          ->first();
+          
 
-
-        $estrutura          = Estrutura::where('proposta_id', $id)->get();
-        $totalDeVagas       = 0;
-        $vagasDescobertas   = 0;
-        $vagasInternas      = 0;
-        foreach ($estrutura as $key => $total) {
-            $totalDeVagas       += $total['qtdVagasInternas'] + $total['qtdVagasExternas'];
-            $vagasDescobertas   += $total['qtdVagasExternas'];
-            $vagasInternas      += $total['qtdVagasInternas'];
-        }
-
-        return view(
-            'propostas/visualizarBasic',
-            compact(
-                'categoriaSoftware',
-                'categoriaHardwarePrincipal',
-                'categoriaHardwareNacional',
-                'categoriaParkEyesSoftware',
-                'categoriaParkEyesHWPrincipal',
-                'categoriaParkEyesHWNacional',
-                'categoriaParkEyesCompleta',
-                'categoriaIntegracaoAplicativos',
-                'proposta',
-                'categoriaInstalacaoCompleta',
-                'totalDeVagas',
-                'vagasDescobertas',
-                'vagasInternas'
-            )
-        );
-
+          $totalDiasGravacao = $totalDias->valor;
+          if($totalDiasGravacao == 0 ){
+             $totalDiasGravacao = "24h";
+          }
+          return view(
+              'propostas/visualizarBasic',
+              compact(
+                  'categoriaSoftware',
+                  'categoriaHardwarePrincipal',
+                  'categoriaHardwareNacional',
+                  'categoriaParkEyesSoftware',
+                  'categoriaParkEyesHWPrincipal',
+                  'categoriaParkEyesHWNacional',
+                  'categoriaParkEyesCompleta',
+                  'proposta',
+                  'totalDiasGravacao',
+                  'categoriaInstalacaoCompleta',
+                  'totalDeVagas',
+                  'vagasDescobertas',
+                  'vagasInternas'
+              )
+          );
     }
 
+    public function valorCampo(){
+        return view ('valorCampo');
+    }
+
+    public static function valorCampoPost(Request $request){
+        $input = $request->all();
+
+       
+      
+        if($input['tipo'] == 'distanciaCentralizado'){
+            $var = Estrutura::where('proposta_id', '=',$request['proposta_id'])->select('distanciaCentralizado')->first();
+            $distanciaCentralizado   =  $var->distanciaCentralizado;
+            return response()->json(['success' => true, 'valor' => $distanciaCentralizado]);
+        }elseif($input['tipo'] == 'distanciaEntreParques'){
+            $var = Estrutura::where('proposta_id', '=',$request['proposta_id'])->select('distanciaEntreParques')->first();
+            $distanciaEntreParques   =  $var->distanciaEntreParques;
+            return response()->json(['success' => true, 'valor' => $distanciaEntreParques]);
+        }else {
+            return response()->json(['success' => false]);
+        }
+    }
 
     public function saveServerSide()
     {
@@ -297,7 +500,20 @@ class PropostasController extends Controller
             $vagasDescobertas   += $total['qtdVagasExternas'];
             $vagasInternas      += $total['qtdVagasInternas'];
         }
-    
+        
+
+        $totalDias = PropostasRespostas::where('campo', '=', 'qtdDiasDeGravacao')
+                                        ->where('proposta_id', '=', $id)
+                                        ->select('valor')
+                                        ->first();
+
+        $totalDiasGravacao = $totalDias->valor;
+        if($totalDiasGravacao == 0 ){
+            $totalDiasGravacao = "24h";
+        }else{
+            $totalDiasGravacao = $totalDiasGravacao . " dias";
+        }
+        
         return view(
             'propostas/visualizar',
             compact(
@@ -310,6 +526,7 @@ class PropostasController extends Controller
                 'categoriaParkEyesCompleta',
                 'categoriaIntegracaoAplicativos',
                 'proposta',
+                'totalDiasGravacao',
                 'categoriaInstalacaoCompleta',
                 'totalDeVagas',
                 'vagasDescobertas',
@@ -342,16 +559,18 @@ class PropostasController extends Controller
 
     public function retornaValorPropostaCliente($campo, $proposta_id)
     {
+
         $retornaValor = PropostasRespostas::where('campo', '=', $campo)
             ->where('proposta_id', '=', $proposta_id)
             ->select('valor')
             ->get();
-        
+       // $valorCampo = "";
         foreach ($retornaValor as $k => $v) {
             $valorCampo = $v['valor'];
         }
         return $valorCampo;
     }
+    
     public function retornaValor($totalVagas, $subcategoria_nome, $sub_fixo_id)
     {
 

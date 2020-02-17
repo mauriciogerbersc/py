@@ -40,6 +40,7 @@ x
                         <select class="custom-select" name="tipo_proposta">
                             <option value="1" {{ $pergunta->tipo_proposta == 1 ? "selected" : ""}}>Full</option>
                             <option value="2" {{ $pergunta->tipo_proposta == 2 ? "selected" : ""}}>Basic</option>
+                            <option value="3" {{ $pergunta->tipo_proposta == 3 ? "selected" : ""}}>Ambos</option>
                         </select>
                     </div>
 

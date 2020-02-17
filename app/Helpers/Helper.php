@@ -8,6 +8,8 @@ use App\Http\Controllers\PropostasController;
 use App\Http\Controllers\VagasController;
 use App\Http\Controllers\VariaveisCategoriasController;
 use App\PropostasRespostas;
+use App\SubFixos;
+use App\Proposta;
 
 class Helper
 {
@@ -57,6 +59,30 @@ class Helper
         return ceil($return);
     }
 
+    public static function quantidadeParquesOutdoor($proposta_id){
+        $parkesOutdoor = new ConfiguracaoController();
+        $quantidade = $parkesOutdoor->quantidadeParquesOutdoor($proposta_id);
+        return $quantidade;
+    }
+
+    public static function retornaPropostasClientes($cliente_id){
+        #echo $cliente_id;
+        $propostas = Proposta::where('propostas.cliente_id', '=', $cliente_id)
+        ->join('users', 'users.id', 'propostas.cliente_id')
+        ->join('tabela_precos_proposta', 'tabela_precos_proposta.proposta_id', '=', 'propostas.id')
+        ->join('sub_fixos', 'sub_fixos.id', '=', 'tabela_precos_proposta.sub_fixos_id')
+        ->select('users.name as nomeCliente', 'propostas.tp_proposta', 'propostas.id', 'propostas.created_at', 'propostas.status', 'sub_fixos.id as sub_id', 'sub_fixos.nomeSub')
+        ->orderBy('propostas.id', 'desc')
+        ->get();
+        
+        
+        return $propostas;
+    }
+    public static function retornaAnteriores($id_pai){
+        $subFixos = SubFixos::where('tabela_pai', '=', $id_pai)->get();
+        return $subFixos;
+    }
+
     public static function regraDeNegocio($regra, $variavel_id, $proposta_id, $totalDeVagas)
     {
 
@@ -83,7 +109,15 @@ class Helper
                 if ($field == 'countParaCisco') {
                     $estruturas = new ConfiguracaoController();
                     $total = $estruturas->totalParquesCobertos($tabela, $proposta_id);
-                    return $total * 2;
+                     #echo $totalDeVagas . "<br>";
+                     if (!empty($out[5][1])) {
+                        
+                        $total = $total.$out[5][1];
+                        #echo $total."<br>";
+                        $total = Helper::matheval($total);
+                    }
+                    return $total;
+
                 } elseif ($field == 'alturaEstrutura') {
 
                     $estruturas = new ConfiguracaoController();
@@ -140,15 +174,15 @@ class Helper
         }
 
         if (strpos($regra, "{{variavel}}") !== false) {
-            #echo "entrou aqui <br>";
+          
             $valorQuestionario = new ConfiguracaoController();
             $valor = $valorQuestionario->valorQuestionario($variavel_id, $proposta_id, $field = null);
           
-            $variaveis = array(26, 57, 55, 56, 51);
+            $variaveis = array(26, 57, 55, 56, 51, 62, 63);
             $variaveisLPR = array(9,34);
 
             if (in_array($variavel_id, $variaveis)) {
-                #echo __LINE__ ." <br> $variavel_id <br>";
+            
                 $valor = $valorQuestionario->valorQuestionario($variavel_id, $proposta_id, 'quantidadeCamerasExtras');
             } else if (in_array($variavel_id, $variaveisLPR)) {
                 #echo __LINE__ ." <br> $variavel_id <br>";
@@ -196,10 +230,22 @@ class Helper
         return $propostas->retornaValor($totalDeVagas, $tipo, $sub_fixo_id);
     }
 
-    public static function retornaVariaveis($cliente_id, $categoria_id, $tipo)
+    public static function retornaVariaveis($cliente_id, $categoria_id, $tipo, $proposta_id)
     {
         $variaveis = new VariaveisController();
-        return $variaveis->retornaVariaveisCliente($cliente_id, $categoria_id, $tipo);
+        return $variaveis->retornaVariaveisCliente($cliente_id, $categoria_id, $tipo, $proposta_id);
+    }
+
+
+    public static function estadosComPropostas(){
+        $proposta = Proposta::select('uf')->groupBy('uf')->get();
+
+        $ufs = array();
+        foreach($proposta as $k=>$v){
+            $ufs[] = $v['uf'];
+        }
+
+        return $ufs;
     }
 
     public static function shout(string $string)

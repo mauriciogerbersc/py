@@ -34,8 +34,8 @@ x
                     Cadastrar Nova Tabela
                 </button>
                 <div class="dropdown-menu tx-13" aria-labelledby="droprightMenuButton">
-                    <a class="dropdown-item" href="/variaveis/subcategorias/nova/full">Tabela Full</a>
-                    <a class="dropdown-item" href="/variaveis/subcategorias/nova/basic">Tabela Basic</a>
+                    <a class="dropdown-item" href="/variaveis/subcategorias/editar/54">Tabela Full</a>
+                    <a class="dropdown-item" href="/variaveis/subcategorias/editar/53">Tabela Basic</a>
                 </div>
             </div>
         </div>
@@ -50,7 +50,62 @@ x
         @endif
 
         @if(count($arr) > 0)
-        <table id="example1" class="table ">
+
+        <div id="accordion7" class="accordion">
+            @foreach($tabelas as $tab)
+            <h6 class="accordion-title">{{$tab->nomeSub}}</h6>
+            <div class="accordion-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Data criação</th>
+                        
+                            <th class="dt-center">Tabela de Preços</th>
+                            <th class="dt-center">Desconto Aplicado?</th>
+                            <th class="dt-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(Helper::retornaAnteriores($tab->tabela_pai) as $key=>$a)
+                        <tr>
+                            <td class="dt-center">{!! Helper::formataDataHora($a['created_at']) !!}</td>
+                           
+                            <td class="dt-center"><a
+                                    href="/variaveis/subcategorias/visualizar/{{$a['id']}}">{{$a['nomeSub']}}</a></td>
+                            <td class="dt-center">{{$a['descontoDado']}}%</td>
+
+                            <td class="dt-center">
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button"
+                                        id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                        aria-expanded="false">
+                                        Ações
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item"
+                                            href="/variaveis/subcategorias/editar/{{$a['id']}}">Nova a
+                                            partir desta</a>
+                                        <!-- <a class="dropdown-item" href="/variaveis/subcategorias/remover/{{$a['id']}}">Remover
+                                    Tabela</a> -->
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+
+            </div>
+            @endforeach
+        </div><!-- az-accordion 
+
+
+
+
+
+
+
+        <table id="example1" class="table">
             <thead>
                 <tr>
                     <th>Data criação</th>
@@ -88,7 +143,7 @@ x
                                 <a class="dropdown-item" href="/variaveis/subcategorias/editar/{{$a['id']}}">Nova a
                                     partir desta</a>
                                 <!-- <a class="dropdown-item" href="/variaveis/subcategorias/remover/{{$a['id']}}">Remover
-                                    Tabela</a> -->
+                                    Tabela</a> 
                             </div>
                         </div>
                     </td>
@@ -96,6 +151,7 @@ x
                 @endforeach
             </tbody>
         </table>
+    -->
         @endif
     </div>
 </div>
@@ -111,12 +167,18 @@ x
 <script src="{{asset('lib/datatables.net-dt/js/dataTables.dataTables.min.js')}}"></script>
 <script src="{{asset('lib/datatables.net-responsive/js/dataTables.responsive.min.js')}}"></script>
 <script src="{{asset('lib/datatables.net-responsive-dt/js/responsive.dataTables.min.js')}}"></script>
-<script src="{{asset('lib/select2/js/select2.min.js')}}"></script>
+<script src="{{asset('/lib/jqueryui/jquery-ui.min.js')}}"></script>
 
 <script src="{{asset('js/dashforge.js')}}"></script>
 <script>
     $(function() {
         'use strict'
+
+        $('#accordion7').accordion({
+          heightStyle: 'content',
+          
+        });
+        
 
         $('#example1').DataTable({
             pageLength: 50,

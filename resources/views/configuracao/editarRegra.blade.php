@@ -35,7 +35,17 @@ x
                 @csrf
                 <div class="form-row">
 
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-4">
+                        <label for="pergunta_id">Categoria da Regra</label>
+                       
+                        <select class="custom-select" name="categoria">
+                                <option value="0" {{ $regra->categoria == 0 ? "selected" : ""}}>Full</option>
+                                <option value="1" {{ $regra->categoria == 1 ? "selected" : ""}}>Basic</option>
+                                <option value="2" {{ $regra->categoria == 2 ? "selected" : ""}}>Ambos</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-4">
                         <label for="variavel">Variável questionário</label>
                         <select class="custom-select" name="variavel_id">
                             @foreach($variaveis as $variavel)
@@ -44,7 +54,7 @@ x
                         </select>
                     </div>
 
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-4">
                         <label for="pergunta_id">Pergunta do Questionário</label>
                        
                         <select class="custom-select" name="pergunta_id">
