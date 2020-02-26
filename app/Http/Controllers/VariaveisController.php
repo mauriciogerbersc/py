@@ -25,7 +25,8 @@ class VariaveisController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index($id = null)
-    {
+    {   
+        $titulo             = "Estrutura da Proposta";
         $categorias         = Categoria::all();
 
         $variaveis          = Variavel::orderBy('ordem', 'asc')->get();
@@ -35,7 +36,7 @@ class VariaveisController extends Controller
             $variaveis          = Variavel::where('tipo_variavel', '=', $id)->orderBy('ordem', 'asc')->get();
      
         }
-        return view('variaveis/index', compact('categorias', 'variaveis'));
+        return view('variaveis/index', compact('categorias', 'variaveis', 'titulo'));
     }
 
     /**
@@ -45,8 +46,8 @@ class VariaveisController extends Controller
      */
     public function create()
     {
-
-        $vagas      = Vagas::all();
+        $titulo     = "Cadastro de variável";
+        $vagas      = Vagas::all(); 
         $categorias = Categoria::all();
 
         $cats = array();
@@ -54,7 +55,7 @@ class VariaveisController extends Controller
             $cats[] = array('id' => $val->id, 'nome' => $val->nome);
         }
 
-        return view('variaveis/cadastro', compact('cats', 'vagas'));
+        return view('variaveis/cadastro', compact('cats', 'vagas', 'titulo'));
     }
 
 
@@ -112,13 +113,14 @@ class VariaveisController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
-    {
+    {   
+        $titulo         = "Editar Variável";
         $variavel       = Variavel::find($id);
         $cats           = Categoria::all();
         if (isset($variavel)) {
-            return view('variaveis/editar', compact('variavel', 'cats'));
+            return view('variaveis/editar', compact('variavel', 'cats', 'titulo'));
         } else {
-            return redirect('/variaveis')->with('classe', 'alert-danger')->with('mensagem', 'Variável Inexistente.');
+            return redirect('/variaveis/listar')->with('classe', 'alert-danger')->with('mensagem', 'Variável Inexistente.');
         }
     }
 
@@ -221,7 +223,8 @@ class VariaveisController extends Controller
             /*echo "cliente id {$cliente_id}<br>";
             print_r($categoria_id)."<br>";
             print_r($vars)."<br>";
-            print_r($perguntasCategorias); */
+            print_r($perguntasCategorias); 
+            */
             
 
             $variaveisDoCliente = TabelaPrecosPropostas::where('tabela_precos_proposta.proposta_id', '=', $proposta_id)
@@ -243,8 +246,7 @@ class VariaveisController extends Controller
                                                         )
                                                         ->orderBy('variavels.ordem', 'asc')
                                                         ->get();
-       
-         
+    
              
         return $variaveisDoCliente;
     }

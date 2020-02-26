@@ -24,7 +24,7 @@ x
     <div class="container">
         <ol class="breadcrumb df-breadcrumbs mg-b-10">
             <li class="breadcrumb-item"><a href="./dashboard.html">Painel de Controle</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Gerenciamento de Variáveis</li>
+            <li class="breadcrumb-item active" aria-current="page">Estrutura da Proposta</li>
         </ol>
 
         <div class="pd-b-30 pd-t-20">

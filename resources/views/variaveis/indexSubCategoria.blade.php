@@ -175,7 +175,8 @@ x
         'use strict'
 
         $('#accordion7').accordion({
-          heightStyle: 'content',
+            active: false,
+            collapsible: true   
           
         });
         

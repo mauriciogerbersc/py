@@ -24,14 +24,15 @@ class VariaveisCategoriasController extends Controller
     public function subcategoriaIndex()
     {
 
-
+        $titulo  = "Tabelas de Preços";
         $ids = array(53,54);
-        $arr = SubFixos::whereNotIn('id',$ids)
+        $arr = SubFixos::where('status', '=', 1)
+                        ->whereNotIn('id',$ids)
                         ->orderBy('id', 'asc')
                         ->get();
                       
-        $tabelas = SubFixos::whereNotIn('id',$ids)->orderBy('id', 'desc')->groupBy('tabela_pai')->get();
-        return view('variaveis/indexSubCategoria', compact('arr','tabelas'));
+        $tabelas = SubFixos::whereNotIn('id',$ids)->where('status', '=', 1)->orderBy('id', 'desc')->groupBy('tabela_pai')->get();
+        return view('variaveis/indexSubCategoria', compact('arr','tabelas', 'titulo'));
     }
 
 
@@ -147,6 +148,7 @@ class VariaveisCategoriasController extends Controller
     }
     public function editCategoriaNova($id)
     {
+        $titulo             = "Nova Tabela a partir";
         $vagas              = Vagas::all();
 
         $categorias         = Categoria::all();
@@ -203,7 +205,7 @@ class VariaveisCategoriasController extends Controller
       
         if (isset($subPrecos)) {
             return view('/variaveis/editarSubCategoria', 
-            compact('vagas', 'subPrecos', 'variaveis', 'subs', 'categorias', 'subFixos', 'categoriasPrecosFixos')
+            compact('vagas', 'subPrecos', 'variaveis', 'subs', 'categorias', 'subFixos', 'categoriasPrecosFixos', 'titulo')
         );
         } else {
             return view('/variaveis/subcategorias');
@@ -365,10 +367,11 @@ class VariaveisCategoriasController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
+    {   
+        $titulo     = "Categorias";
         $categorias = Categoria::orderBy('created_at', 'asc')->get();
 
-        return view('variaveis/indexCategoria', compact('categorias'));
+        return view('variaveis/indexCategoria', compact('categorias','titulo'));
     }
 
     /**
@@ -429,10 +432,11 @@ class VariaveisCategoriasController extends Controller
      */
     public function edit($id)
     {
+        $titulo    = "Editar Categoria";
         $categoria = Categoria::find($id);
 
         if (isset($categoria)) {
-            return view('variaveis/editarCategoria', compact('categoria'));
+            return view('variaveis/editarCategoria', compact('categoria','titulo'));
         } else {
             return view('/');
         }

@@ -82,7 +82,7 @@ x
             <form method="POST" action="/propostas/nova/{{$cliente->id}}">
 
                 @csrf
-                <input type="text"  id="tabela_id" name="tabela_id"   value="" />
+                <input type="hidden"  id="tabela_id" name="tabela_id"   value="" />
                 <input type="hidden" name="cliente_id" value="{{$cliente->id}}" />
                 <input type="hidden" name="tipo_proposta" value="{{$tipo_proposta}}" />
                 <div id="wizard4">

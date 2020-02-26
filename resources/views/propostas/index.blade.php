@@ -82,6 +82,9 @@ x
                                     <div class="dropdown-menu tx-13">
                                         <h6 class="dropdown-header tx-uppercase tx-11 tx-bold tx-inverse tx-spacing-1">Gerar
                                             Propostas</h6>
+                                           
+                                        <a class="dropdown-item" target="_blank" href="/propostas/plantas/{{$a['id']}}">Enviar Plantas</a>
+                                        <div class="dropdown-divider"></div>
                                         @if($a['status']==0)
                                             @if($a['tp_proposta']==0)
                                             <a class="dropdown-item" target="_blank"
@@ -138,7 +141,8 @@ x
         'use strict'
 
         $('#accordion7').accordion({
-          heightStyle: 'content',
+            active: false,
+    collapsible: true   
           
         });
 
