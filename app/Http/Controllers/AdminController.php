@@ -15,6 +15,7 @@ class AdminController extends Controller
 
     public function index(){
 
+        $titulo = "Página Inicial";
 
         $totalDePropostas = Proposta::all()->count();
         $propostas = Proposta::orderBy('created_at', 'desc')->take(8)->get();
@@ -37,7 +38,7 @@ class AdminController extends Controller
                                         ->get();
         
         
-        return view('dashboard', compact('propostas', 'users', 'totalDePropostas', 'propostasPorUfs'));
+        return view('dashboard', compact('propostas', 'users', 'totalDePropostas', 'propostasPorUfs', 'titulo'));
 
     }
 

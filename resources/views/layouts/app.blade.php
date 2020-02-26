@@ -12,7 +12,7 @@
     <meta name="author" content="gerber">
     <meta name="_token" content="{{csrf_token()}}" />
 
-    <title>{{ config('app.name', 'Acesso ao Sistema ') }}</title>
+    <title>{{ config('app.name') }} - {{ $titulo ?? '' }}</title>
 
     @hasSection('vendor')
     <!-- vendor css -->

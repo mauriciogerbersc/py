@@ -31,7 +31,8 @@ Route::get('/propostas/gerarProposta/{id}', 'PropostasController@gerarProposta')
 
 Route::post('/propostas/nova/{id}', 'PropostasController@store');
 
-
+Route::get('/propostas/plantas/{id}', 'PropostasController@plantas');
+Route::post('/propostas/plantas/{id}', 'PropostasController@plantasUpload');
 Route::get('/propostas/nova/{id}', 'PropostasController@create');
 Route::get('/propostas/novaBasic/{id}', 'PropostasController@createBasic');
 Route::get('/propostas/old/{id}', 'PropostasController@createOld');

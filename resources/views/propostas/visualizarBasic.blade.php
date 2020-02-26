@@ -45,6 +45,11 @@
         color: #aaaaaa;
         opacity: 0.4;
     }
+   
+    .divider-text {
+        font-size: 13px;
+        font-weight:800;
+    }
 </style>
 @endsection
 
@@ -173,7 +178,7 @@ x
 
             <div class="pd-t-20 wd-600 mg-l-auto mg-r-auto ht-320">
                 <div style="margin:0 auto;">
-                    <img src="{{asset('img/parkeyes-proposta.jpg')}}" />
+                    <img src="{{asset('img/basic.png')}}" />
                 </div>
             </div>
 
@@ -687,6 +692,69 @@ x
 
                 <hr>
 
+                @foreach ($estruturaProposta as $key=>$val)
+
+                
+                <div>
+                    <div class="row row-sm">
+                        <div class="col-md">
+                            <h5>{{$val->nomeParque}}</h5>
+                            @if($val->imagem!='')
+                                <figure class="pos-relative mg-b-0 wd-lg-50p">
+                                    <img src="/files/{{$val->imagem}}" class="img-thumbnail" width="278" height="183">
+                                    <figcaption class="pos-absolute b-0 l-0 wd-100p pd-20 d-flex justify-content-center">
+                                        <div class="btn-group">
+                                            <a href="" class="btn btn-dark btn-icon"><i data-feather="trash-2"></i></a>
+                                        </div>
+                                    </figcaption>
+                                </figure>
+                           
+                            @else
+                                <figure class="pos-relative mg-b-0 wd-lg-50p">
+                                    <img src="/img/parque-dafault.png" class="img-thumbnail" width="278" height="183">
+                                    <figcaption class="pos-absolute b-0 l-0 wd-100p pd-20 d-flex justify-content-center">
+                                        <div class="btn-group">
+                                            <a href="" class="btn btn-dark btn-icon"><i data-feather="trash-2"></i></a>
+                                        </div>
+                                    </figcaption>
+                                </figure>
+                            
+                            @endif
+                        </div><!-- col -->
+    
+                        @if($val->parqueCentralizado)
+                            <div class="divider-text"><-- {{$val->distanciaCentralizado}} m --></div>
+                            <div class="col-md mg-t-10 mg-md-t-0 mg-l-60">
+                                <figure class="img-caption pos-relative mg-b-0">
+                                    <img src="/img/central-comando.jpeg" class="img-thumbnail" width="248" height="153">
+    
+                                </figure>
+                            </div><!-- col -->
+                            
+                        @else
+    
+                            <div class="col-md mg-t-10 mg-md-t-0">&nbsp;</div>
+    
+                        @endif
+                    </div><!-- row -->
+     
+    
+                    @if($key+1 != $estruturaProposta->count())
+                        <div class="row row-sm">
+                            <div class="col-md-6"></div>
+                            <div class="divider-text divider-vertical" data-text="">{{$val->distanciaEntreParques}} m</div>
+                            <div class="col-md mg-t-6 mg-md-t-0">
+                                <br><br>
+                                <br>
+                                <br>
+                                <br>
+                            </div><!-- col -->
+                        </div>
+                    @endif
+                </div>    
+                @endforeach
+
+                <hr>
                 <div class="card">
                     <div class="card-header tx-bold">
                         Considerações Finais

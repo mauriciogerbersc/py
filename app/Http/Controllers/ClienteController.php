@@ -25,7 +25,7 @@ class ClienteController extends Controller
      */
     public function index()
     {
-
+        $titulo = "Clientes";
         $us = User::leftJoin('sub_fixos', 'sub_fixos.id', '=', 'users.sub_fixo_id')
             ->select('users.id', 'users.name', 'sub_fixos.nomeSub', 'sub_fixos.id as sub_id', 'users.status')
             ->get();
@@ -45,7 +45,7 @@ class ClienteController extends Controller
         }
 
         
-        return view('clientes/index', compact('users'));
+        return view('clientes/index', compact('users', 'titulo'));
     }
 
 
@@ -63,8 +63,9 @@ class ClienteController extends Controller
      */
     public function create()
     {
+        $titulo        = "Cadastro de Cliente";
         $subFixo       = SubFixos::All();
-        return view('clientes/cadastro', compact("subFixo"));
+        return view('clientes/cadastro', compact("subFixo", "titulo"));
     }
 
     /**
@@ -111,12 +112,13 @@ class ClienteController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
-    {
+    {   
+        $titulo        = "Editar Cliente";
         $subFixo       = SubFixos::All();
         $cliente       = User::find($id);
 
         if (isset($cliente)) {
-            return view('/clientes/editar', compact('subFixo', 'cliente'));
+            return view('/clientes/editar', compact('subFixo', 'cliente','titulo'));
         } else {
             return view('/clientes');
         }
