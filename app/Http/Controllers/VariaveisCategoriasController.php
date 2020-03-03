@@ -30,8 +30,8 @@ class VariaveisCategoriasController extends Controller
                         ->whereNotIn('id',$ids)
                         ->orderBy('id', 'asc')
                         ->get();
-                      
-        $tabelas = SubFixos::whereNotIn('id',$ids)->where('status', '=', 1)->orderBy('id', 'desc')->groupBy('tabela_pai')->get();
+            $tabelas = '';             
+       // $tabelas = SubFixos::whereNotIn('id',$ids)->where('status', '=', 1)->orderBy('id', 'desc')->groupBy('tabela_pai')->get();
         return view('variaveis/indexSubCategoria', compact('arr','tabelas', 'titulo'));
     }
 
@@ -181,7 +181,6 @@ class VariaveisCategoriasController extends Controller
                         ->select('sub_precos_fixos.preco', 'variavels.id', 'variavels.categoria_id', 'variavels.nome')
                         ->get();
 
-        
         $variaveis = array();
         foreach ($vars as $k => $valores) 
         {
@@ -237,11 +236,15 @@ class VariaveisCategoriasController extends Controller
         1. Criar nova categoria na tabela `sub_fixos` e armazeno o ID da tabela pai. 
         (no caso a tabela que estou herdando os dados)
         */
+        if(($id == 54) OR ($id == 53)){
+            $id = 0;
+        }
         $subFixo = new SubFixos();
 
         $subFixo->nomeSub      = $request->input('nomeSubGrupo');
         $subFixo->descontoDado = $request->input('descontoDado');
         $subFixo->tabela_pai   = $id;
+        $subFixo->status       = 1;
         $subFixo->save();
 
         /*

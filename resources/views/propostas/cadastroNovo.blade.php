@@ -50,7 +50,7 @@ x
                 </div>
                 <div class="modal-footer">
                     <!--<button type="button" class="btn btn-secondary tx-13" data-dismiss="modal" id="fechar">Fechar</button> -->
-                    <button type="button" class="btn btn-primary tx-13" id="salvarSelecionado">Setar</button>
+                    <button type="button" class="btn btn-primary tx-13" id="salvarSelecionado">Definir</button>
                 </div>
             </div>
         </div>
@@ -353,7 +353,15 @@ x
 <script src="{{asset('lib/jquery-steps/build/jquery.steps.min.js')}}"></script>
 
 <script src="{{asset('js/dashforge.js')}}"></script>
+<script type="text/javascript">
+    function stopRKey(evt) {
+      var evt = (evt) ? evt : ((event) ? event : null);
+      var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+      if ((evt.keyCode == 13) && ((node.type=="text") || (node.type=="radio") || (node.type=="checkbox")) )  {return false;}
+    }
 
+    document.onkeypress = stopRKey;
+</script> 
 <script>
     $(window).on('load',function(){
         $('#modal5').modal('show');

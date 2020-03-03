@@ -420,6 +420,10 @@ class PropostasController extends Controller
             ->select('valor')
             ->first();
 
+        $notas = PropostasRespostas::where('campo', '=', 'notasObservacoes')
+        ->where('proposta_id', '=', $id)
+        ->select('valor')
+        ->first();
 
         $totalDiasGravacao = $totalDias->valor;
         if ($totalDiasGravacao == 0) {
@@ -442,7 +446,8 @@ class PropostasController extends Controller
                 'totalDeVagas',
                 'vagasDescobertas',
                 'vagasInternas',
-                'titulo'
+                'titulo',
+                'notas'
             )
         );
     }
@@ -521,6 +526,10 @@ class PropostasController extends Controller
      */
     public function show($id)
     {
+        $estruturaProposta = Proposta::where('propostas.id', '=', $id)
+        ->join('estruturas', 'estruturas.proposta_id', '=', 'propostas.id')
+        ->select('estruturas.nomeParque', 'estruturas.imagem', 'estruturas.parqueCentralizado','estruturas.id as idEstrutura', 'estruturas.distanciaCentralizado', 'estruturas.distanciaEntreParques')
+        ->get();
         /* Todas as categorias dos tipos de produtos */
         $categoriaSoftware                  = Categoria::where('id', '=', 2)->get();
         $categoriaHardwarePrincipal         = Categoria::where('id', '=', 4)->get();
@@ -588,6 +597,7 @@ class PropostasController extends Controller
                 'categoriaHardwarePrincipal',
                 'categoriaHardwareNacional',
                 'categoriaParkEyesSoftware',
+                'estruturaProposta',
                 'categoriaParkEyesHWPrincipal',
                 'categoriaParkEyesHWNacional',
                 'categoriaParkEyesCompleta',

@@ -34,8 +34,8 @@ x
                     Cadastrar Nova Tabela
                 </button>
                 <div class="dropdown-menu tx-13" aria-labelledby="droprightMenuButton">
-                    <a class="dropdown-item" href="/variaveis/subcategorias/editar/54">Tabela Full</a>
-                    <a class="dropdown-item" href="/variaveis/subcategorias/editar/53">Tabela Basic</a>
+                    <a class="dropdown-item" href="/variaveis/subcategorias/editar/72">Tabela Full</a>
+                    <a class="dropdown-item" href="/variaveis/subcategorias/editar/73">Tabela Basic</a>
                 </div>
             </div>
         </div>
@@ -52,106 +52,62 @@ x
         @if(count($arr) > 0)
 
         <div id="accordion7" class="accordion">
-            @foreach($tabelas as $tab)
+            @foreach($arr as $tab)
             <h6 class="accordion-title">{{$tab->nomeSub}}</h6>
             <div class="accordion-body">
                 <table class="table">
                     <thead>
+
                         <tr>
                             <th>Data criação</th>
-                        
                             <th class="dt-center">Tabela de Preços</th>
                             <th class="dt-center">Desconto Aplicado?</th>
                             <th class="dt-center">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach(Helper::retornaAnteriores($tab->tabela_pai) as $key=>$a)
-                        <tr>
-                            <td class="dt-center">{!! Helper::formataDataHora($a['created_at']) !!}</td>
-                           
-                            <td class="dt-center"><a
-                                    href="/variaveis/subcategorias/visualizar/{{$a['id']}}">{{$a['nomeSub']}}</a></td>
-                            <td class="dt-center">{{$a['descontoDado']}}%</td>
-
-                            <td class="dt-center">
-                                <div class="dropdown">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button"
-                                        id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false">
-                                        Ações
-                                    </button>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <a class="dropdown-item"
-                                            href="/variaveis/subcategorias/editar/{{$a['id']}}">Nova a
-                                            partir desta</a>
-                                        <!-- <a class="dropdown-item" href="/variaveis/subcategorias/remover/{{$a['id']}}">Remover
-                                    Tabela</a> -->
+                        @if($tab->tabela_pai!=0)
+                            @foreach(Helper::retornaAnteriores($tab->tabela_pai) as $key=>$a)
+                            <tr>
+                                <td class="dt-center">{!! Helper::formataDataHora($a['created_at']) !!}</td>       
+                                <td class="dt-center"><a href="/variaveis/subcategorias/visualizar/{{$a['id']}}">{{$a['nomeSub']}}</a></td>
+                                <td class="dt-center">{{$a['descontoDado']}}%</td>
+                                <td class="dt-center">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" 
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ações</button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <a class="dropdown-item" href="/variaveis/subcategorias/editar/{{$a['id']}}">Nova apartir desta</a>
+                                            <!-- <a class="dropdown-item" href="/variaveis/subcategorias/remover/{{$tab['id']}}">Remover Tabela</a> -->
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
+                                </td>
+                            </tr>
+                            @endforeach
+                        @else 
+                            <tr>
+                                <td class="dt-center">{!! Helper::formataDataHora($tab->created_at) !!}</td>       
+                                <td class="dt-center"><a href="/variaveis/subcategorias/visualizar/{{$tab->id}}">{{$tab->nomeSub}}</a></td>
+                                <td class="dt-center">{{$tab->descontoDado}}%</td>
+                                <td class="dt-center">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" 
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ações</button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <a class="dropdown-item" href="/variaveis/subcategorias/editar/{{$tab->id}}">Nova apartir desta</a>
+                                            <!-- <a class="dropdown-item" href="/variaveis/subcategorias/remover/{{$tab['id']}}">Remover Tabela</a> -->
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endif
                     </tbody>
                 </table>
 
             </div>
             @endforeach
-        </div><!-- az-accordion 
+        </div>
 
-
-
-
-
-
-
-        <table id="example1" class="table">
-            <thead>
-                <tr>
-                    <th>Data criação</th>
-                    <th class="dt-center">Tabela pai</th>
-                    <th class="dt-center">Tabela de Preços</th>
-                    <th class="dt-center">Desconto Aplicado?</th>
-                    <th class="dt-center">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($arr as $a)
-                <tr>
-                    <td class="dt-center">{!! Helper::formataDataHora($a['created_at']) !!}</td>
-                    <td class="dt-center">
-                        <strong>
-                            @if($a['tabela_pai'] == 0)
-                            --
-                            @else
-                            <a href="/variaveis/subcategorias/visualizar/{{$a['tabela_pai']}}">
-                                {!! Helper::retornaPai($a['tabela_pai']) !!}
-                            </a>
-                            @endif
-                        </strong>
-                    </td>
-                    <td class="dt-center"><a
-                            href="/variaveis/subcategorias/visualizar/{{$a['id']}}">{{$a['nomeSub']}}</a></td>
-                    <td class="dt-center">{{$a['descontoDado']}}%</td>
-                    <td class="dt-center">
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Ações
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="/variaveis/subcategorias/editar/{{$a['id']}}">Nova a
-                                    partir desta</a>
-                                <!-- <a class="dropdown-item" href="/variaveis/subcategorias/remover/{{$a['id']}}">Remover
-                                    Tabela</a> 
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    -->
         @endif
     </div>
 </div>

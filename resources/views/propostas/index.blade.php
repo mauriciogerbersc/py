@@ -80,25 +80,22 @@ x
                                         Ações
                                     </button>
                                     <div class="dropdown-menu tx-13">
-                                        <h6 class="dropdown-header tx-uppercase tx-11 tx-bold tx-inverse tx-spacing-1">Gerar
-                                            Propostas</h6>
+                                        <h6 class="dropdown-header tx-uppercase tx-11 tx-bold tx-inverse tx-spacing-1">Gerar Propostas</h6>
                                            
                                         <a class="dropdown-item" target="_blank" href="/propostas/plantas/{{$a['id']}}">Enviar Plantas</a>
+
                                         <div class="dropdown-divider"></div>
                                         @if($a['status']==0)
                                             @if($a['tp_proposta']==0)
-                                            <a class="dropdown-item" target="_blank"
-                                                href="/propostas/visualizar/{{$a['id']}}">Visualizar Full</a>
+                                            <a class="dropdown-item" target="_blank" href="/propostas/visualizar/{{$a['id']}}">Visualizar Full</a>
                                            @else 
-                                           <a class="dropdown-item" target="_blank"
-                                                href="/propostas/visualizarBasic/{{$a['id']}}">Visualizar Basic</a>
+                                           <a class="dropdown-item" target="_blank" href="/propostas/visualizarBasic/{{$a['id']}}">Visualizar Basic</a>
                                             @endif
                                         @elseif($proposta['status']==1)
-                                            <a class="dropdown-item" target="_blank"
-                                            href="/propostas/gerarProposta/{{$a['id']}}">Visualizar Proposta</a>
-                                            <a class="dropdown-item" target="_blank"
-                                            href="/propostas/">Gerar Contrato</a>
+                                            <a class="dropdown-item" target="_blank" href="/propostas/gerarProposta/{{$a['id']}}">Baixar Proposta</a>
+                                            <a class="dropdown-item" target="_blank" href="/propostas/">Gerar Contrato</a>
                                         @endif
+
                                         <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" target="_blank" href="/propostas/regerar/{{$a['id']}}/basic">Nova Basic</a>
                                         <a class="dropdown-item" target="_blank" href="/propostas/regerar/{{$a['id']}}/full">Nova Full</a>

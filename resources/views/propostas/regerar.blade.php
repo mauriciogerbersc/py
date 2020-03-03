@@ -248,11 +248,11 @@ x
                                 </select>
                             </div>
 
-                            @if(Helper::procuraRespostas($pergunta['id'],$proposta_id) == 'Sim')
+                            
                             @if($pergunta['html_apendice'] != '')
                             {!! $pergunta['html_apendice'] !!}
                             @endif
-                            @endif
+                           
 
                             @elseif($pergunta['tipo_campo'] == 4)
                             <input type="number" @if(!empty($pergunta['id_campo'])) id="{{$pergunta['id_campo']}}"
@@ -484,7 +484,7 @@ x
                 $colunaPaineisGrupo.append($colunaPaineis.clone());
                 $colunaDistanciaLinhasGrupo.append($colunaDistanciaLinhas.clone());
             }
-        });
+        }).trigger("change");
 
 
         $("#possuiCamerasExtras").change(function() {

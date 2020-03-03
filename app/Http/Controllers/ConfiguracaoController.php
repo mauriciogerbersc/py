@@ -333,7 +333,7 @@ class ConfiguracaoController extends Controller
         $pergunta->id_campo             = $request->input('id_campo');
         $pergunta->name_campo           = $request->input('name_campo');
         $pergunta->html_apendice        = $request->input('html_apendice');
-        $pergunta->session_status       = 1;
+        $pergunta->status       = 1;
 
         if( $pergunta->save()) {
 

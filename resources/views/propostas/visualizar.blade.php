@@ -1007,7 +1007,70 @@ x
                             instalação de software e treinamento de operadores indicados pelo cliente.</li>
                     </ol>
                 </div>
-
+                @foreach ($estruturaProposta as $key=>$val)
+                @php
+                    
+                $varEntreParques = $val->distanciaEntreParques;
+                @endphp
+                <div>
+                    <div class="row row-sm">
+                        <div class="col-md">
+                            <h5>{{$val->nomeParque}}</h5>
+                            @if($val->imagem!='')
+                                <figure class="pos-relative mg-b-0 wd-lg-50p">
+                                    <img src="/files/{{$val->imagem}}" class="img-thumbnail" width="278" height="183">
+                                    <figcaption class="pos-absolute b-0 l-0 wd-100p pd-20 d-flex justify-content-center">
+                                        <div class="btn-group">
+                                            <a href="" class="btn btn-dark btn-icon"><i data-feather="trash-2"></i></a>
+                                        </div>
+                                    </figcaption>
+                                </figure>
+                           
+                            @else
+                                <figure class="pos-relative mg-b-0 wd-lg-50p">
+                                    <img src="/img/parque-dafault.png" class="img-thumbnail" width="278" height="183">
+                                    <figcaption class="pos-absolute b-0 l-0 wd-100p pd-20 d-flex justify-content-center">
+                                        <div class="btn-group">
+                                            <a href="" class="btn btn-dark btn-icon"><i data-feather="trash-2"></i></a>
+                                        </div>
+                                    </figcaption>
+                                </figure>
+                            
+                            @endif
+                        </div><!-- col -->
+    
+                        @if($val->parqueCentralizado)
+                            <div class="divider-text"><-- {{$val->distanciaCentralizado}} m --></div>
+                            <div class="col-md mg-t-10 mg-md-t-0 mg-l-60">
+                                <figure class="img-caption pos-relative mg-b-0">
+                                    <img src="/img/central-comando.jpeg" class="img-thumbnail" width="248" height="153">
+    
+                                </figure>
+                            </div><!-- col -->
+                            
+                        @else
+    
+                            <div class="col-md mg-t-10 mg-md-t-0">&nbsp;</div>
+    
+                        @endif
+                    </div><!-- row -->
+     
+    
+                    @if($key+1 != $estruturaProposta->count())
+                        <div class="row row-sm">
+                            <div class="col-md-6"></div>
+                            <div class="divider-text divider-vertical" data-text="">@php echo $varEntreParques; @endphp m</div>
+                            <div class="col-md mg-t-6 mg-md-t-0">
+                                <br><br>
+                                <br>
+                                <br>
+                                <br>
+                            </div><!-- col -->
+                        </div>
+                    @endif
+                </div>    
+                @endforeach
+                
                 <hr>
 
                 <div class="card">
@@ -1036,7 +1099,7 @@ x
                         Notas de Visita Técnica e Observações:
                     </div>
                     <div class="card-body">
-
+                        
                     </div>
                 </div>
 

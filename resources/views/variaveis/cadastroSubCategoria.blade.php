@@ -196,12 +196,22 @@ x
 <script src="{{asset('js/dashforge.js')}}"></script>
 <script src="{{asset('lib/jquery.maskMoney/jquery.maskMoney.js')}}" type="text/javascript"></script>
 <script src="{{asset('js/jquery.mask.min.js')}}"></script>
+<script type="text/javascript">
+    function stopRKey(evt) {
+      var evt = (evt) ? evt : ((event) ? event : null);
+      var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+      if ((evt.keyCode == 13) && ((node.type=="text") || (node.type=="radio") || (node.type=="checkbox")) )  {return false;}
+    }
 
+    document.onkeypress = stopRKey;
+</script> 
 <script>
+
+    
     $(function() {
             'use strict'
 
-
+        
             $(".table").hide();
         
             $("table").has("tbody td").show().after("<hr>");

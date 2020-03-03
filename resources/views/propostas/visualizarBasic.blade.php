@@ -702,21 +702,13 @@ x
                             @if($val->imagem!='')
                                 <figure class="pos-relative mg-b-0 wd-lg-50p">
                                     <img src="/files/{{$val->imagem}}" class="img-thumbnail" width="278" height="183">
-                                    <figcaption class="pos-absolute b-0 l-0 wd-100p pd-20 d-flex justify-content-center">
-                                        <div class="btn-group">
-                                            <a href="" class="btn btn-dark btn-icon"><i data-feather="trash-2"></i></a>
-                                        </div>
-                                    </figcaption>
+                                   
                                 </figure>
                            
                             @else
                                 <figure class="pos-relative mg-b-0 wd-lg-50p">
                                     <img src="/img/parque-dafault.png" class="img-thumbnail" width="278" height="183">
-                                    <figcaption class="pos-absolute b-0 l-0 wd-100p pd-20 d-flex justify-content-center">
-                                        <div class="btn-group">
-                                            <a href="" class="btn btn-dark btn-icon"><i data-feather="trash-2"></i></a>
-                                        </div>
-                                    </figcaption>
+                                    
                                 </figure>
                             
                             @endif
@@ -781,7 +773,7 @@ x
                         Notas de Visita Técnica e Observações:
                     </div>
                     <div class="card-body">
-
+                      {{$notas->valor}}
                     </div>
                 </div>
 
