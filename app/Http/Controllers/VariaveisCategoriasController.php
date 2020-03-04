@@ -203,7 +203,7 @@ class VariaveisCategoriasController extends Controller
 
       
         if (isset($subPrecos)) {
-            return view('/variaveis/editarSubCategoria', 
+            return view('/variaveis/editarSubcat', 
             compact('vagas', 'subPrecos', 'variaveis', 'subs', 'categorias', 'subFixos', 'categoriasPrecosFixos', 'titulo')
         );
         } else {

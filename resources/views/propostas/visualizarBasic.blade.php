@@ -85,6 +85,44 @@ x
 
 
 <div class="content content-fixed bd-b">
+
+    
+    <div class="modal fade" id="modal5" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="exampleModalLabel5"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+            <div class="modal-content tx-14">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalLabel5">Defina novo Valor</h6>
+                   <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>-->
+                </div>
+                <div class="modal-body pd-sm-t-30 pd-sm-b-40 pd-sm-x-30">
+
+                    <input type="hidden" id="tipoAlteracao" />
+                    <div class="row row-sm">
+                      <div class="col-sm">
+                        <label class="tx-10 tx-uppercase tx-medium tx-spacing-1 mg-b-5 tx-color-03">Tipo de Alteração</label>
+                        <select class="custom-select" id="tipoDeAlteracao">
+                            <option value="+">Acréscimo</option>
+                            <option value="-">Desconto</option>
+                        </select>
+                      </div><!-- col -->
+                      <div class="col-sm-5 mg-t-20 mg-sm-t-0">
+                        <label class="tx-10 tx-uppercase tx-medium tx-spacing-1 mg-b-5 tx-color-03"> %</label>
+                        <input type="text" class="form-control" id="porcentagem" placeholder="Informe a %">
+                      </div><!-- col -->
+                    </div>
+                  </div><!-- modal-body -->
+                    <div class="modal-footer">
+                    <!--<button type="button" class="btn btn-secondary tx-13" data-dismiss="modal" id="fechar">Fechar</button> -->
+                    <button type="button" class="btn btn-primary tx-13" id="salvarSelecionado">Definir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0">
 
         <ol class="breadcrumb df-breadcrumbs mg-b-10">
@@ -99,10 +137,17 @@ x
             </div>
             <div class="mg-t-20 mg-sm-t-0">
                 <input type="hidden" value="{{$proposta['id']}}" id="propostaID" />
+
+                <button id="alterarParkeyes" class="btn btn-white">
+     
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-dollar-sign mg-r-5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    Alterar Valor ParkEyes</button>
+
+
                 <button id="exportarProposta" class="btn btn-primary mg-l-5">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="feather feather-credit-card mg-r-5">
+                        class="feather feather-file-text mg-r-5">
                         <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
                         <line x1="1" y1="10" x2="23" y2="10"></line>
                     </svg> Gerar Proposta
@@ -490,29 +535,33 @@ x
                     <table class="table table-dark table-hover table-striped mg-b-0">
                         <thead>
                             <tr>
-                                <th class="wd-40p">TOTAL PARKEYES BASIC</th>
+                                <th class="wd-40p">TOTAL PARKEYES FULL</th>
                                 <th class="tx-right">PROJETO</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>Sistema ParkEyes:</td>
-                                <td class="tx-right" id="totalSistemParkEyes"></td>
+                                <td class="tx-right" id="sistemaParkEyes"></td>
+                                <input type="text" id="sistemaParkEyesOriginal" value="" />
                             </tr>
                             <tr>
-                                <td>Instalação do Sistema ParkEyes:</td>
+                                <td>Instalação do Sistema ParkEyes </td>
+                                <input type="text" id="instalacaoSistemaParkEyesOriginal" value="" />
                                 <td class="tx-right" id="instalacaoSistemaParkEyes"></td>
                             </tr>
                             <tr>
-                                <td>Total</td>
-                                <td class="tx-right totalSistemaInstalacao"></td>
+                                <td>Total:</td>
+                                
+                                <td class="tx-right" id="totalEntreSistemaInstalacao"></td>
                             </tr>
                             <tr>
-                                <td>Total por Vaga</td>
-                                <td class="tx-right totalPorVagaInterna"></td>
+                                <td>Total por vaga: </td>
+                                <td class="tx-right" id="totalEntreSistemaInstalacaoPorVaga"></td>
                             </tr>
                         </tbody>
                     </table>
+
 
 
                     <table class="table table-dark table-hover table-striped mg-b-0">
@@ -958,6 +1007,56 @@ x
             ExportPdf();
         });
 
+
+        $("#alterarOutdoor").click(function(e){
+            $("#tipoAlteracao").val('outdoor');
+            $('#modal5').modal('show');
+        });
+
+        $("#alterarParkeyes").click(function(e){
+            $("#tipoAlteracao").val('parkeyes');
+            $('#modal5').modal('show');
+        
+        });
+
+        $("#salvarSelecionado").click(function (){
+           /// Selecione uma
+            var tipoAlteracao = $("#tipoAlteracao").val();
+            var tipoValor     = $("#tipoDeAlteracao option:selected").val();
+            var porcentagem   = $("#porcentagem").val();
+            console.log(tipoAlteracao + ' ' + porcentagem + ' ' + tipoValor);
+
+            if(tipoAlteracao == 'parkeyes'){
+                var valorAtualParkEyes = $("#sistemaParkEyesOriginal").val();
+                var porcentagem = (parseFloat(valorAtualParkEyes)*(parseFloat(porcentagem))/100);
+                if(tipoValor == '-'){
+                    var valorComDesconto = parseFloat(valorAtualParkEyes - porcentagem,10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1").toString();
+                }else{
+                    var valorComDesconto = parseFloat(parseFloat(valorAtualParkEyes) + parseFloat(porcentagem),10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1").toString();
+                }
+                var valorTotal       = parseFloat(valorComDesconto) + parseFloat($("#instalacaoSistemaParkEyesOriginal").val());
+                $("#totalEntreSistemaInstalacao").html("<strong> R$ "+  formatMoney(valorTotal) + "</strong>");
+                $("#sistemaParkEyes").html("<strong> R$ " + formatMoney(valorComDesconto) + "</strong>");
+                $("#sistemaParkEyesOriginal").val(valorComDesconto);
+                var totalPorVaga = valorTotal/$("#totalDeVagasInternas").val();
+                $("#totalEntreSistemaInstalacaoPorVaga").html("<strong>R$ " + formatMoney(totalPorVaga) + "</strong>");
+
+
+                $(".totalSistemaInstalacao").html("<strong>R$ " + formatMoney(valorTotal) + "</strong>")
+                $(".totalPorVaga").html("<strong>R$ " + formatMoney(totalPorVaga) + "</strong>")
+            
+
+            }
+
+            var novoTotal = parseFloat($("#sistemaParkEyesOriginal").val()) + parseFloat($("#instalacaoSistemaParkEyesOriginal").val()) + parseFloat($("#sistemaParkEyesOutdoorOriginal").val()) + parseFloat($("#instalacaoSistemaParkEyesOutdoorOriginal").val());
+            console.log(novoTotal);
+            $("#totalPROJETO").html("<strong> R$"+ formatMoney(novoTotal)+"</strong>");
+            var totalPorVagaNovo = novoTotal/$("#totalDeVagas").val();
+            $("#totalPorVaga").html("<strong> R$"+ formatMoney(totalPorVagaNovo)+"</strong>");
+           
+
+            $('#modal5').modal('hide');
+        });
         $(".table").hide();
         
         $("table").has("tbody td").show().after("<hr>");
@@ -1023,8 +1122,16 @@ x
        
         var valorGrupo1 = vTotalTb1+vTotalTb2+vTotalTb3;
         var totalSistemaInstalacao = valorGrupo1+vTotalTb4;
-        console.log('grupo1 ' + valorGrupo1);
+        $("#sistemaParkEyesOriginal").val(valorGrupo1);
+        $("#sistemaParkEyes").html("<strong>R$ "+formatMoney(valorGrupo1)+"</strong>");
+
+        var totalEntreSistemaInstalacao = valorGrupo1+vTotalTb4;
+        $("#instalacaoSistemaParkEyesOriginal").val(vTotalTb4);
+        $("#totalEntreSistemaInstalacao").html("<strong>R$ "+formatMoney(totalEntreSistemaInstalacao)+"</strong>");
+        
         var totalDeVagasInternas = $("#totalDeVagasInternas").val();
+        var totalEntreSistemaInstalacaoPorVaga = totalEntreSistemaInstalacao/totalDeVagasInternas;
+        $("#totalEntreSistemaInstalacaoPorVaga").html("<strong>R$ "+formatMoney(totalEntreSistemaInstalacaoPorVaga)+"</strong>");
         var totalDeVagas         = $("#totalDeVagas").val();
         var totalPorVagaInternas = totalSistemaInstalacao/totalDeVagasInternas;
         var totalPorVaga         = totalSistemaInstalacao/totalDeVagasInternas;
