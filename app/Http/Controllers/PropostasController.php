@@ -541,6 +541,7 @@ class PropostasController extends Controller
         $categoriaParkEyesCompleta          = Categoria::where('id', '=', 10)->get();
         $categoriaIntegracaoAplicativos     = Categoria::where('id', '=', 11)->get();
 
+        $distanciaEntreParques = 0;
        foreach($estruturaProposta as $k=>$v){
            if($v['distanciaEntreParques']!=0){
                 $distanciaEntreParques = $v['distanciaEntreParques'];
