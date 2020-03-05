@@ -541,6 +541,12 @@ class PropostasController extends Controller
         $categoriaParkEyesCompleta          = Categoria::where('id', '=', 10)->get();
         $categoriaIntegracaoAplicativos     = Categoria::where('id', '=', 11)->get();
 
+       foreach($estruturaProposta as $k=>$v){
+           if($v['distanciaEntreParques']!=0){
+                $distanciaEntreParques = $v['distanciaEntreParques'];
+           }
+       }
+   
         /* Recupero a proposta do cliente */
         $prop       = Proposta::where('propostas.id', '=', $id)
             ->join('propostas_respostas', 'propostas_respostas.proposta_id', 'propostas.id')
@@ -603,6 +609,7 @@ class PropostasController extends Controller
                 'categoriaParkEyesCompleta',
                 'categoriaIntegracaoAplicativos',
                 'proposta',
+                'distanciaEntreParques',
                 'totalDiasGravacao',
                 'categoriaInstalacaoCompleta',
                 'totalDeVagas',

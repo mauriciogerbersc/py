@@ -49,15 +49,15 @@ x
         </div>
         @endif
 
-        @if(count($arr) > 0)
+        @if(count($final) > 0)
 
         <div id="accordion7" class="accordion">
-            @foreach($arr as $tab)
-            <h6 class="accordion-title">{{$tab->nomeSub}}</h6>
+            @foreach($final as $key=>$tab)
+           
+            <h6 class="accordion-title">{{$key}}</h6>
             <div class="accordion-body">
                 <table class="table">
                     <thead>
-
                         <tr>
                             <th>Data criação</th>
                             <th class="dt-center">Tabela de Preços</th>
@@ -66,45 +66,28 @@ x
                         </tr>
                     </thead>
                     <tbody>
-                        @if($tab->tabela_pai!=0)
-                            @foreach(Helper::retornaAnteriores($tab->tabela_pai) as $key=>$a)
-                            <tr>
-                                <td class="dt-center">{!! Helper::formataDataHora($a['created_at']) !!}</td>       
-                                <td class="dt-center"><a href="/variaveis/subcategorias/visualizar/{{$a['id']}}">{{$a['nomeSub']}}</a></td>
-                                <td class="dt-center">{{$a['descontoDado']}}%</td>
-                                <td class="dt-center">
-                                    <div class="dropdown">
-                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" 
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ações</button>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                            <a class="dropdown-item" href="/variaveis/subcategorias/editar/{{$a['id']}}">Nova apartir desta</a>
-                                            <!-- <a class="dropdown-item" href="/variaveis/subcategorias/remover/{{$tab['id']}}">Remover Tabela</a> -->
-                                        </div>
+                        @foreach(Helper::retornaAnteriores($tab) as $key=>$a)
+                        <tr>
+                            <td class="dt-center">{!! Helper::formataDataHora($a['created_at']) !!}</td>       
+                            <td class="dt-center"><a href="/variaveis/subcategorias/visualizar/{{$a['id']}}">{{$a['nomeSub']}}</a></td>
+                            <td class="dt-center">{{$a['descontoDado']}}%</td>
+                            <td class="dt-center">
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" 
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ações</button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" href="/variaveis/subcategorias/editar/{{$a['id']}}">Nova apartir desta</a>
+                                        <!-- <a class="dropdown-item" href="/variaveis/subcategorias/remover/{{$tab['id']}}">Remover Tabela</a> -->
                                     </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        @else 
-                            <tr>
-                                <td class="dt-center">{!! Helper::formataDataHora($tab->created_at) !!}</td>       
-                                <td class="dt-center"><a href="/variaveis/subcategorias/visualizar/{{$tab->id}}">{{$tab->nomeSub}}</a></td>
-                                <td class="dt-center">{{$tab->descontoDado}}%</td>
-                                <td class="dt-center">
-                                    <div class="dropdown">
-                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" 
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ações</button>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                            <a class="dropdown-item" href="/variaveis/subcategorias/editar/{{$tab->id}}">Nova apartir desta</a>
-                                            <!-- <a class="dropdown-item" href="/variaveis/subcategorias/remover/{{$tab['id']}}">Remover Tabela</a> -->
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endif
+                                </div>
+                            </td>
+                        </tr>
+                       @endforeach
                     </tbody>
                 </table>
 
             </div>
+            
             @endforeach
         </div>
 

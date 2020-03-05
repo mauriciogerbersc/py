@@ -45,6 +45,7 @@
         color: #aaaaaa;
         opacity: 0.4;
     }
+    .hidden { display: none !important;}
 </style>
 @endsection
 
@@ -87,29 +88,36 @@ x
             <div class="modal-content tx-14">
                 <div class="modal-header">
                     <h6 class="modal-title" id="exampleModalLabel5">Defina novo Valor</h6>
-                   <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
-                    </button>-->
+                    </button>
                 </div>
                 <div class="modal-body pd-sm-t-30 pd-sm-b-40 pd-sm-x-30">
 
                     <input type="hidden" id="tipoAlteracao" />
+
+                    <div class="form-group">
+                        <label class="tx-10 tx-uppercase tx-medium tx-spacing-1 mg-b-5 tx-color-03">Nota Técnica</label>
+                        <input type="text" class="form-control" id="notaTecnicaValor" placeholder="Informe os motivos do desconto ou acréscimo">
+                    </div>
+
+   
                     <div class="row row-sm">
-                      <div class="col-sm">
-                        <label class="tx-10 tx-uppercase tx-medium tx-spacing-1 mg-b-5 tx-color-03">Tipo de Alteração</label>
+                      <div class="col-sm-5 mg-t-20 mg-sm-t-0">
+                        <label class="tx-10 tx-uppercase tx-medium tx-spacing-1 mg-b-5 tx-color-03">Tipo</label>
                         <select class="custom-select" id="tipoDeAlteracao">
-                            <option value="+">Acréscimo</option>
-                            <option value="-">Desconto</option>
+                            <option value="+">Acresc.</option>
+                            <option value="-">Desc.</option>
                         </select>
                       </div><!-- col -->
-                      <div class="col-sm-5 mg-t-20 mg-sm-t-0">
-                        <label class="tx-10 tx-uppercase tx-medium tx-spacing-1 mg-b-5 tx-color-03"> %</label>
-                        <input type="text" class="form-control" id="porcentagem" placeholder="Informe a %">
+                      <div class="col-sm">
+                        <label class="tx-10 tx-uppercase tx-medium tx-spacing-1 mg-b-5 tx-color-03"> Valor</label>
+                        <input type="text" class="form-control moeda" id="porcentagem" placeholder="em R$">
                       </div><!-- col -->
                     </div>
                   </div><!-- modal-body -->
                     <div class="modal-footer">
-                    <!--<button type="button" class="btn btn-secondary tx-13" data-dismiss="modal" id="fechar">Fechar</button> -->
+                    <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal" id="fechar">Fechar</button> 
                     <button type="button" class="btn btn-primary tx-13" id="salvarSelecionado">Definir</button>
                 </div>
             </div>
@@ -134,12 +142,12 @@ x
                 <button id="alterarParkeyes" class="btn btn-white">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-dollar-sign mg-r-5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                  
-                    Alterar Valor ParkEyes</button>
+                    Alterar Valor Sb Trade</button>
 
                 <button id="alterarOutdoor" class="btn btn-white mg-l-5">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-dollar-sign mg-r-5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                  
-                    Alterar Valor Outdoor</button>
+                    Alterar Valor PolliPark</button>
 
                 <button id="exportarProposta" class="btn btn-primary mg-l-5">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -524,8 +532,6 @@ x
                     </table>
                     @endforeach
 
-
-
                     <!-- ParkEyes Software -->
                     @foreach($categoriaParkEyesSoftware as $categoria)
                     <table id="tbl8" class="table table-dark table-hover table-striped mg-b-0 somarTabela">
@@ -691,7 +697,6 @@ x
                     </table>
                     @endforeach
 
-
                     <!-- ParkEyes Instalação Completa -->
                     @foreach($categoriaParkEyesCompleta as $categoria)
                     <table id="tbl6" class="table table-dark table-hover table-striped mg-b-0 somarTabela">
@@ -817,11 +822,9 @@ x
                             <tr>
                                 <td>Sistema ParkEyes:</td>
                                 <td class="tx-right" id="sistemaParkEyes"></td>
-                                <input type="text" id="sistemaParkEyesOriginal" value="" />
                             </tr>
                             <tr>
                                 <td>Instalação do Sistema ParkEyes </td>
-                                <input type="text" id="instalacaoSistemaParkEyesOriginal" value="" />
                                 <td class="tx-right" id="instalacaoSistemaParkEyes"></td>
                             </tr>
                             <tr>
@@ -848,11 +851,9 @@ x
                             <tr>
                                 <td>Sistema ParkEyes Outdoor:</td>
                                 <td class="tx-right" id="sistemaParkEyesOutdoor"></td>
-                                <input type="text" id="sistemaParkEyesOutdoorOriginal" value="" />
-                            </tr>
+                             </tr>
                             <tr>
                                 <td>Instalação do Sistema ParkEyes Outdoor: </td>
-                                <input type="text" id="instalacaoSistemaParkEyesOutdoorOriginal" value="" />
                                 <td class="tx-right" id="instalacaoSistemaParkEyesOutdoor"></td>
                             </tr>
                             <tr>
@@ -876,13 +877,38 @@ x
                         <tbody>
                             <tr>
                                 <td>Total da proposta:</td>
-                                <td class="tx-right" id="totalPROJETO"></td>
+                                <td class="tx-right totalPROJETO"></td>
                             </tr>
                             <tr>
                                 <td>Total por vaga:</td>
                                 <td class="tx-right" id="totalPorVaga"></td>
                             </tr>
                         </tbody>
+                    </table>
+
+
+                    <table id="tabelaTotalProposta" class="table table-dark table-hover table-striped mg-b-0 hidden somarTabelaFinal">
+                        <thead>
+                            <tr>
+                                <th class="wd-40p">CONDIÇÃO ESPECIAL</th>
+                                <th class="tx-right">PROJETO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Total da proposta:</td>
+                                <td class="tx-right totalPROJETO"></td>
+                                <input type="hidden" id="totalPROJETOOriginal" class="valor" value="0" />
+                                <input type="hidden" id="totalSb" class="valor" value="0" />
+                                <input type="hidden" id="totalPolli" class="valor"  value="0" />
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td class="tx-right valorTotalFinal tx-size-7">Total: </td>
+                            </tr>
+                        </tfoot>
                     </table>
 
                 </div>
@@ -909,6 +935,7 @@ x
                             </tbody>
                             <tfoot>
                                 <tr>
+                                    <input type="hidden" class="totalGrupo1" />
                                     <td class="text-right" colspan="4" id="totalGrupo1"></td>
                                 </tr>
                             </tfoot>
@@ -931,6 +958,7 @@ x
                             </tbody>
                             <tfoot>
                                 <tr>
+                                    <input type="hidden" class="totalGrupo2" />
                                     <td class="text-right" colspan="4" id="totalGrupo2"></td>
                                 </tr>
                             </tfoot>
@@ -1060,66 +1088,47 @@ x
                     </ol>
                 </div>
                 @foreach ($estruturaProposta as $key=>$val)
-                @php
-                    
-                $varEntreParques = $val->distanciaEntreParques;
-                @endphp
+                    @php
+                    $varEntreParques = 0;
+                    if($val->distanciaEntreParques!=0){
+                        $varEntreParques = $val->distanciaEntreParques;
+                    }
+                    @endphp
                 <div>
-                    <div class="row row-sm">
-                        <div class="col-md">
-                            <h5>{{$val->nomeParque}}</h5>
+                    <div class="row">
+                        <h5>{{$val->nomeParque}}</h5>
+                        <div class="col-sm-8">
                             @if($val->imagem!='')
-                                <figure class="pos-relative mg-b-0 wd-lg-50p">
-                                    <img src="/files/{{$val->imagem}}" class="img-thumbnail" width="278" height="183">
-                                    <figcaption class="pos-absolute b-0 l-0 wd-100p pd-20 d-flex justify-content-center">
-                                        <div class="btn-group">
-                                            <a href="" class="btn btn-dark btn-icon"><i data-feather="trash-2"></i></a>
-                                        </div>
-                                    </figcaption>
-                                </figure>
-                           
+                                <img src="/files/{{$val->imagem}}" class="img-fluid" alt="{{$val->nomeParque}}">
                             @else
-                                <figure class="pos-relative mg-b-0 wd-lg-50p">
-                                    <img src="/img/parque-dafault.png" class="img-thumbnail" width="278" height="183">
-                                    <figcaption class="pos-absolute b-0 l-0 wd-100p pd-20 d-flex justify-content-center">
-                                        <div class="btn-group">
-                                            <a href="" class="btn btn-dark btn-icon"><i data-feather="trash-2"></i></a>
-                                        </div>
-                                    </figcaption>
-                                </figure>
-                            
+                                <img src="/img/parque-dafault.png" class="img-thumbnail" width="278" height="183">
                             @endif
                         </div><!-- col -->
     
                         @if($val->parqueCentralizado)
                             <div class="divider-text"><-- {{$val->distanciaCentralizado}} m --></div>
-                            <div class="col-md mg-t-10 mg-md-t-0 mg-l-60">
+                            <div class="col-sm-2">
                                 <figure class="img-caption pos-relative mg-b-0">
-                                    <img src="/img/central-comando.jpeg" class="img-thumbnail" width="248" height="153">
-    
+                                    <img src="/img/central-comando.jpeg" class="img-thumbnail" width="104" height="80" style="margin-top:50%">
                                 </figure>
                             </div><!-- col -->
-                            
                         @else
-    
-                            <div class="col-md mg-t-10 mg-md-t-0">&nbsp;</div>
-    
+                            <div class="col-sm-4 offset-sm-4">&nbsp;</div>
                         @endif
-                    </div><!-- row -->
-     
-    
+                   
+                    </div><!-- row -->        
+                       
+                    <div class="row">
                     @if($key+1 != $estruturaProposta->count())
-                        <div class="row row-sm">
-                            <div class="col-md-6"></div>
-                            <div class="divider-text divider-vertical" data-text="">@php echo $varEntreParques; @endphp m</div>
-                            <div class="col-md mg-t-6 mg-md-t-0">
-                                <br><br>
-                                <br>
-                                <br>
-                                <br>
-                            </div><!-- col -->
-                        </div>
+                    <div class="d-flex wd-100p">
+                        <div class="wd-50p ht-90 bg-white-100">&nbsp;<br><br><br></div>
+                        <div class="divider-text divider-vertical">{{$distanciaEntreParques}} m</div>
+                        <div class="wd-40p ht-90 bg-white-100">&nbsp;<br><br><br></div>
+                      </div>
+                            
                     @endif
+                </div><!-- row -->        
+                       
                 </div>    
                 @endforeach
                 
@@ -1130,7 +1139,7 @@ x
                         Considerações Finais
                     </div>
                     <div class="card-body">
-                        <ul class="list-group">
+                        <ul class="list-group" id="consideracoesFinais">
                             <li class="list-group-item">O valor exato e final do projeto será conhecido mediante o
                                 Projeto Executivo ParkEyes onde constará o quantitativo exato de materiais empregados na
                                 intalação.</li>
@@ -1194,7 +1203,8 @@ x
 <script src="{{asset('lib/js-cookie/js.cookie.js')}}"></script>
 <script src="{{asset('lib/jquery.maskMoney/jquery.maskMoney.js')}}" type="text/javascript"></script>
 <script src="{{asset('js/jspdf.js')}}"></script>
-
+<script src="{{asset('lib/jquery.maskMoney/jquery.maskMoney.js')}}" type="text/javascript"></script>
+<script src="{{asset('js/jquery.mask.min.js')}}"></script>
 
 <style>
     /*
@@ -1331,66 +1341,110 @@ x
      
         $("#alterarOutdoor").click(function(e){
             $("#tipoAlteracao").val('outdoor');
+            $("#notaTecnicaValor").val("");
+            $("#porcentagem").val("");
             $('#modal5').modal('show');
         });
 
         $("#alterarParkeyes").click(function(e){
             $("#tipoAlteracao").val('parkeyes');
+            $("#notaTecnicaValor").val("");
+            $("#porcentagem").val("");
             $('#modal5').modal('show');
         
         });
+
+  
 
         $("#salvarSelecionado").click(function (){
            /// Selecione uma
             var tipoAlteracao = $("#tipoAlteracao").val();
             var tipoValor     = $("#tipoDeAlteracao option:selected").val();
-            var porcentagem   = $("#porcentagem").val();
-            console.log(tipoAlteracao + ' ' + porcentagem + ' ' + tipoValor);
+            var valorDesconto   = $("#porcentagem").val();
+            valorDesconto = valorDesconto.replace(/\./g, "").replace(",", ".") || 0;
+            valorDesconto = parseFloat(valorDesconto);
+            var novoValorSb   = 0;
+            var novoValorPoli  = 0;
 
             if(tipoAlteracao == 'parkeyes'){
-                var valorAtualParkEyes = $("#sistemaParkEyesOriginal").val();
-                var porcentagem = (parseFloat(valorAtualParkEyes)*(parseFloat(porcentagem))/100);
+                var valorAtualTotal = $(".totalGrupo1").val();  
+             
                 if(tipoValor == '-'){
-                    var valorComDesconto = parseFloat(valorAtualParkEyes - porcentagem,10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1").toString();
+                    var alteracao  = "Desconto";
+                    novoValorSb    = parseFloat(valorAtualTotal - valorDesconto,10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1").toString();
                 }else{
-                    var valorComDesconto = parseFloat(parseFloat(valorAtualParkEyes) + parseFloat(porcentagem),10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1").toString();
+                    var alteracao    = "Acréscimo";
+                    novoValorSb      = parseFloat(parseFloat(valorAtualTotal) + parseFloat(valorDesconto),10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1").toString();
                 }
-                var valorTotal       = parseFloat(valorComDesconto) + parseFloat($("#instalacaoSistemaParkEyesOriginal").val());
-                $("#totalEntreSistemaInstalacao").html("<strong> R$ "+  formatMoney(valorTotal) + "</strong>");
-                $("#sistemaParkEyes").html("<strong> R$ " + formatMoney(valorComDesconto) + "</strong>");
-                $("#sistemaParkEyesOriginal").val(valorComDesconto);
-                var totalPorVaga = valorTotal/$("#totalDeVagasInternas").val();
-                $("#totalEntreSistemaInstalacaoPorVaga").html("<strong>R$ " + formatMoney(totalPorVaga) + "</strong>");
+    
+                var rows = "";
+                rows += "<tr>";
+                    rows += "<td>"+alteracao+" Sb Trade ("+tipoValor+")</td>";
+                    rows += "<td class='tx-right'><strong>R$ "+formatMoney(valorDesconto)+"</strong></td>";
+                rows += "</tr>";
 
+                var li = "";
+                li += "<li class='list-group-item'>"+ $("#notaTecnicaValor").val() +" - R$ "+ formatMoney(valorDesconto)+"</li>";
+
+                $("#tabelaTotalProposta").removeClass("hidden");
+                $("#totalSb").val(novoValorSb);
+            
+                $("#tabelaTotalProposta tbody:last").append(rows);  
+                $("#consideracoesFinais").append(li);
+                $("#primeiraGrupo1").html("<strong>1ª R$ " +formatMoney(novoValorSb*0.50) + "</strong>");
+                $("#segundaGrupo1").html("<strong>2ª R$ " +formatMoney(novoValorSb*0.20) + "</strong>");
+                $("#terceiraGrupo1").html("<strong>3ª R$ " +formatMoney(novoValorSb*0.30) + "</strong>");
+                $("#totalGrupo1").html("<strong>Total - R$ "+formatMoney(novoValorSb)+"</strong>"); 
+                console.log(novoValorSb);
+                $(".totalGrupo1").val(novoValorSb); 
             }else{
-                var valorAtualParkEyesOutdoor = $("#sistemaParkEyesOutdoorOriginal").val()
-                var porcentagem = (parseFloat(valorAtualParkEyesOutdoor)*(parseFloat(porcentagem))/100);
-
+                var valorAtualTotal =   $(".totalGrupo2").val(); 
+              
                 if(tipoValor == '-'){
-                    var valorComDesconto = parseFloat(valorAtualParkEyesOutdoor - porcentagem,10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1").toString();
+                    var alteracao = "Desconto";
+                    novoValorPoli = parseFloat(valorAtualTotal - valorDesconto,10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1").toString();
                 }else{
-                    var valorComDesconto = parseFloat(parseFloat(valorAtualParkEyesOutdoor) + parseFloat(porcentagem),10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1").toString();
+                    var alteracao = "Acréscimo";
+                    novoValorPoli = parseFloat(parseFloat(valorAtualTotal) + parseFloat(valorDesconto),10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1").toString();
                 }
 
-                var valorTotal       = parseFloat(valorComDesconto) + parseFloat($("#instalacaoSistemaParkEyesOutdoorOriginal").val());
+                var rows = "";
+                rows += "<tr>";
+                    rows += "<td>"+alteracao+" PolliPark ("+tipoValor+")</td>";
+                    rows += "<td class='tx-right'><strong>R$ "+formatMoney(valorDesconto)+"</strong></td>";
+                rows += "</tr>";
+                
+                var li = "";
+                li += "<li class='list-group-item'>"+ $("#notaTecnicaValor").val() +" - R$ "+formatMoney(valorDesconto)+"</li>";
 
-                $("#totalEntreSistemaInstalacaoOutdoor").html("<strong> R$ "+  formatMoney(valorTotal) + "</strong>");
-                $("#sistemaParkEyesOutdoor").html("<strong> R$ " + formatMoney(valorComDesconto) + "</strong>");
-                $("#sistemaParkEyesOutdoorOriginal").val(valorComDesconto);
-                console.log($("#totalDeVagasExternas").val());
-                var totalPorVaga = valorTotal/$("#totalDeVagasExternas").val();
-                $("#totalEntreSistemaInstalacaoOutdoorPorVaga").html("<strong>R$ " + formatMoney(totalPorVaga) + "</strong>");
+
+               $("#tabelaTotalProposta").removeClass("hidden");
+               $("#totalPolli").val(valorDesconto);
+               $("#tabelaTotalProposta tbody:last").append(rows);    
+               $("#consideracoesFinais").append(li);
+
+                $("#primeiraGrupo2").html("<strong>1ª R$ " +formatMoney(novoValorPoli*0.50) + "</strong>");
+                $("#segundaGrupo2").html("<strong>2ª R$ " +formatMoney(novoValorPoli*0.20) + "</strong>");
+                $("#terceiraGrupo2").html("<strong>3ª R$ " +formatMoney(novoValorPoli*0.30) + "</strong>");
+                $("#totalGrupo2").html("<strong>Total - R$ "+formatMoney(novoValorPoli)+"</strong>"); 
+                $(".totalGrupo2").val(novoValorPoli);      
             }
 
-            var novoTotal = parseFloat($("#sistemaParkEyesOriginal").val()) + parseFloat($("#instalacaoSistemaParkEyesOriginal").val()) + parseFloat($("#sistemaParkEyesOutdoorOriginal").val()) + parseFloat($("#instalacaoSistemaParkEyesOutdoorOriginal").val());
-            console.log(novoTotal);
-            $("#totalPROJETO").html("<strong> R$"+ formatMoney(novoTotal)+"</strong>");
-            var totalPorVagaNovo = novoTotal/$("#totalDeVagas").val();
-            $("#totalPorVaga").html("<strong> R$"+ formatMoney(totalPorVagaNovo)+"</strong>");
-           
-
+            somaNovosValores();
             $('#modal5').modal('hide');
         });
+
+
+        function somaNovosValores(){
+            
+            var totalGrupo1 = $(".totalGrupo1").val();
+            var totalGrupo2 = $(".totalGrupo2").val();
+            var novoValorTotal = parseFloat(parseFloat(totalGrupo1) + parseFloat(totalGrupo2));
+
+            $(".valorTotalFinal").html("<strong>R$ "+formatMoney(novoValorTotal)+"</strong>");
+        }
+
+        $(".moeda").mask('000.000.000.000.000,00', {reverse: true});
 
         $('#exportarProposta').click(function(e) {
             ExportPdf();
@@ -1527,6 +1581,7 @@ x
         $("#primeiraGrupo1").html("<strong>1ª R$ " +formatMoney(valorGrupo1*0.50) + "</strong>");
         $("#segundaGrupo1").html("<strong>2ª R$ " +formatMoney(valorGrupo1*0.20) + "</strong>");
         $("#terceiraGrupo1").html("<strong>3ª R$ " +formatMoney(valorGrupo1*0.30) + "</strong>");
+        $(".totalGrupo1").val(valorGrupo1);
         $("#totalGrupo1").html("<strong>Total - R$ " +formatMoney(valorGrupo1) + "</strong>");
 
 
@@ -1536,15 +1591,17 @@ x
         $("#primeiraGrupo2").html("<strong>1ª R$ " +formatMoney(valorGrupo2*0.50) + "</strong>");
         $("#segundaGrupo2").html("<strong>2ª R$ " +formatMoney(valorGrupo2*0.20) + "</strong>");
         $("#terceiraGrupo2").html("<strong>3ª R$ " +formatMoney(valorGrupo2*0.30) + "</strong>");
+        $(".totalGrupo2").val(valorGrupo2);
         $("#totalGrupo2").html("<strong>Total - R$ " +formatMoney(valorGrupo2) + "</strong>");
 
         var valorTotal = vTotalTb1+vTotalTb2+vTotalTb3+vTotalTb4+vTotalTb5+vTotalTb6+vTotalTb7+vTotalTb8+vTotalTb9;
         console.log("Valor total: "+ parseFloat(valorTotal));
-
+        $("#totalPROJETOOriginal").val(valorTotal);
         var totalDeVagas = $("#totalDeVagas").val();
         var totalPorVaga = valorTotal/totalDeVagas;
         console.log("Valor total por vaga: "+ totalPorVaga);
-        $("#totalPROJETO").html("<strong>R$ "+formatMoney(valorTotal)+"</strong>");
+        $(".totalPROJETO").html("<strong>R$ "+formatMoney(valorTotal)+"</strong>");
+        $("#totalPorVagaOriginal").val(totalPorVaga);
         $("#totalPorVaga").html("<strong>R$ "+formatMoney(totalPorVaga)+"</strong>");
     });
    

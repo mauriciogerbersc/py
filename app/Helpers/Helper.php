@@ -79,7 +79,9 @@ class Helper
         return $propostas;
     }
     public static function retornaAnteriores($id_pai){
-        $subFixos = SubFixos::where('tabela_pai', '=', $id_pai)->get();
+        $subFixos = SubFixos::where('id', '=', $id_pai)
+                              ->orWhere('tabela_pai', '=', $id_pai)
+                              ->orderBy('created_at', 'desc')->get();
         return $subFixos;
     }
 
