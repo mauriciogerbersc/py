@@ -98,7 +98,7 @@ x
 
                     <div class="form-group">
                         <label class="tx-10 tx-uppercase tx-medium tx-spacing-1 mg-b-5 tx-color-03">Nota Técnica</label>
-                        <input type="text" class="form-control" id="notaTecnicaValor" placeholder="Informe os motivos do desconto ou acréscimo">
+                        <input type="text" class="form-control" required id="notaTecnicaValor" placeholder="Informe os motivos do desconto ou acréscimo">
                     </div>
 
    
@@ -112,7 +112,7 @@ x
                       </div><!-- col -->
                       <div class="col-sm">
                         <label class="tx-10 tx-uppercase tx-medium tx-spacing-1 mg-b-5 tx-color-03"> Valor</label>
-                        <input type="text" class="form-control moeda" id="porcentagem" placeholder="em R$">
+                        <input type="text" class="form-control moeda" required id="porcentagem" placeholder="em R$">
                       </div><!-- col -->
                     </div>
                   </div><!-- modal-body -->
@@ -642,7 +642,7 @@ x
                     </table>
                     @endforeach
 
-
+                    @if(($qtdEntradas['valor'] != 0) AND ($qtdSaidas['valor'] != 0))
                     <!-- ParkEyes Outdoor Hardware Nacional -->
                     @foreach($categoriaParkEyesHWNacional as $categoria)
                     <table id="tbl9" class="table table-dark table-hover table-striped mg-b-0 somarTabela">
@@ -752,7 +752,7 @@ x
                         </tfoot>
                     </table>
                     @endforeach
-
+                    @endif
 
                     <!-- ParkEyes Integração e aplicativos -->
                     @foreach($categoriaIntegracaoAplicativos as $categoria)
@@ -839,7 +839,7 @@ x
                         </tbody>
                     </table>
 
-
+                    @if(($qtdEntradas['valor'] != 0) AND ($qtdSaidas['valor'] != 0))
                     <table class="table table-dark table-hover table-striped mg-b-0">
                         <thead>
                             <tr>
@@ -866,6 +866,7 @@ x
                             </tr>
                         </tbody>
                     </table>
+                    @endif
 
                     <table class="table table-dark table-hover table-striped mg-b-0">
                         <thead>
@@ -914,7 +915,8 @@ x
                 </div>
 
 
-
+                <div class="page-break"></div>
+                
                 <div class="card">
                     <div class="card-header tx-bold ">
                         Termo de pagamento
@@ -998,9 +1000,11 @@ x
                             <li class="list-group-item">Custo anual por Vaga de R$
                                 <strong>{{$manutencao_mensal}}</strong> a serem quitadas
                                 em parcelas mensais com total de R$ <strong>{{$parcelasMensais}}</strong>.</li>
+                                @if(($qtdEntradas['valor'] != 0) AND ($qtdSaidas['valor'] != 0))
                             <li class="list-group-item">Custo mensal por parque de estacionamento outdoor de R$
-                                <strong>420,00</strong>
-                                totalizando R$ <strong>{{$mensalOutdoor}}</strong>.</li>
+                            <strong>420,00</strong>
+                            totalizando R$ <strong>{{$mensalOutdoor}}</strong>.</li>
+                            @endif
                             <li class="list-group-item">Mensalidade total de manutenção preventiva obrigatória R$
                                 <strong>{{$totalMensal}}</strong>.</li>
                         </ul>
@@ -1045,7 +1049,7 @@ x
                         </div>
                     </div>
                 </div>
-
+                <div class="page-break"></div>
 
                 <div class="row">
                     <ol class="pd-t-20">
@@ -1087,29 +1091,47 @@ x
                             instalação de software e treinamento de operadores indicados pelo cliente.</li>
                     </ol>
                 </div>
+                <div class="page-break"></div>
                 @foreach ($estruturaProposta as $key=>$val)
                     @php
+                    $i = $key;
+                    if ($i % 2 == 0 && $i != count($estruturaProposta)) { 
+                        echo "<div class='page-break'></div>";
+                    }
+
                     $varEntreParques = 0;
                     if($val->distanciaEntreParques!=0){
                         $varEntreParques = $val->distanciaEntreParques;
                     }
                     @endphp
                 <div>
+                    <h5>{{$val->nomeParque}}</h5>
                     <div class="row">
-                        <h5>{{$val->nomeParque}}</h5>
-                        <div class="col-sm-8">
+                        
+                        @if($val->parqueCentralizado)
+                        <div class="col-sm-9">
                             @if($val->imagem!='')
-                                <img src="/files/{{$val->imagem}}" class="img-fluid" alt="{{$val->nomeParque}}">
+                                <img src="/files/{{$val->imagem}}" class="img-fluid" alt="{{$val->nomeParque}}" width="600" height="440">
                             @else
                                 <img src="/img/parque-dafault.png" class="img-thumbnail" width="278" height="183">
                             @endif
                         </div><!-- col -->
-    
+                        @else 
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-10">
+                            @if($val->imagem!='')
+                                <img src="/files/{{$val->imagem}}" class="img-fluid" alt="{{$val->nomeParque}}" width="600" height="440">
+                            @else
+                                <img src="/img/parque-dafault.png" class="img-thumbnail" width="278" height="183">
+                            @endif
+                        </div><!-- col -->
+                        <div class="col-sm-1"></div>
+                        @endif
                         @if($val->parqueCentralizado)
                             <div class="divider-text"><-- {{$val->distanciaCentralizado}} m --></div>
-                            <div class="col-sm-2">
-                                <figure class="img-caption pos-relative mg-b-0">
-                                    <img src="/img/central-comando.jpeg" class="img-thumbnail" width="104" height="80" style="margin-top:50%">
+                            <div class="col-sm-1">
+                                <figure class="img-caption pos-relative mg-b-0" style="margin-top:400%;">
+                                    <img src="/img/central-comando.jpeg" class="img-thumbnail" width="104" height="80">
                                 </figure>
                             </div><!-- col -->
                         @else
@@ -1133,7 +1155,7 @@ x
                 @endforeach
                 
                 <hr>
-
+                <div class="page-break"></div>
                 <div class="card">
                     <div class="card-header tx-bold">
                         Considerações Finais
@@ -1155,12 +1177,13 @@ x
                 </div>
 
                 <hr>
+
                 <div class="card">
                     <div class="card-header tx-bold">
                         Notas de Visita Técnica e Observações:
                     </div>
                     <div class="card-body">
-                        
+                        {{$notas->valor}}
                     </div>
                 </div>
 
@@ -1332,6 +1355,7 @@ x
                 success: function(data){
                     if(data.success){
                         alert("Conteúdo salvo no servidor.");
+                        $(location).attr('href', '/propostas');
                     }
                 },error: function(){
                     alert('Erro no Ajax !');
@@ -1384,7 +1408,7 @@ x
                 rows += "</tr>";
 
                 var li = "";
-                li += "<li class='list-group-item'>"+ $("#notaTecnicaValor").val() +" - R$ "+ formatMoney(valorDesconto)+"</li>";
+                li += "<li class='list-group-item'>"+ $("#notaTecnicaValor").val() +" Total - R$ "+ formatMoney(valorDesconto)+"</li>";
 
                 $("#tabelaTotalProposta").removeClass("hidden");
                 $("#totalSb").val(novoValorSb);

@@ -414,7 +414,13 @@ class PropostasController extends Controller
             $vagasInternas      += $total['qtdVagasInternas'];
         }
 
-
+        $distanciaEntreParques = 0;
+        foreach($estruturaProposta as $k=>$v){
+            if($v['distanciaEntreParques']!=0){
+                 $distanciaEntreParques = $v['distanciaEntreParques'];
+            }
+        }
+    
         $totalDias = PropostasRespostas::where('campo', '=', 'qtdDiasDeGravacao')
             ->where('proposta_id', '=', $id)
             ->select('valor')
@@ -447,6 +453,7 @@ class PropostasController extends Controller
                 'vagasDescobertas',
                 'vagasInternas',
                 'titulo',
+                'distanciaEntreParques',
                 'notas'
             )
         );
@@ -526,10 +533,27 @@ class PropostasController extends Controller
      */
     public function show($id)
     {
+        $titulo = 'Proposta Full';
         $estruturaProposta = Proposta::where('propostas.id', '=', $id)
         ->join('estruturas', 'estruturas.proposta_id', '=', 'propostas.id')
         ->select('estruturas.nomeParque', 'estruturas.imagem', 'estruturas.parqueCentralizado','estruturas.id as idEstrutura', 'estruturas.distanciaCentralizado', 'estruturas.distanciaEntreParques')
         ->get();
+
+        
+        $notas = PropostasRespostas::where('campo', '=', 'notasObservacoes')
+        ->where('proposta_id', '=', $id)
+        ->select('valor')
+        ->first();
+
+        $qtdEntradas =  PropostasRespostas::where('campo', '=', 'qtdEntradas')
+        ->where('proposta_id', '=', $id)
+        ->select('valor')
+        ->first();
+    
+        $qtdSaidas =  PropostasRespostas::where('campo', '=', 'qtdSaidas')
+        ->where('proposta_id', '=', $id)
+        ->select('valor')
+        ->first();
         /* Todas as categorias dos tipos de produtos */
         $categoriaSoftware                  = Categoria::where('id', '=', 2)->get();
         $categoriaHardwarePrincipal         = Categoria::where('id', '=', 4)->get();
@@ -605,17 +629,21 @@ class PropostasController extends Controller
                 'categoriaHardwareNacional',
                 'categoriaParkEyesSoftware',
                 'estruturaProposta',
+                'qtdEntradas',
+                'qtdSaidas',
                 'categoriaParkEyesHWPrincipal',
                 'categoriaParkEyesHWNacional',
                 'categoriaParkEyesCompleta',
                 'categoriaIntegracaoAplicativos',
                 'proposta',
+                'notas',
                 'distanciaEntreParques',
                 'totalDiasGravacao',
                 'categoriaInstalacaoCompleta',
                 'totalDeVagas',
                 'vagasDescobertas',
-                'vagasInternas'
+                'vagasInternas',
+                'titulo'
             )
         );
     }

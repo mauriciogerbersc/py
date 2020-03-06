@@ -204,12 +204,12 @@ x
                                     </td>
 
                                     <td>
-                                        <input type="text" class="form-control" id="alturaSistema"
+                                        <input type="text" class="form-control moeda" id="alturaSistema"
                                             name="alturaSistema[]" value="0">
                                     </td>
 
                                     <td>
-                                        <input type="text" class="form-control" id="peDireito" name="peDireito[]"
+                                        <input type="text" class="form-control moeda" id="peDireito" name="peDireito[]"
                                             value="0">
                                     </td>
 
@@ -351,6 +351,8 @@ x
 <script src="{{asset('lib/select2/js/select2.min.js')}}"></script>
 <script src="{{asset('lib//parsleyjs/parsley.min.js')}}"></script>
 <script src="{{asset('lib/jquery-steps/build/jquery.steps.min.js')}}"></script>
+<script src="{{asset('lib/jquery.maskMoney/jquery.maskMoney.js')}}" type="text/javascript"></script>
+<script src="{{asset('js/jquery.mask.min.js')}}"></script>
 
 <script src="{{asset('js/dashforge.js')}}"></script>
 <script type="text/javascript">
@@ -397,7 +399,8 @@ x
     $(function() {
 
        
-
+        $(".moeda").mask('000.000.000.000.000,00', {reverse: true});
+           
         function limpa_formulário_cep() {
             // Limpa valores do formulário de cep.
             $("#rua").val("");
@@ -497,10 +500,10 @@ x
             rows += '<input type="number" class="form-control" id="quantidadeVagasExternas" name="quantidadeVagasExternas[]" value="0" >';
             rows += '</td>';
             rows += '<td>';
-            rows += '<input type="text" class="form-control" id="alturaSistema" name="alturaSistema[]" value="0">';
+            rows += '<input type="text" class="form-control moeda" id="alturaSistema" name="alturaSistema[]" value="0">';
             rows += '</td>';
             rows += '<td>';
-            rows += '<input type="text" class="form-control" id="peDireito" name="peDireito[]" value="0">';
+            rows += '<input type="text" class="form-control moeda" id="peDireito" name="peDireito[]" value="0">';
             rows += '</td>';
             rows += '<td>';
             rows += '<select name="parqueMaisCentralizado[]" class="custom-select radioCentralizado"><option value="0" selected>Não</option><option value="1">Sim</option></select>';

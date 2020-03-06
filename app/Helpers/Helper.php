@@ -88,7 +88,7 @@ class Helper
     public static function regraDeNegocio($regra, $variavel_id, $proposta_id, $totalDeVagas)
     {
 
-        #echo $regra .  ' ' . $variavel_id .  ' ' . $proposta_id .  ' ' . $totalDeVagas . "<br>"; 
+        //echo $regra .  ' ' . $variavel_id .  ' ' . $proposta_id .  ' ' . $totalDeVagas . "<br>"; 
 
         if (strpos($regra, "[[") !== false) {
             $regra = str_replace("[[", "{{", $regra);
@@ -111,6 +111,7 @@ class Helper
                 if ($field == 'countParaCisco') {
                     $estruturas = new ConfiguracaoController();
                     $total = $estruturas->totalParquesCobertos($tabela, $proposta_id);
+                
                      #echo $totalDeVagas . "<br>";
                      if (!empty($out[5][1])) {
                         

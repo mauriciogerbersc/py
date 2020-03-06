@@ -76,24 +76,19 @@ class ConfiguracaoController extends Controller
 
             return $total;
         } else if ($tipo == 'distanciaCabeamentosCat5e') {
-            $retornaValor = PropostasRespostas::where('propostas_respostas.proposta_id', '=', $proposta_id)
-                ->select('propostas_respostas.campo', 'propostas_respostas.valor')
-                ->get();
-
+            $distanciaEstrutura = Estrutura::where('estruturas.proposta_id', '=', $proposta_id)
+            ->select('estruturas.distanciaEntreParques', 'estruturas.distanciaCentralizado')
+            ->get();
+           
             $distanciaAcessos = Acesso::where('proposta_id', '=', $proposta_id)->get();
+       
             $total = 0;
-            foreach ($retornaValor as $k => $v) {
-                if ($v['campo'] == 'distanciaCentroControle') {
-                    if ($v['valor'] < 80) {
-                        $total += $v['valor'];
-                    }
+            foreach ($distanciaEstrutura as $k => $v) {
+               
+                if ($v['distanciaEntreParques'] < 80) {
+                    $total += $v['distanciaEntreParques'];
                 }
-
-                if (($v['campo'] == 'distanciaEntreParques')) {
-                    if ($v['valor'] < 80) {
-                        $total += $v['valor'];
-                    }
-                }
+                
             }
 
             foreach ($distanciaAcessos as $k => $v) {
@@ -101,7 +96,7 @@ class ConfiguracaoController extends Controller
                     $total += $v['distanciaProximo'];
                 }
             }
-
+        
             return $total;
         } else if ($tipo == 'distanciaEntreTodosParques') {
 

@@ -45,6 +45,7 @@
         color: #aaaaaa;
         opacity: 0.4;
     }
+    .hidden { display: none !important;}
 </style>
 @endsection
 
