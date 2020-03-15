@@ -75,7 +75,7 @@ class Helper
         ->orderBy('propostas.id', 'desc')
         ->get();
         
-        
+        #echo $propostas;
         return $propostas;
     }
     public static function retornaAnteriores($id_pai){

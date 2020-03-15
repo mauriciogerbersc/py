@@ -100,6 +100,7 @@ class ClienteController extends Controller
         $user->email = $request->input('email');
         $user->password = Hash::make($request->input('password'));
         $user->sub_fixo_id = $request->input('categoriaPrecos');
+        $user->status = 1;
         $user->save();
 
         return redirect('/clientes')->with('classe', 'alert-success')->with('mensagem', 'Cliente criado com sucesso.');

@@ -82,7 +82,7 @@ x
             <form method="POST" action="/propostas/nova/{{$cliente->id}}">
 
                 @csrf
-                <input type="hidden"  id="tabela_id" name="tabela_id"   value="" />
+                <input type="hidden"  id="tabela_id" name="tabela_id"  value="{{$cliente->sub_fixo_id}}" />
                 <input type="hidden" name="cliente_id" value="{{$cliente->id}}" />
                 <input type="hidden" name="tipo_proposta" value="{{$tipo_proposta}}" />
                 <div id="wizard4">
@@ -204,12 +204,11 @@ x
                                     </td>
 
                                     <td>
-                                        <input type="text" class="form-control moeda" id="alturaSistema"
-                                            name="alturaSistema[]" value="0">
+                                        <input type="text" class="form-control alt" id="alturaSistema" required onfocus="getDecimal2()" name="alturaSistema[]" value="0">
                                     </td>
 
                                     <td>
-                                        <input type="text" class="form-control moeda" id="peDireito" name="peDireito[]"
+                                        <input type="text" class="form-control alt" id="peDireito" required name="peDireito[]"
                                             value="0">
                                     </td>
 
@@ -344,17 +343,15 @@ x
 <script src="{{asset('lib/feather-icons/feather.min.js')}}"></script>
 <script src="{{asset('lib/perfect-scrollbar/perfect-scrollbar.min.js')}}"></script>
 <script src="{{asset('lib/prismjs/prism.js')}}"></script>
-<script src="{{asset('lib/datatables.net/js/jquery.dataTables.min.js')}}"></script>
-<script src="{{asset('lib/datatables.net-dt/js/dataTables.dataTables.min.js')}}"></script>
-<script src="{{asset('lib/datatables.net-responsive/js/dataTables.responsive.min.js')}}"></script>
-<script src="{{asset('lib/datatables.net-responsive-dt/js/responsive.dataTables.min.js')}}"></script>
 <script src="{{asset('lib/select2/js/select2.min.js')}}"></script>
-<script src="{{asset('lib//parsleyjs/parsley.min.js')}}"></script>
+<script src="{{asset('lib/parsleyjs/parsley.min.js')}}"></script>
 <script src="{{asset('lib/jquery-steps/build/jquery.steps.min.js')}}"></script>
+
+
+<script src="{{asset('js/dashforge.js')}}"></script>
 <script src="{{asset('lib/jquery.maskMoney/jquery.maskMoney.js')}}" type="text/javascript"></script>
 <script src="{{asset('js/jquery.mask.min.js')}}"></script>
 
-<script src="{{asset('js/dashforge.js')}}"></script>
 <script type="text/javascript">
     function stopRKey(evt) {
       var evt = (evt) ? evt : ((event) ? event : null);
@@ -365,9 +362,13 @@ x
     document.onkeypress = stopRKey;
 </script> 
 <script>
-    $(window).on('load',function(){
-        $('#modal5').modal('show');
-    });
+    var tabela_id = $("#tabela_id").val();
+   
+    if(tabela_id == 0){
+        $(window).on('load',function(){
+            $('#modal5').modal('show');
+        });
+    }
 
 
     (function($) {
@@ -398,8 +399,6 @@ x
 
     $(function() {
 
-       
-        $(".moeda").mask('000.000.000.000.000,00', {reverse: true});
            
         function limpa_formulário_cep() {
             // Limpa valores do formulário de cep.
@@ -500,10 +499,10 @@ x
             rows += '<input type="number" class="form-control" id="quantidadeVagasExternas" name="quantidadeVagasExternas[]" value="0" >';
             rows += '</td>';
             rows += '<td>';
-            rows += '<input type="text" class="form-control moeda" id="alturaSistema" name="alturaSistema[]" value="0">';
+            rows += '<input type="text" class="form-control alt" id="alturaSistema" required name="alturaSistema[]" value="">';
             rows += '</td>';
             rows += '<td>';
-            rows += '<input type="text" class="form-control moeda" id="peDireito" name="peDireito[]" value="0">';
+            rows += '<input type="text" class="form-control alt" id="peDireito" required name="peDireito[]" value="">';
             rows += '</td>';
             rows += '<td>';
             rows += '<select name="parqueMaisCentralizado[]" class="custom-select radioCentralizado"><option value="0" selected>Não</option><option value="1">Sim</option></select>';
@@ -513,6 +512,11 @@ x
             rows += '</td>';
             rows += '</tr>';
             $("#tabelaParques > tbody:last").append(rows);
+            
+        });
+
+        $(document).on("focus", ".alt", function() { 
+            $(".alt").mask('0.0', {reverse: true});
         });
 
         $("#tabelaParques").on("change", ".radioCentralizado", function(){

@@ -114,6 +114,8 @@ class PropostasController extends Controller
             $isBasic       = true;
         }
 
+        
+
         $proposta_id        = $id;
         $propostasRespostas = PropostasRespostas::where('propostas_respostas.proposta_id', '=', $id)->first();
         $estruturas         = Estrutura::where('proposta_id', $id)->get();
@@ -121,15 +123,19 @@ class PropostasController extends Controller
 
         $cliente_id         = $proposta['cliente_id'];
 
+        $cliente       = User::find($cliente_id);
+        $tabelas       = SubFixos::where('status', '=', 1)->get();
 
         return view(
             'propostas/regerar',
             compact(
                 'estruturas',
                 'cliente_id',
+                'tabelas',
                 'proposta',
                 'isBasic',
                 'perguntas',
+                'cliente',
                 'propostasRespostas',
                 'proposta_id',
                 'tipo_proposta',
@@ -205,6 +211,12 @@ class PropostasController extends Controller
 
         $proposta_id = $proposta->id;
 
+         /* Salvando o relacionamento da  tabela de preços utilizada, cliente e projeto. */
+         $tabelaPrecosPropostas = new TabelaPrecosPropostas();
+         $tabelaPrecosPropostas->cliente_id  = $request->input('cliente_id');
+         $tabelaPrecosPropostas->proposta_id = $proposta_id;
+         $tabelaPrecosPropostas->sub_fixos_id = $request->input('tabela_id');
+         $tabelaPrecosPropostas->save();
 
         foreach ($request->input() as $key => $val) {
             if (!is_array($val)) {

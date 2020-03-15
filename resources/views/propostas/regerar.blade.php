@@ -23,6 +23,43 @@ x
 
 @section('body')
 <div class="content content-fixed">
+
+
+    <div class="modal fade" id="modal5" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="exampleModalLabel5"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+            <div class="modal-content tx-14">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalLabel5">Selecione uma tabela</h6>
+                   <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>-->
+                </div>
+                <div class="modal-body">
+                    <p class="mg-b-0">
+                        <div class="wd-md-120p">
+                            <select class="form-control select2" id="tabela_precos" style="width:100%;">
+                                <option label="Selecione uma"></option>
+                                @foreach($tabelas as $k=>$v)
+                                <option value="{{$v->id}}">{{$v->nomeSub}}</option>
+                                @endforeach
+                            </select>
+
+                        </div>
+                    </p>
+
+                    <p class="mg-b-0"><a href="/variaveis/subcategorias">Criar uma nova tabela</a></p>
+                </div>
+                <div class="modal-footer">
+                    <!--<button type="button" class="btn btn-secondary tx-13" data-dismiss="modal" id="fechar">Fechar</button> -->
+                    <button type="button" class="btn btn-primary tx-13" id="salvarSelecionado">Definir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
     <div class="container">
         <ol class="breadcrumb df-breadcrumbs mg-b-10">
             <li class="breadcrumb-item"><a href="/dashboard">Painel de Controle</a></li>
@@ -37,6 +74,8 @@ x
             <form method="POST" action="/propostas/regerarNova/{{$cliente_id}}">
 
                 @csrf
+                <input type="hidden"  id="tabela_id" name="tabela_id"  value="{{$cliente->sub_fixo_id}}" />
+               
                 <input type="hidden" name="cliente_id" value="{{$cliente_id}}" />
                 <input type="hidden" name="proposta_id" class="proposta_id" value="{{$proposta->id}}" />
                 <input type="hidden"   name="tipo_proposta" value="{{$tipo_proposta}}" />
@@ -174,12 +213,12 @@ x
                                     </td>
 
                                     <td>
-                                        <input type="text" class="form-control" id="alturaSistema"
+                                        <input type="text" class="form-control alt" id="alturaSistema"
                                             name="alturaSistema[]" value="{{$estrutura->alturaSistema}}">
                                     </td>
 
                                     <td>
-                                        <input type="text" class="form-control" id="peDireito" name="peDireito[]"
+                                        <input type="text" class="form-control alt" id="peDireito" name="peDireito[]"
                                             value="{{$estrutura->alturaPeDireito}}">
                                     </td>
 
@@ -342,6 +381,43 @@ x
 
 
 <script>
+
+
+var tabela_id = $("#tabela_id").val();
+   
+   if(tabela_id == 0){
+       $(window).on('load',function(){
+           $('#modal5').modal('show');
+       });
+   }
+
+
+   (function($) {
+
+'use strict'
+
+var Defaults = $.fn.select2.amd.require('select2/defaults');
+
+$.extend(Defaults.defaults, {
+searchInputPlaceholder: ''
+});
+
+var SearchDropdown = $.fn.select2.amd.require('select2/dropdown/search');
+
+var _renderSearchDropdown = SearchDropdown.prototype.render;
+
+SearchDropdown.prototype.render = function(decorated) {
+
+// invoke parent method
+var $rendered = _renderSearchDropdown.apply(this, Array.prototype.slice.apply(arguments));
+
+this.$search.attr('placeholder', this.options.get('searchInputPlaceholder'));
+
+return $rendered;
+};
+
+})(window.jQuery);
+
     $(function() {
        
 
@@ -351,6 +427,19 @@ x
             $("#cidade").val("");
             $("#uf").val("");
         }
+
+        
+        $("#salvarSelecionado").click(function (){
+           /// Selecione uma
+           
+            if($("#tabela_precos option:selected").val() != ''){
+                $("#tabela_id").val($("#tabela_precos option:selected").val());
+                $('#modal5').modal('hide');
+            }else{
+                alert("Selecione uma tabela de preços para seguir a proposta.")
+            }
+        });
+
         'use strict'
         $(document).ready(function() {
             $('#wizard4').steps({
@@ -428,10 +517,10 @@ x
             rows += '<input type="number" class="form-control" id="quantidadeVagasExternas" name="quantidadeVagasExternas[]" value="0" >';
             rows += '</td>';
             rows += '<td>';
-            rows += '<input type="text" class="form-control" id="alturaSistema" name="alturaSistema[]" value="0">';
+            rows += '<input type="text" class="form-control alt" id="alturaSistema" name="alturaSistema[]" value="0">';
             rows += '</td>';
             rows += '<td>';
-            rows += '<input type="text" class="form-control" id="peDireito" name="peDireito[]" value="0">';
+            rows += '<input type="text" class="form-control alt" id="peDireito" name="peDireito[]" value="0">';
             rows += '</td>';
             rows += '<td>';
             rows += '<select name="parqueMaisCentralizado[]" class="custom-select radioCentralizado"><option value="0" selected>Não</option><option value="1">Sim</option></select>';
@@ -443,7 +532,9 @@ x
             $("#tabelaParques > tbody:last").append(rows);
         });
 
-
+        $(document).on("focus", ".alt", function() { 
+            $(".alt").mask('0.0', {reverse: true});
+        });
 
         $("#tabelaParques").on("click", ".removeRow", function() {
             $(this).closest("tr").remove();
