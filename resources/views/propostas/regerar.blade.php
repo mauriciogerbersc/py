@@ -232,10 +232,10 @@ x
                                     </td>
                                     <td>
                                     @if($estrutura->distanciaCentralizado!=0)
-                                    <input type="text" class="form-control distancias" id="distanciaEntreParques"
+                                    <input type="text" class="form-control distancias distancia" id="distanciaEntreParques"
                                     placeholder="Rel. Centralizado." name="distanciaEntreParques[]" value="{{$estrutura->distanciaCentralizado}}" />
                                     @else 
-                                    <input type="text" class="form-control distancias" id="distanciaEntreParques"
+                                    <input type="text" class="form-control distancias distancia" id="distanciaEntreParques"
                                     placeholder="Rel. Centralizado." name="distanciaEntreParques[]" value="{{$estrutura->distanciaEntreParques}}" />
                                     @endif
                                 </td>
@@ -369,17 +369,24 @@ x
 <script src="{{asset('lib/feather-icons/feather.min.js')}}"></script>
 <script src="{{asset('lib/perfect-scrollbar/perfect-scrollbar.min.js')}}"></script>
 <script src="{{asset('lib/prismjs/prism.js')}}"></script>
-<script src="{{asset('lib/datatables.net/js/jquery.dataTables.min.js')}}"></script>
-<script src="{{asset('lib/datatables.net-dt/js/dataTables.dataTables.min.js')}}"></script>
-<script src="{{asset('lib/datatables.net-responsive/js/dataTables.responsive.min.js')}}"></script>
-<script src="{{asset('lib/datatables.net-responsive-dt/js/responsive.dataTables.min.js')}}"></script>
 <script src="{{asset('lib/select2/js/select2.min.js')}}"></script>
-<script src="{{asset('lib//parsleyjs/parsley.min.js')}}"></script>
+<script src="{{asset('lib/parsleyjs/parsley.min.js')}}"></script>
 <script src="{{asset('lib/jquery-steps/build/jquery.steps.min.js')}}"></script>
 
+
 <script src="{{asset('js/dashforge.js')}}"></script>
+<script src="{{asset('lib/jquery.maskMoney/jquery.maskMoney.js')}}" type="text/javascript"></script>
+<script src="{{asset('js/jquery.mask.min.js')}}"></script>
 
+<script type="text/javascript">
+    function stopRKey(evt) {
+      var evt = (evt) ? evt : ((event) ? event : null);
+      var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+      if ((evt.keyCode == 13) && ((node.type=="text") || (node.type=="radio") || (node.type=="checkbox")) )  {return false;}
+    }
 
+    document.onkeypress = stopRKey;
+</script> 
 <script>
 
 
@@ -526,7 +533,7 @@ return $rendered;
             rows += '<select name="parqueMaisCentralizado[]" class="custom-select radioCentralizado"><option value="0" selected>Não</option><option value="1">Sim</option></select>';
             rows += '</td>';
             rows += '<td>';
-            rows += '<input type="text" class="form-control" id="distanciaEntreParques" placeholder="Rel. Centralizado." name="distanciaEntreParques[]" />';
+            rows += '<input type="text" class="form-control distancia" id="distanciaEntreParques" placeholder="Rel. Centralizado." name="distanciaEntreParques[]" />';
             rows += '</td>';
             rows += '</tr>';
             $("#tabelaParques > tbody:last").append(rows);
@@ -535,6 +542,12 @@ return $rendered;
         $(document).on("focus", ".alt", function() { 
             $(".alt").mask('0.0', {reverse: true});
         });
+
+
+        $(document).on("focus", ".distancia", function() { 
+            $(".distancia").mask('000.00', {reverse: true});
+        });
+
 
         $("#tabelaParques").on("click", ".removeRow", function() {
             $(this).closest("tr").remove();

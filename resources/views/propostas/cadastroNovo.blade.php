@@ -220,7 +220,7 @@ x
                                     </td>
 
                                     <td>
-                                        <input type="text" class="form-control" id="distanciaEntreParques"
+                                        <input type="text" class="form-control distancia" id="distanciaEntreParques"
                                             placeholder="Rel. Centralizado." name="distanciaEntreParques[]" />
                                     </td>
                                 </tr>
@@ -508,7 +508,7 @@ x
             rows += '<select name="parqueMaisCentralizado[]" class="custom-select radioCentralizado"><option value="0" selected>Não</option><option value="1">Sim</option></select>';
             rows += '</td>';
             rows += '<td>';
-            rows += '<input type="text" class="form-control" id="distanciaEntreParques" placeholder="Rel. Centralizado." name="distanciaEntreParques[]" />';
+            rows += '<input type="text" class="form-control distancia" id="distanciaEntreParques" placeholder="Rel. Centralizado." name="distanciaEntreParques[]" />';
             rows += '</td>';
             rows += '</tr>';
             $("#tabelaParques > tbody:last").append(rows);
@@ -517,6 +517,10 @@ x
 
         $(document).on("focus", ".alt", function() { 
             $(".alt").mask('0.0', {reverse: true});
+        });
+
+        $(document).on("focus", ".distancia", function() { 
+            $(".distancia").mask('000.00', {reverse: true});
         });
 
         $("#tabelaParques").on("change", ".radioCentralizado", function(){

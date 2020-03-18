@@ -25,7 +25,7 @@ class VariaveisCategoriasController extends Controller
     {
 
         $titulo  = "Tabelas de Preços";
-        $ids = array(72,73);
+        $ids = array(72,73,0);
         $arr = SubFixos::where('status', '=', 1)
                         ->whereNotIn('id',$ids)
                         ->orderBy('id', 'asc')
