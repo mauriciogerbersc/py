@@ -62,6 +62,7 @@ x
                     <div class="form-group col-md-4">
                         <label for="categoriaDePrecos">Categoria de Preços</label>
                         <select name="categoriaPrecos" class="custom-select">
+               
                             @foreach($subFixo as $sub)
                                 <option value="{{$sub['id']}}">{{$sub['nomeSub']}}</option>
                             @endforeach
